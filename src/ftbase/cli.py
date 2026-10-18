@@ -1,3 +1,5 @@
+# Rewritten from tracklab@686508a: pipeline/src/tracklab/cli.py
+# Changes: football only, down to the ingest, bronze and silver subcommands.
 """Command-line entry point."""
 
 from __future__ import annotations
@@ -18,6 +20,7 @@ from ftbase.ingest.fetch import ingest_source, make_client
 from ftbase.ingest.local import ingest_local
 from ftbase.ingest.manifest import Source, load_manifest
 from ftbase.paths import data_root
+from ftbase.silver.build import build_silver
 
 SOURCE_ID = "opendata-football"
 
@@ -65,6 +68,19 @@ def _cmd_bronze(args: argparse.Namespace) -> int:
         BRONZE_BUILDERS[group](source, raw_root, args.data_dir)
     print(f"total seconds={time.perf_counter() - started:.1f}")
     return 0
+
+
+def _cmd_silver(args: argparse.Namespace) -> int:
+    try:
+        result = build_silver(args.data_dir, args.manifest)
+    except (KeyError, FileNotFoundError, RuntimeError, ValueError) as exc:
+        sys.exit(f"ftbase: {exc.args[0]}")
+    passed = sum(c.ok for c in result.checks)
+    print(f"checks: {passed}/{len(result.checks)} passed")
+    for failure in result.failures:
+        print(f"FAIL {failure}")
+    print(f"total seconds={result.seconds:.1f}")
+    return 1 if result.failures else 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -129,6 +145,26 @@ def build_parser() -> argparse.ArgumentParser:
         "(default: data).",
     )
     bronze.set_defaults(func=_cmd_bronze)
+
+    silver = subparsers.add_parser(
+        "silver",
+        help="Build silver from bronze with DuckDB (orientation, dims, frames, events, views) "
+        "and run its checks; exit 1 if any fails.",
+    )
+    silver.add_argument(
+        "--manifest",
+        type=Path,
+        default=default_manifest(),
+        help="Path to sources.json; dim_match takes the pinned commit from it "
+        "(default: the manifest shipped with ftbase).",
+    )
+    silver.add_argument(
+        "--data-dir",
+        type=Path,
+        default=data_root(),
+        help="Data root: reads bronze/football/, writes silver/ (default: data).",
+    )
+    silver.set_defaults(func=_cmd_silver)
     return parser
 
 

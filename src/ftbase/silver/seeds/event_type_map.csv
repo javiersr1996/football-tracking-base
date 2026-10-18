@@ -1,9 +1,4 @@
 sport,native_family,native_subtype_pattern,event_type,note
-basketball,possessions,*,possession,The provider delivers team possessions; football has to derive them
-football,possession,*,possession,Derived by the chain rule; see reports/possessions_football.csv
-basketball,touches,*,player_possession,One player holding the ball
+football,possession,*,possession,Derived by the chain rule; see events.sql
 football,player_possession,*,player_possession,Same idea under the provider's own name
-basketball,passes,*,pass,A family of its own in this bundle
 football,player_possession,pass,pass,"A player possession the provider says ended in a pass: one native row, so it is a pass and not also a player_possession"
-basketball,shots,*,shot,
-basketball,free_throws,*,shot,native_family separates them from open-play shots

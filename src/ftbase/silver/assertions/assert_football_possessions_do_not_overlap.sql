@@ -1,12 +1,11 @@
--- The invariant the chain rule was chosen for. Football's team possessions are
--- derived here, so nothing outside this project guarantees they tile the match
--- without stepping on each other; merging the phases of play instead would put
--- 3,030 of them on top of their neighbour.
+-- Copied from tracklab@686508a: pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql
+-- Changes: the basketball paragraph of the comment dropped; dbt ref() replaced by the
+-- table name; run by ftbase.silver.checks.
 --
--- Basketball is not checked here because its possessions are the provider's own
--- and 1,521 pairs of them share their boundary frame, with 2 genuinely
--- overlapping and 29 lasting a single frame. That is a fact about the bundle,
--- reported by the contract tests, not something a model may quietly repair.
+-- The invariant the chain rule was chosen for. The team possessions are derived
+-- here, so nothing outside this project guarantees they tile the match without
+-- stepping on each other; merging the phases of play instead would put 3,030 of
+-- them on top of their neighbour.
 
 WITH ordered AS (
     SELECT
@@ -14,7 +13,7 @@ WITH ordered AS (
         event_id,
         frame_start,
         lag(frame_end) OVER (PARTITION BY match_id ORDER BY frame_start) AS previous_end
-    FROM {{ ref('events') }}
+    FROM events
     WHERE sport = 'football' AND event_type = 'possession'
 )
 

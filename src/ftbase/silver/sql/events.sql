@@ -1,140 +1,51 @@
--- Every event of both bundles in one shape: 20 native families in basketball,
--- 4 in football plus its phases of play, and the football team possession this
--- model derives because the provider does not deliver one.
+-- Copied from tracklab@686508a: pipeline/dbt/models/silver/events.sql
+-- Changes: football only (the 20 basketball families, their Jinja loop and the union
+-- dropped); no dbt config block: ftbase.silver.build runs this once per match with the
+-- bronze event views pointed at that match and writes one Parquet file per match; the
+-- Jinja `side` macro written out as its CASE; dbt source() and ref() replaced by table
+-- names.
 --
--- The table keeps only what both sports fill with the same meaning (decision 5).
+-- Every event of the bundle in one shape: the 4 native families, the phases of
+-- play, and the team possession this model derives because the provider does not
+-- deliver one.
+--
+-- The table keeps only what is filled with the same meaning across families.
 -- Everything else stays in bronze and comes back with a join on
 -- (match_id, native_family, native_event_id), which is why those three columns
--- travel on every row. The EPV of a football event and the shot quality of a
--- basketball one are one join away and are not copied here.
+-- travel on every row. The EPV of an event is one join away and is not copied here.
 --
--- **Coordinates are rotated, and a row with no rotation gets no coordinates.**
--- Both providers deliver events in an attack frame and silver keeps the venue
--- frame (decision 2). Basketball rotates by the `leftHoop` of the event's
--- possession, football by its own `attacking_side`. A basketball row whose
--- possession does not resolve has no rotation, so its coordinates are NULL
--- rather than rotated by a default sign: that exact bug was found in task 9's
--- probe by a synthetic test, because no row in these 10 matches triggers it.
+-- **Coordinates are rotated to the venue frame.** The provider delivers events in
+-- an attack frame (the team in possession attacks towards +x) and silver keeps the
+-- venue frame of the tracking, so each row is turned by its own `attacking_side`.
+-- A row whose side is neither `left_to_right` nor `right_to_left` gets NULL
+-- coordinates rather than a default sign.
 --
--- **What a shot's coordinates are, and are not.** `shots.location` is where the
--- provider says the shot happened. Task 9 measured that it is not the shooter's
--- position at `startFrame` in 10 shots of 1,433, off by up to 33 frames, so
--- these columns are never joined to `frames` to infer where a player stood.
---
--- **The football team possession is read, not guessed.** `tracklab possessions`
--- scored the plan's two candidate rules against a third source neither uses,
--- the per-frame `possession_group` of the tracking: merging consecutive phases
--- of the same team gives 5,092 possessions covering 96.67% of the frames the
--- provider itself attributes to a team, but 3,030 of them overlap their
--- neighbour and they agree with the tracking on the team in 76.87% of the
--- frames of the worst match. Following the provider's own
--- `first_player_possession_in_team_possession` flag gives 3,998 (4,009 once a
--- new period opens one too, below), covering
--- 85.82%, overlapping none and agreeing 79.78% in the worst match. The chain
--- rule wins: it never overlaps, it agrees more, and it is the provider
--- delimiting its own team possessions rather than this project inferring them
--- from phases that the file itself says can contain a loss.
+-- **The team possession is read, not guessed.** tracklab scored two candidate
+-- rules against a third source neither uses, the per-frame `possession_group` of
+-- the tracking: merging consecutive phases of the same team gives 5,092
+-- possessions covering 96.67% of the frames the provider itself attributes to a
+-- team, but 3,030 of them overlap their neighbour and they agree with the tracking
+-- on the team in 76.87% of the frames of the worst match. Following the provider's
+-- own `first_player_possession_in_team_possession` flag gives 3,998 (4,009 once a
+-- new period opens one too, below), covering 85.82%, overlapping none and agreeing
+-- 79.78% in the worst match. The chain rule wins: it never overlaps, it agrees
+-- more, and it is the provider delimiting its own team possessions rather than
+-- this project inferring them from phases that the file itself says can contain a
+-- loss.
 
-{{ config(
-    options = {
-        'partition_by': 'sport, native_match_id',
-        'overwrite': 'true',
-    }
-) }}
-
-{#
-  One entry per basketball family: where its frames, its team, its players, its
-  coordinates, its subtype and its outcome live. Written out in full so the 20
-  mappings can be read side by side instead of hidden in 20 near-identical
-  blocks. Every coordinate is in feet as delivered, in the attack frame.
-#}
-{% set BASKETBALL = [
-  {'family': 'possessions',      'possession': 'id',           'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'NULL',           'p2': 'NULL',              'xs': 'NULL',        'ys': 'NULL',        'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'startType',   'outcome': 'outcome'},
-  {'family': 'chances',          'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'NULL',           'p2': 'NULL',              'xs': 'NULL',        'ys': 'NULL',        'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'startType',   'outcome': 'outcome'},
-  {'family': 'chance_players',   'possession': 'possessionId', 'fs': 'NULL',       'fe': 'NULL',       'team': 'NULL',         'p1': 'playerId',       'p2': 'NULL',              'xs': 'shotLoc_x',   'ys': 'shotLoc_y',   'xe': 'reboundLoc_x',  'ye': 'reboundLoc_y',  'subtype': 'NULL',        'outcome': 'NULL'},
-  {'family': 'closeouts',        'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'ballhandlerDefId',  'xs': 'startLoc_x',  'ys': 'startLoc_y',  'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'bhrAction',   'outcome': "array_to_string(bhrOutcomes, ';')"},
-  {'family': 'dribbles',         'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'NULL',              'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'region',      'outcome': 'NULL'},
-  {'family': 'drives',           'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'ballhandlerDefId',  'xs': 'location_x',  'ys': 'location_y',  'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'category',    'outcome': 'endType'},
-  {'family': 'fouls',            'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'foulerTeamId', 'p1': 'foulerId',       'p2': 'fouledId',          'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'foulType',    'outcome': 'NULL'},
-  {'family': 'free_throws',      'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'shooterId',      'p2': 'NULL',              'xs': 'NULL',        'ys': 'NULL',        'xe': 'NULL',          'ye': 'NULL',          'subtype': 'NULL',        'outcome': "CASE WHEN outcome THEN 'made' ELSE 'missed' END"},
-  {'family': 'handoffs',         'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'setterId',       'p2': 'receiverId',        'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'locationType','outcome': "array_to_string(bhrOutcomes, ';')"},
-  {'family': 'isolations',       'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'ballhandlerDefId',  'xs': 'location_x',  'ys': 'location_y',  'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'NULL',        'outcome': "array_to_string(bhrOutcomes, ';')"},
-  {'family': 'matchups',         'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'NULL',         'p1': 'offPlayerId',    'p2': 'defPlayerId',       'xs': 'NULL',        'ys': 'NULL',        'xe': 'NULL',          'ye': 'NULL',          'subtype': 'NULL',        'outcome': 'NULL'},
-  {'family': 'off_ball_screens', 'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'cutterId',       'p2': 'screenerId',        'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'NULL',        'outcome': "array_to_string(outcomes, ';')"},
-  {'family': 'passes',           'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'passerId',       'p2': 'receiverId',        'xs': 'passerLoc_x', 'ys': 'passerLoc_y', 'xe': 'receiverLoc_x', 'ye': 'receiverLoc_y', 'subtype': 'NULL',        'outcome': "CASE WHEN complete THEN 'complete' WHEN turnover THEN 'turnover' ELSE 'incomplete' END"},
-  {'family': 'picks',            'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'screenerId',        'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'locationType','outcome': "array_to_string(bhrOutcomes, ';')"},
-  {'family': 'posts',            'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'ballhandlerId',  'p2': 'ballhandlerDefId',  'xs': 'location_x',  'ys': 'location_y',  'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'section',     'outcome': "array_to_string(bhrOutcomes, ';')"},
-  {'family': 'rebounds',         'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'teamId',       'p1': 'rebounderId',    'p2': 'NULL',              'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': "CASE WHEN defensive THEN 'defensive' ELSE 'offensive' END", 'outcome': 'NULL'},
-  {'family': 'shots',            'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'shooterId',      'p2': 'passerId',          'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'shotType',    'outcome': "CASE WHEN outcome THEN 'made' ELSE 'missed' END"},
-  {'family': 'timeouts',         'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'teamId',       'p1': 'NULL',           'p2': 'NULL',              'xs': 'NULL',        'ys': 'NULL',        'xe': 'NULL',          'ye': 'NULL',          'subtype': 'NULL',        'outcome': 'NULL'},
-  {'family': 'touches',          'possession': 'possessionId', 'fs': 'startFrame', 'fe': 'endFrame',   'team': 'offTeamId',    'p1': 'playerId',       'p2': 'defenderId',        'xs': 'location_x',  'ys': 'location_y',  'xe': 'endLoc_x',      'ye': 'endLoc_y',      'subtype': 'NULL',        'outcome': "array_to_string(outcomes, ';')"},
-  {'family': 'turnovers',        'possession': 'possessionId', 'fs': 'frame',      'fe': 'frame',      'team': 'offTeamId',    'p1': 'turnedOverId',   'p2': 'stealerId',         'xs': 'location_x',  'ys': 'location_y',  'xe': 'NULL',          'ye': 'NULL',          'subtype': 'NULL',        'outcome': 'NULL'},
-] %}
-
-WITH basketball_rotation AS (
-    -- (x, y) when leftHoop, (-x, -y) when not, NULL when the possession is unknown.
-    SELECT id AS possession_native_id, match_id,
-           CASE WHEN leftHoop THEN 1 WHEN NOT leftHoop THEN -1 END AS venue_factor
-    FROM {{ source('bronze_basketball', 'events_possessions') }}
-),
-
-basketball_raw AS (
-{% for f in BASKETBALL %}
-    SELECT
-        'basketball' AS sport,
-        e.match_id AS native_match_id,
-        '{{ f.family }}' AS native_family,
-        e.id::VARCHAR AS native_event_id,
-        e.{{ f.possession }}::VARCHAR AS possession_native_id,
-        e.period AS period,
-        {{ f.fs }}::BIGINT AS frame_start,
-        {{ f.fe }}::BIGINT AS frame_end,
-        {{ f.team }}::BIGINT AS native_team_id,
-        {{ f.p1 }}::BIGINT AS native_player_id,
-        {{ f.p2 }}::BIGINT AS native_player2_id,
-        {{ f.xs }}::DOUBLE AS x_start_native,
-        {{ f.ys }}::DOUBLE AS y_start_native,
-        {{ f.xe }}::DOUBLE AS x_end_native,
-        {{ f.ye }}::DOUBLE AS y_end_native,
-        {{ f.subtype }}::VARCHAR AS native_subtype,
-        {{ f.outcome }}::VARCHAR AS outcome
-    FROM {{ source('bronze_basketball', 'events_' ~ f.family) }} e
-{% if not loop.last %}    UNION ALL{% endif %}
-{% endfor %}
-),
-
-basketball AS (
-    SELECT
-        b.sport, b.native_match_id, b.native_family, b.native_event_id,
-        'bb:' || b.native_family || ':' || b.native_event_id AS event_id,
-        'bb:possessions:' || b.possession_native_id AS possession_id,
-        b.period, b.frame_start, b.frame_end,
-        'bb:' || b.native_team_id AS team_id,
-        'bb:' || b.native_player_id AS player_id,
-        'bb:' || b.native_player2_id AS player2_id,
-        r.venue_factor * b.x_start_native * 0.3048 AS x_start_m,
-        r.venue_factor * b.y_start_native * 0.3048 AS y_start_m,
-        r.venue_factor * b.x_end_native * 0.3048 AS x_end_m,
-        r.venue_factor * b.y_end_native * 0.3048 AS y_end_m,
-        b.native_subtype, b.outcome
-    FROM basketball_raw b
-    LEFT JOIN basketball_rotation r
-        ON r.match_id = b.native_match_id AND r.possession_native_id = b.possession_native_id
-),
-
--- Football's team possession: open one on each player_possession the provider
--- flags as the first of a team possession, close it on the row before the next.
--- A new period opens one too: the provider does not flag the first touch after the
--- break when the same team still has the ball, and a chain across the break would
--- carry one period and one attacking side for both halves.
-football_touches AS (
+-- The team possession: open one on each player_possession the provider flags as
+-- the first of a team possession, close it on the row before the next. A new
+-- period opens one too: the provider does not flag the first touch after the break
+-- when the same team still has the ball, and a chain across the break would carry
+-- one period and one attacking side for both halves.
+WITH football_touches AS (
     SELECT
         match_id, period, team_id, player_id, event_id,
         frame_start, frame_end, x_start, y_start, x_end, y_end, attacking_side, end_type,
         first_player_possession_in_team_possession
             OR coalesce(period <> lag(period) OVER w, false) AS opens,
         row_number() OVER w AS rn
-    FROM {{ source('bronze_football', 'dynamic_events') }}
+    FROM bronze_dynamic_events
     WHERE event_type = 'player_possession'
     WINDOW w AS (PARTITION BY match_id ORDER BY frame_start, event_id)
 ),
@@ -184,7 +95,7 @@ football_raw AS (
         CASE WHEN e.event_type = 'player_possession' THEN e.end_type ELSE e.event_subtype END
             AS native_subtype,
         CASE WHEN e.event_type = 'player_possession' THEN e.end_type END AS outcome
-    FROM {{ source('bronze_football', 'dynamic_events') }} e
+    FROM bronze_dynamic_events e
 
     UNION ALL
 
@@ -201,7 +112,7 @@ football_raw AS (
             WHEN p.team_possession_lead_to_shot THEN 'shot'
             WHEN p.team_possession_loss_in_phase THEN 'loss'
         END
-    FROM {{ source('bronze_football', 'phases_of_play') }} p
+    FROM bronze_phases_of_play p
 
     UNION ALL
 
@@ -223,22 +134,19 @@ football AS (
         'fb:' || f.native_team_id AS team_id,
         'fb:' || f.native_player_id AS player_id,
         'fb:' || f.native_player2_id AS player2_id,
-        {% set side = "CASE f.attacking_side WHEN 'left_to_right' THEN 1 WHEN 'right_to_left' THEN -1 END" %}
-        {{ side }} * f.x_start_native AS x_start_m,
-        {{ side }} * f.y_start_native AS y_start_m,
-        {{ side }} * f.x_end_native AS x_end_m,
-        {{ side }} * f.y_end_native AS y_end_m,
+        CASE f.attacking_side WHEN 'left_to_right' THEN 1 WHEN 'right_to_left' THEN -1 END
+            * f.x_start_native AS x_start_m,
+        CASE f.attacking_side WHEN 'left_to_right' THEN 1 WHEN 'right_to_left' THEN -1 END
+            * f.y_start_native AS y_start_m,
+        CASE f.attacking_side WHEN 'left_to_right' THEN 1 WHEN 'right_to_left' THEN -1 END
+            * f.x_end_native AS x_end_m,
+        CASE f.attacking_side WHEN 'left_to_right' THEN 1 WHEN 'right_to_left' THEN -1 END
+            * f.y_end_native AS y_end_m,
         f.native_subtype, f.outcome
     FROM football_raw f
     LEFT JOIN football_possessions p
         ON p.native_match_id = f.native_match_id
         AND f.frame_start BETWEEN p.frame_start AND p.frame_end
-),
-
-united AS (
-    SELECT * FROM basketball
-    UNION ALL
-    SELECT * FROM football
 ),
 
 typed AS (
@@ -248,8 +156,8 @@ typed AS (
     SELECT
         u.*,
         m.event_type AS mapped_event_type
-    FROM united u
-    LEFT JOIN {{ ref('event_type_map') }} m
+    FROM football u
+    LEFT JOIN event_type_map m
         ON m.sport = u.sport
         AND m.native_family = u.native_family
         AND (m.native_subtype_pattern = '*' OR m.native_subtype_pattern = u.native_subtype)
@@ -283,5 +191,5 @@ SELECT
     t.possession_id::VARCHAR AS possession_id,
     t.outcome::VARCHAR AS outcome
 FROM typed t
-JOIN {{ ref('dim_sport') }} s ON s.sport = t.sport
+JOIN dim_sport s ON s.sport = t.sport
 ORDER BY t.sport, t.native_match_id, t.period, t.frame_start, t.event_id
