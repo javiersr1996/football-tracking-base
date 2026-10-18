@@ -50,38 +50,38 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 27,
-      "lines_copied": 127,
-      "lines_total": 154,
+      "lines_changed": 26,
+      "lines_copied": 126,
+      "lines_total": 152,
       "origins": [
         "pipeline/src/tracklab/bronze/football/events.py"
       ],
       "path": "src/ftbase/bronze/football/events.py",
-      "sha256": "146fd52db54bb194bed15d3029b705bd1e7729043e417b10ea0bff03402bd058",
+      "sha256": "faa5cdbe9f4c0541b55ca56369248bed043b1864812181dc2bbecd536ad66a76",
       "state": "copiado"
     },
     {
       "commit": "686508a",
-      "lines_changed": 16,
-      "lines_copied": 689,
-      "lines_total": 705,
+      "lines_changed": 33,
+      "lines_copied": 670,
+      "lines_total": 703,
       "origins": [
         "pipeline/src/tracklab/bronze/football/meta.py"
       ],
       "path": "src/ftbase/bronze/football/meta.py",
-      "sha256": "5c54bc2ada750b85ae847389096d63f40f6f501b05daeb2ebce3afb508ac6f4e",
+      "sha256": "a46d2f3e620e2ddd24411ecaa75fc205ef5f16433e70157283b619e0edc5b4f3",
       "state": "copiado"
     },
     {
       "commit": "686508a",
-      "lines_changed": 19,
-      "lines_copied": 238,
+      "lines_changed": 24,
+      "lines_copied": 233,
       "lines_total": 257,
       "origins": [
         "pipeline/src/tracklab/bronze/football/tracking.py"
       ],
       "path": "src/ftbase/bronze/football/tracking.py",
-      "sha256": "f484130cb0ff49bd7c2e1db99674692c04fc4ce25e7d44a932c6f9e8a932508c",
+      "sha256": "90eff83e8f66df4c0d9a301ccfe8d9ba14428de9adbbcb0354cf8b639b69ae98",
       "state": "copiado"
     },
     {
@@ -110,14 +110,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 160,
+      "lines_changed": 162,
       "lines_copied": 105,
-      "lines_total": 265,
+      "lines_total": 267,
       "origins": [
         "pipeline/src/tracklab/cli.py"
       ],
       "path": "src/ftbase/cli.py",
-      "sha256": "301546f45a1bf73af1f6d509b637d883afd7e2f6506a3ffa3c832748d33f7557",
+      "sha256": "3bc485adc28b96b7fa874befad22c2699cfe884f2a59f00f0c545af7107591a0",
       "state": "reescrito"
     },
     {
@@ -221,7 +221,7 @@
       "lines_total": 24,
       "origins": [],
       "path": "src/ftbase/ingest/select.py",
-      "sha256": "c5491c0506b19d7714807bd28b34da29d16ad3d1f9ff6e0610e95352035e464a",
+      "sha256": "265a334c155f7485e8ec84939e37e3760e3af024bb25bf8f9092c539055910aa",
       "state": "nuevo"
     },
     {
@@ -262,12 +262,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 341,
+      "lines_changed": 379,
       "lines_copied": 0,
-      "lines_total": 341,
+      "lines_total": 379,
       "origins": [],
       "path": "src/ftbase/provenance.py",
-      "sha256": "5b26f41449bffe6a8eddeceda2293514a41990e06d044a280e712b44d0d323df",
+      "sha256": "5176ab1a3526eed78cd7b51ce6fbe7b237b4caaffd880b14f5c920ef96524d63",
       "state": "nuevo"
     },
     {
@@ -311,7 +311,7 @@
         "pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql"
       ],
       "path": "src/ftbase/silver/assertions/assert_football_possessions_do_not_overlap.sql",
-      "sha256": "0e83d1906f7c7519a7a05a3f675a3cbca2e69ff7a247dc439a48f72e43c1b08a",
+      "sha256": "e837df76c343e3085468c1ef90a9c63d335f4245c620ca35c7295c9ed3359220",
       "state": "copiado"
     },
     {
@@ -323,7 +323,7 @@
         "pipeline/dbt/tests/assert_frames_entities_in_dim_entity.sql"
       ],
       "path": "src/ftbase/silver/assertions/assert_frames_entities_in_dim_entity.sql",
-      "sha256": "65c86d1305e16771b6b0bacf05bf8811f74b59d115ba08dd1aa7738864bb756d",
+      "sha256": "23c4ce5e500180abbfc1a71d7ace76224c72cbe9cb9d95b3d4e56193dad6b611",
       "state": "copiado"
     },
     {
@@ -364,15 +364,15 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 163,
+      "lines_changed": 174,
       "lines_copied": 4,
-      "lines_total": 167,
+      "lines_total": 178,
       "origins": [
         "pipeline/dbt/models/sources/football.yml",
         "pipeline/dbt/models/sources/common.yml"
       ],
       "path": "src/ftbase/silver/build.py",
-      "sha256": "e7e2222dab3664a8e260f0a0fa3720b2b40d5c224446cb66cf374b9c03cbbbd3",
+      "sha256": "d11ddf7add3df70ae17a6ee207e9c5f9737a3bb0a9e8456c35dcb424b3af3179",
       "state": "reescrito"
     },
     {
@@ -385,7 +385,7 @@
         "pipeline/dbt/macros/test_unique_combination.sql"
       ],
       "path": "src/ftbase/silver/checks.py",
-      "sha256": "ee253d528edafd3be5767f5910cc32864b9ad84ccce89946f835fe4ace5eb6e7",
+      "sha256": "7a4df0ce7e443a34b39318587230732ec9c290b7b773db569d9eb91ac43e0fe8",
       "state": "reescrito"
     },
     {
@@ -424,26 +424,26 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 21,
+      "lines_changed": 20,
       "lines_copied": 44,
-      "lines_total": 65,
+      "lines_total": 64,
       "origins": [
         "pipeline/dbt/models/silver/dim_entity.sql"
       ],
       "path": "src/ftbase/silver/sql/dim_entity.sql",
-      "sha256": "31d771ac15a26c3e5f89ecee485d2ec620727b4e3d31088b278aace70a670c02",
+      "sha256": "edb8b368d07c6c86701cd9a5a2f9c4f14f63e119841b3a3ea3206cf0dd673b14",
       "state": "reescrito"
     },
     {
       "commit": "686508a",
-      "lines_changed": 24,
-      "lines_copied": 51,
-      "lines_total": 75,
+      "lines_changed": 25,
+      "lines_copied": 49,
+      "lines_total": 74,
       "origins": [
         "pipeline/dbt/models/silver/dim_match.sql"
       ],
       "path": "src/ftbase/silver/sql/dim_match.sql",
-      "sha256": "ad1089198b5b93e55dc5d4cd90f63cea9784f8d407bc8f5526a740c48b6ceb57",
+      "sha256": "19eb1e3653048c90046e1f5e92f5a7efbb323b3adb4fcfd0217cdb00e3d5c531",
       "state": "reescrito"
     },
     {
@@ -461,25 +461,25 @@
     {
       "commit": "686508a",
       "lines_changed": 16,
-      "lines_copied": 4,
-      "lines_total": 20,
+      "lines_copied": 3,
+      "lines_total": 19,
       "origins": [
         "pipeline/dbt/models/silver/dim_sport.sql"
       ],
       "path": "src/ftbase/silver/sql/dim_sport.sql",
-      "sha256": "dd32b21c863ed8e37a2408b744be0d01fad1b69821620b725a9a55d2afc63290",
+      "sha256": "6aa94a1cd7d914ac4a5b599c1cfda5b919a741f801346a52d8b020461adbcbfd",
       "state": "reescrito"
     },
     {
       "commit": "686508a",
-      "lines_changed": 14,
+      "lines_changed": 13,
       "lines_copied": 19,
-      "lines_total": 33,
+      "lines_total": 32,
       "origins": [
         "pipeline/dbt/models/silver/dim_team.sql"
       ],
       "path": "src/ftbase/silver/sql/dim_team.sql",
-      "sha256": "0bdfa0eb54f88a41443b95e50ec5de54306b322d03dcc3f6da66a5547ffcae81",
+      "sha256": "0d8c6071031b99fc2943901dee41e8d4c626ca5a849bd94c6dbffa72b4fd1ea1",
       "state": "reescrito"
     },
     {
@@ -496,38 +496,38 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 49,
+      "lines_changed": 45,
       "lines_copied": 146,
-      "lines_total": 195,
+      "lines_total": 191,
       "origins": [
         "pipeline/dbt/models/silver/events.sql"
       ],
       "path": "src/ftbase/silver/sql/events.sql",
-      "sha256": "9258fe52d27ecec96076a40573d3b59242087e18a1cb6620b10e894dc3815651",
+      "sha256": "4c346256c83d915393b3eacc45a59b11c8ed123aab91aec23e07105d119669ef",
       "state": "reescrito"
     },
     {
       "commit": "686508a",
-      "lines_changed": 14,
+      "lines_changed": 13,
       "lines_copied": 23,
-      "lines_total": 37,
+      "lines_total": 36,
       "origins": [
         "pipeline/dbt/models/silver/views/frame_possession.sql"
       ],
       "path": "src/ftbase/silver/sql/frame_possession.sql",
-      "sha256": "a82a1286734ac0aeeb17afe234759aff2346fa91dd6fd0c6f50420fd3638f04b",
+      "sha256": "96fcfc66741fff196c15f7a89bbcedd9f7e7f020c825bfad70a04f4e03eb2584",
       "state": "copiado"
     },
     {
       "commit": "686508a",
-      "lines_changed": 47,
+      "lines_changed": 46,
       "lines_copied": 63,
-      "lines_total": 110,
+      "lines_total": 109,
       "origins": [
         "pipeline/dbt/models/silver/frames.sql"
       ],
       "path": "src/ftbase/silver/sql/frames.sql",
-      "sha256": "ffd7b2708eaabf499ac6ce0c7d6b7d409dfe88a87d14c51176ff407246b5a242",
+      "sha256": "edefcac473a3a8cfd31ea5102178b81e7c1b0f5d1a21444fdeb7321a2818bdf3",
       "state": "reescrito"
     },
     {
@@ -668,12 +668,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 264,
+      "lines_changed": 297,
       "lines_copied": 0,
-      "lines_total": 264,
+      "lines_total": 297,
       "origins": [],
       "path": "tests/unit/test_fixtures.py",
-      "sha256": "3358deb6e64f919d63ccfa618a4146feb922ea037e59b698740fd40460758df4",
+      "sha256": "4bfdccf69899cd3d7e2c4c4f76e9a983241662e8ea897cb3de6e69d6db66e5ef",
       "state": "nuevo"
     },
     {
@@ -702,12 +702,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 265,
+      "lines_changed": 306,
       "lines_copied": 0,
-      "lines_total": 265,
+      "lines_total": 306,
       "origins": [],
       "path": "tests/unit/test_provenance.py",
-      "sha256": "5eb4228a7552f02abd9c7b43ddbfd794f9e26f751fdedf73b63a126e8cf8a6f3",
+      "sha256": "c0ddf721dda63b1e7de5c67fcadd4bffbaad8a9740d2f5097b598025ccda4bdb",
       "state": "nuevo"
     },
     {
@@ -736,21 +736,21 @@
   "summary": {
     "copiado": {
       "files": 32,
-      "lines_changed": 283,
-      "lines_copied": 5412,
-      "lines_total": 5695
+      "lines_changed": 303,
+      "lines_copied": 5387,
+      "lines_total": 5690
     },
     "nuevo": {
       "files": 13,
-      "lines_changed": 2283,
+      "lines_changed": 2395,
       "lines_copied": 0,
-      "lines_total": 2283
+      "lines_total": 2395
     },
     "reescrito": {
       "files": 18,
-      "lines_changed": 1123,
-      "lines_copied": 1345,
-      "lines_total": 2468
+      "lines_changed": 1130,
+      "lines_copied": 1342,
+      "lines_total": 2472
     }
   }
 }

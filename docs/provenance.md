@@ -27,15 +27,15 @@ literal copies of imported files. On origins:
 - **`ftbase provenance`** regenerates `reports/provenance.json` (sorted keys, LF, no dates) and the
   two count columns below. Where the originals come from decides what it can count:
   - `nuevo` row: nothing to read, every line is changed. Works anywhere.
-  - Any row whose file still has the sha256 stored in `reports/provenance.json`: the stored count
-    is reused.
-  - An edited `copiado` or `reescrito` file: recounted against the original as it sits in this
-    repository's own import commit, found by its message (`git log --grep='^Import football base
-    from tracklab@<commit>'`, never by a fixed sha, so a rewritten history still works). The
-    import commit holds the files at their tracklab paths, so the origin column is the path to
-    read. If that commit is not reachable (a shallow clone) or the row's origin is not in it
-    (`cli.py`, `orientation.py` and `test_silver_orientation.py` were written after the import),
-    the command exits 1 and names the file and what is missing.
+  - Any other row: recounted against the original as it sits in this repository's own import
+    commit, found by its message (`git log --grep='^Import football base from
+    tracklab@<commit>'`, never by a fixed sha, so a rewritten history still works). The import
+    commit holds the files at their tracklab paths, so the origin column is the path to read.
+  - A row whose origin that commit does not hold (`cli.py`, `orientation.py` and
+    `test_silver_orientation.py` were written after the import), or a clone where the commit is
+    not reachable (a shallow clone): the stored count is reused only if the sha256, the origin
+    paths, the commit and the state stored in `reports/provenance.json` equal the file's and the
+    row's. Otherwise the command exits 1 and names the file and what is missing.
   - **`--tracklab <path>`**: every row is recounted against that clone with `git show` (read
     only), whatever the JSON says. Use it after editing one of those three files, or to
     cross-check the offline counts.
@@ -76,15 +76,15 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 
 | File in ftbase | Path in tracklab | tracklab commit | State | Lines copied | Lines changed |
 |---|---|---|---|---|---|
-| `src/ftbase/silver/sql/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | reescrito | 44 | 21 |
-| `src/ftbase/silver/sql/dim_match.sql` | `pipeline/dbt/models/silver/dim_match.sql` | `686508a` | reescrito | 51 | 24 |
+| `src/ftbase/silver/sql/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | reescrito | 44 | 20 |
+| `src/ftbase/silver/sql/dim_match.sql` | `pipeline/dbt/models/silver/dim_match.sql` | `686508a` | reescrito | 49 | 25 |
 | `src/ftbase/silver/sql/dim_period.sql` | `pipeline/dbt/models/silver/dim_period.sql` | `686508a` | reescrito | 21 | 14 |
-| `src/ftbase/silver/sql/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | reescrito | 4 | 16 |
-| `src/ftbase/silver/sql/dim_team.sql` | `pipeline/dbt/models/silver/dim_team.sql` | `686508a` | reescrito | 19 | 14 |
+| `src/ftbase/silver/sql/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | reescrito | 3 | 16 |
+| `src/ftbase/silver/sql/dim_team.sql` | `pipeline/dbt/models/silver/dim_team.sql` | `686508a` | reescrito | 19 | 13 |
 | `src/ftbase/silver/sql/dim_team_period.sql` | `pipeline/dbt/models/silver/dim_team_period.sql` | `686508a` | copiado | 7 | 13 |
-| `src/ftbase/silver/sql/events.sql` | `pipeline/dbt/models/silver/events.sql` | `686508a` | reescrito | 146 | 49 |
-| `src/ftbase/silver/sql/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | reescrito | 63 | 47 |
-| `src/ftbase/silver/sql/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | 23 | 14 |
+| `src/ftbase/silver/sql/events.sql` | `pipeline/dbt/models/silver/events.sql` | `686508a` | reescrito | 146 | 45 |
+| `src/ftbase/silver/sql/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | reescrito | 63 | 46 |
+| `src/ftbase/silver/sql/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | 23 | 13 |
 | `src/ftbase/silver/sql/frames_attacking.sql` | `pipeline/dbt/models/silver/views/frames_attacking.sql` | `686508a` | copiado | 16 | 10 |
 | `src/ftbase/silver/seeds/event_type_map.csv` | `pipeline/dbt/seeds/event_type_map.csv` | `686508a` | reescrito | 3 | 1 |
 | `src/ftbase/silver/assertions/assert_attack_signs_opposite.sql` | `pipeline/dbt/tests/assert_attack_signs_opposite.sql` | `686508a` | copiado | 8 | 9 |
@@ -94,14 +94,14 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/silver/assertions/assert_frames_z_only_on_the_ball.sql` | `pipeline/dbt/tests/assert_frames_z_only_on_the_ball.sql` | `686508a` | copiado | 5 | 8 |
 | `src/ftbase/silver/assertions/assert_one_ball_per_match.sql` | `pipeline/dbt/tests/assert_one_ball_per_match.sql` | `686508a` | copiado | 10 | 5 |
 | `src/ftbase/silver/checks.py` | `pipeline/dbt/models/silver/schema.yml` and `pipeline/dbt/macros/test_unique_combination.sql` | `686508a` | reescrito | 14 | 132 |
-| `src/ftbase/silver/build.py` | `pipeline/dbt/models/sources/football.yml` and `pipeline/dbt/models/sources/common.yml` | `686508a` | reescrito | 4 | 163 |
+| `src/ftbase/silver/build.py` | `pipeline/dbt/models/sources/football.yml` and `pipeline/dbt/models/sources/common.yml` | `686508a` | reescrito | 4 | 174 |
 | `src/ftbase/silver/orientation.py` | `pipeline/src/tracklab/silver/orientation.py` (not in the import commit) | `686508a` | reescrito | 117 | 59 |
 | `src/ftbase/fixtures.py` | - | - | nuevo | 0 | 533 |
-| `tests/unit/test_fixtures.py` | - | - | nuevo | 0 | 264 |
+| `tests/unit/test_fixtures.py` | - | - | nuevo | 0 | 297 |
 | `tests/conftest.py` | - | - | nuevo | 0 | 24 |
 | `tests/test_skips_fail.py` | - | - | nuevo | 0 | 38 |
 | `tests/test_cli.py` | - | - | nuevo | 0 | 23 |
-| `tests/unit/test_provenance.py` | - | - | nuevo | 0 | 265 |
+| `tests/unit/test_provenance.py` | - | - | nuevo | 0 | 306 |
 | `src/ftbase/silver/read.py` | - | - | nuevo | 0 | 212 |
 | `src/ftbase/silver/__init__.py` | - | - | nuevo | 0 | 10 |
 | `tests/unit/test_silver_orientation.py` | `pipeline/tests/unit/test_silver_orientation.py` (not in the import commit) | `686508a` | reescrito | 119 | 57 |
@@ -112,9 +112,9 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/bronze/__init__.py` | `pipeline/src/tracklab/bronze/__init__.py` | `686508a` | copiado | 5 | 3 |
 | `src/ftbase/bronze/common.py` | `pipeline/src/tracklab/bronze/common.py` | `686508a` | copiado | 207 | 20 |
 | `src/ftbase/bronze/football/__init__.py` | `pipeline/src/tracklab/bronze/football/__init__.py` | `686508a` | copiado | 1 | 2 |
-| `src/ftbase/bronze/football/events.py` | `pipeline/src/tracklab/bronze/football/events.py` | `686508a` | copiado | 127 | 27 |
-| `src/ftbase/bronze/football/meta.py` | `pipeline/src/tracklab/bronze/football/meta.py` | `686508a` | copiado | 689 | 16 |
-| `src/ftbase/bronze/football/tracking.py` | `pipeline/src/tracklab/bronze/football/tracking.py` | `686508a` | copiado | 238 | 19 |
+| `src/ftbase/bronze/football/events.py` | `pipeline/src/tracklab/bronze/football/events.py` | `686508a` | copiado | 126 | 26 |
+| `src/ftbase/bronze/football/meta.py` | `pipeline/src/tracklab/bronze/football/meta.py` | `686508a` | copiado | 670 | 33 |
+| `src/ftbase/bronze/football/tracking.py` | `pipeline/src/tracklab/bronze/football/tracking.py` | `686508a` | copiado | 233 | 24 |
 | `src/ftbase/bronze/schemas/football/dynamic_events.schema.json` | `pipeline/src/tracklab/bronze/schemas/football/dynamic_events.schema.json` | `686508a` | copiado | 1321 | 0 |
 | `src/ftbase/bronze/schemas/football/phases_of_play.schema.json` | `pipeline/src/tracklab/bronze/schemas/football/phases_of_play.schema.json` | `686508a` | copiado | 209 | 0 |
 | `src/ftbase/formats/__init__.py` | `pipeline/src/tracklab/formats/__init__.py` | `686508a` | copiado | 2 | 6 |
@@ -127,7 +127,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/ingest/verify.py` | `pipeline/src/tracklab/ingest/verify.py` | `686508a` | copiado | 35 | 2 |
 | `src/ftbase/paths.py` | `pipeline/src/tracklab/paths.py` | `686508a` | copiado | 12 | 8 |
 | `src/ftbase/py.typed` | - | - | nuevo | 0 | 0 |
-| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 341 |
+| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 379 |
 | `tests/contracts/test_football_events_bronze.py` | `pipeline/tests/contracts/test_football_events_bronze.py` | `686508a` | reescrito | 165 | 42 |
 | `tests/contracts/test_football_meta_bronze.py` | `pipeline/tests/contracts/test_football_meta_bronze.py` | `686508a` | copiado | 215 | 19 |
 | `tests/contracts/test_football_tracking_bronze.py` | `pipeline/tests/contracts/test_football_tracking_bronze.py` | `686508a` | copiado | 165 | 17 |
@@ -137,5 +137,5 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 38 |
 | `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 226 |
 | `src/ftbase/ingest/select.py` | - | - | nuevo | 0 | 24 |
-| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` (not in the import commit) | `686508a` | reescrito | 105 | 160 |
+| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` (not in the import commit) | `686508a` | reescrito | 105 | 162 |
 | `tests/unit/manifest_helper.py` | `pipeline/src/tracklab/ingest/manifest.py` | `686508a` | copiado | 11 | 7 |
