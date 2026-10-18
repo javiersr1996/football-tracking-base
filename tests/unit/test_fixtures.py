@@ -14,8 +14,10 @@ has to be skipped.
 
 from __future__ import annotations
 
+import hashlib
 import itertools
 import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -211,3 +213,52 @@ def test_a_changed_byte_in_the_bundle_fails_ingest(tmp_path: Path) -> None:
     track.write_bytes(track.read_bytes().replace(b'"frame": 5,', b'"frame": 6,', 1))
     args = ["ingest", "--manifest", str(match.manifest), "--data-dir", str(tmp_path / "d")]
     assert main([*args, "--from-existing", str(match.root)]) == 1
+
+
+def test_a_partial_ingest_runs_bronze_and_silver_on_that_match_alone(tmp_path: Path) -> None:
+    """`ingest --match` then `bronze` and `silver`: the other match of the manifest is not read.
+
+    The manifest lists two matches and the second one's files are deleted after the manifest
+    is written, so a bronze that walks the whole manifest instead of the receipt's match fails.
+    """
+    first = write_synthetic_match(tmp_path / "a", match_id=900001)
+    second = write_synthetic_match(tmp_path / "b", match_id=900002)
+    bundle = first.root
+    shutil.copytree(second.root / "data/matches/900002", bundle / "data/matches/900002")
+    index = bundle / "data/matches.json"
+    index.write_bytes(
+        json.dumps(
+            json.loads(index.read_bytes())
+            + json.loads((second.root / "data/matches.json").read_bytes())
+        ).encode("utf-8")
+    )
+    manifest = json.loads(first.manifest.read_bytes())
+    files = manifest["sources"][0]["files"]
+    other = [
+        f
+        for f in json.loads(second.manifest.read_bytes())["sources"][0]["files"]
+        if f["role"] != "matches"
+    ]
+    data = index.read_bytes()
+    for entry in files:
+        if entry["role"] == "matches":
+            entry.update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+    files.extend(other)
+    manifest_path = tmp_path / "two.json"
+    manifest_path.write_bytes(json.dumps(manifest).encode("utf-8"))
+    shutil.rmtree(bundle / "data/matches/900002")
+
+    data_dir = tmp_path / "data"
+    args = ["--manifest", str(manifest_path), "--data-dir", str(data_dir)]
+    ingest = ["ingest", *args, "--from-existing", str(bundle), "--match", "900001"]
+    assert main(ingest) == 0
+    assert main(["bronze", *args]) == 0
+    assert main(["silver", *args]) == 0
+
+    def stems(folder: str) -> list[str]:
+        return sorted(p.stem for p in (data_dir / folder).glob("*.parquet"))
+
+    assert stems("bronze/football/tracking_frames") == ["900001"]
+    assert stems("bronze/football/match") == ["900001"]
+    assert stems("silver/frames") == ["900001"]
+    assert read_dim("dim_match", data_dir=data_dir).num_rows == 1

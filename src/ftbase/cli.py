@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 from collections.abc import Callable, Sequence
@@ -18,9 +19,10 @@ from ftbase.bronze.football.events import build_events
 from ftbase.bronze.football.meta import build_meta
 from ftbase.bronze.football.tracking import build_tracking
 from ftbase.fixtures import DEFAULT_SEED, write_synthetic_match
-from ftbase.ingest.fetch import ingest_source, make_client
+from ftbase.ingest.fetch import RECEIPT_NAME, ingest_source, make_client
 from ftbase.ingest.local import ingest_local
 from ftbase.ingest.manifest import Source, load_manifest
+from ftbase.ingest.select import select_match
 from ftbase.paths import data_root
 from ftbase.provenance import ProvenanceError, check, render_summary, write
 from ftbase.silver.build import build_silver
@@ -55,6 +57,13 @@ def _cmd_ingest(args: argparse.Namespace) -> int:
     return 1 if receipt.failed else 0
 
 
+def receipt_match_id(data_dir: Path) -> int | None:
+    """The match a partial ``ingest --match`` verified, from its receipt; None for a full ingest."""
+    receipt = json.loads((data_dir / "raw" / SOURCE_ID / RECEIPT_NAME).read_text(encoding="utf-8"))
+    value = receipt.get("match_id")
+    return None if value is None else int(value)
+
+
 def _cmd_bronze(args: argparse.Namespace) -> int:
     groups = [g for g in args.tables.split(",") if g] if args.tables else list(BRONZE_BUILDERS)
     unknown = [g for g in groups if g not in BRONZE_BUILDERS]
@@ -63,6 +72,9 @@ def _cmd_bronze(args: argparse.Namespace) -> int:
     try:
         source = load_manifest(args.manifest).source(SOURCE_ID)
         raw_root = raw_root_for(args.data_dir, SOURCE_ID)
+        match_id = receipt_match_id(args.data_dir)
+        if match_id is not None:
+            source = select_match(source, match_id)
     except (KeyError, FileNotFoundError, RuntimeError) as exc:
         sys.exit(f"ftbase: {exc.args[0]}")
     started = time.perf_counter()

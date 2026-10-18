@@ -72,7 +72,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/silver/build.py` | `pipeline/dbt/models/sources/football.yml` and `pipeline/dbt/models/sources/common.yml` | `686508a` | reescrito | 4 | 163 |
 | `src/ftbase/silver/orientation.py` | `pipeline/src/tracklab/silver/orientation.py` | `686508a` | reescrito | 117 | 59 |
 | `src/ftbase/fixtures.py` | - | - | nuevo | 0 | 533 |
-| `tests/unit/test_fixtures.py` | - | - | nuevo | 0 | 213 |
+| `tests/unit/test_fixtures.py` | - | - | nuevo | 0 | 264 |
 | `tests/conftest.py` | - | - | nuevo | 0 | 24 |
 | `tests/test_skips_fail.py` | - | - | nuevo | 0 | 38 |
 | `tests/test_cli.py` | - | - | nuevo | 0 | 22 |
@@ -112,5 +112,5 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 35 |
 | `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 208 |
 | `src/ftbase/ingest/select.py` | - | - | nuevo | 0 | 24 |
-| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 103 | 145 |
+| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 155 |
 | `tests/unit/manifest_helper.py` | - | - | nuevo | 0 | 14 |
