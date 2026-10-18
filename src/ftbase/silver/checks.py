@@ -3,8 +3,8 @@
 # Changes: the integrity tests of the football models (key uniqueness, not_null of key
 # columns, relationships) written as data and rendered to SQL here instead of dbt generic
 # tests; accepted_values and not_null of non-key columns are not ported, except
-# frames.is_detected and frames_attacking.attack_sign (added: the analysis reads them
-# without a null guard), nor are the column descriptions; the six singular tests are read
+# frames.is_detected and frames_attacking.attack_sign (added: a null in either would pass
+# unnoticed), nor are the column descriptions; the six singular tests are read
 # from assertions/*.sql.
 """Silver's checks: every check is a query that returns the offending rows, so 0 rows passes.
 
