@@ -411,6 +411,15 @@ PLANTED: dict[str, tuple[str, str]] = {
         "dim_match",
         "SELECT * REPLACE (NULL::VARCHAR AS home_team_id) FROM read_parquet({dim_match})",
     ),
+    "not_null frames.is_detected": (
+        "frames",
+        "SELECT * REPLACE (CASE WHEN frame_native = 12 THEN NULL ELSE is_detected END "
+        "AS is_detected) FROM read_parquet({frames})",
+    ),
+    "not_null frames_attacking.attack_sign": (
+        "dim_team_period",
+        "SELECT * REPLACE (NULL::SMALLINT AS attack_sign) FROM read_parquet({dim_team_period})",
+    ),
     "relationships frames.team_id -> dim_team.team_id": (
         "frames",
         "SELECT * REPLACE (CASE WHEN team_id = 'fb:8' THEN 'fb:999' ELSE team_id END AS team_id) "

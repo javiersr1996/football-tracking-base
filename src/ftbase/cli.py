@@ -1,5 +1,5 @@
 # Rewritten from tracklab@686508a: pipeline/src/tracklab/cli.py
-# Changes: football only, down to the ingest, bronze and silver subcommands.
+# Changes: football only, down to the ingest, bronze and silver subcommands; `fixtures` is new.
 """Command-line entry point."""
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from ftbase.bronze.common import raw_root_for
 from ftbase.bronze.football.events import build_events
 from ftbase.bronze.football.meta import build_meta
 from ftbase.bronze.football.tracking import build_tracking
+from ftbase.fixtures import DEFAULT_SEED, write_synthetic_match
 from ftbase.ingest.fetch import ingest_source, make_client
 from ftbase.ingest.local import ingest_local
 from ftbase.ingest.manifest import Source, load_manifest
@@ -81,6 +82,18 @@ def _cmd_silver(args: argparse.Namespace) -> int:
         print(f"FAIL {failure}")
     print(f"total seconds={result.seconds:.1f}")
     return 1 if result.failures else 0
+
+
+def _cmd_fixtures(args: argparse.Namespace) -> int:
+    match = write_synthetic_match(args.out, seed=args.seed)
+    print(f"synthetic match {match.match_id}: {len(match.runs)} planted runs")
+    print(f"bundle:   {match.root}")
+    print(f"manifest: {match.manifest}")
+    print(
+        f"next: ftbase ingest --manifest {match.manifest} --from-existing {match.root} "
+        f"--data-dir <dir>, then bronze and silver with the same --manifest and --data-dir"
+    )
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -165,6 +178,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Data root: reads bronze/football/, writes silver/ (default: data).",
     )
     silver.set_defaults(func=_cmd_silver)
+
+    fixtures = subparsers.add_parser(
+        "fixtures",
+        help="Write a synthetic match in SkillCorner's raw format, with its manifest "
+        "(no network, no provider data; nothing measured on it is a result).",
+    )
+    fixtures.add_argument("--out", type=Path, required=True, help="Folder to write into.")
+    fixtures.add_argument(
+        "--seed", type=int, default=DEFAULT_SEED, help="Seed of the coordinates (default: fixed)."
+    )
+    fixtures.set_defaults(func=_cmd_fixtures)
     return parser
 
 

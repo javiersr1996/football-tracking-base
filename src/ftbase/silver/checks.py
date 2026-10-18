@@ -2,8 +2,10 @@
 # pipeline/dbt/macros/test_unique_combination.sql
 # Changes: the integrity tests of the football models (key uniqueness, not_null of key
 # columns, relationships) written as data and rendered to SQL here instead of dbt generic
-# tests; accepted_values and not_null of non-key columns are not ported, nor are the
-# column descriptions; the six singular tests are read from assertions/*.sql.
+# tests; accepted_values and not_null of non-key columns are not ported, except
+# frames.is_detected and frames_attacking.attack_sign (added: the analysis reads them
+# without a null guard), nor are the column descriptions; the six singular tests are read
+# from assertions/*.sql.
 """Silver's checks: every check is a query that returns the offending rows, so 0 rows passes.
 
 Two kinds, run by ``ftbase silver`` after the build and by the tests:
@@ -101,6 +103,8 @@ SCHEMA_CHECKS: tuple[Check, ...] = (
     *_foreign("frames", "sport", "dim_sport", "sport"),
     relationship("frames", "match_id", "dim_match", "match_id"),
     *_foreign("frames", "team_id", "dim_team", "team_id", nullable=True),
+    not_null("frames", "is_detected"),
+    not_null("frames_attacking", "attack_sign"),
     *_key("events", "match_id", "event_id"),
     unique("events", "event_id"),
     *_foreign("events", "sport", "dim_sport", "sport"),
