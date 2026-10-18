@@ -263,3 +263,44 @@ def test_an_edited_file_whose_origin_is_outside_the_import_asks_for_tracklab(
     assert "pipeline/gone.py is not in the import commit" in problems[0]
     with pytest.raises(SystemExit, match="not in the import commit"):
         main(["provenance", "--root", str(repo)])
+
+
+def test_a_row_whose_origin_was_changed_in_the_table_fails_the_check(tmp_path: Path) -> None:
+    repo, _ = _regenerated(tmp_path)
+    assert main(["provenance", "--check", "--root", str(repo)]) == 0
+    table = repo / provenance.DOC
+    # Point the row at an origin the import commit does not hold: the stored count must not
+    # be reused for a row it was not counted for.
+    table.write_bytes(table.read_bytes().replace(b"`pipeline/old.py`", b"`pipeline/gone.py`", 1))
+
+    assert main(["provenance", "--check", "--root", str(repo)]) == 1
+    problems = provenance.check(repo, None)
+    assert any("not in the import commit" in p for p in problems)
+
+
+def test_a_count_edited_by_hand_in_the_json_and_the_table_fails_the_check(
+    tmp_path: Path,
+) -> None:
+    repo, _ = _regenerated(tmp_path)
+    real = _stored(repo)["src/ftbase/moved.py"]["lines_copied"]
+    fake = real - 3
+    report = repo / provenance.REPORT
+    data = json.loads(report.read_text(encoding="utf-8"))
+    for entry in data["files"]:
+        if entry["path"] == "src/ftbase/moved.py":
+            entry["lines_copied"] = fake
+            entry["lines_changed"] = entry["lines_total"] - fake
+    data["summary"]["copiado"]["lines_copied"] -= 3
+    data["summary"]["copiado"]["lines_changed"] += 3
+    report.write_bytes((json.dumps(data, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+    table = repo / provenance.DOC
+    lines = table.read_text(encoding="utf-8").split("\n")
+    lines = [
+        re.sub(r"\| \d+ \| \d+ \|$", f"| {fake} | {10 - fake} |", ln)
+        if ln.startswith("| `src/ftbase/moved.py`")
+        else ln
+        for ln in lines
+    ]
+    table.write_bytes("\n".join(lines).encode("utf-8"))
+
+    assert main(["provenance", "--check", "--root", str(repo)]) == 1

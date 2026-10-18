@@ -16,6 +16,9 @@ Where the originals come from: ``--tracklab <clone>`` reads them from tracklab; 
 ``nuevo`` row needs none, a file whose sha256 is the one in ``reports/provenance.json`` keeps
 its stored count, and an edited ``copiado`` or ``reescrito`` file is recounted against the
 original as it sits in this repository's own import commit (see :func:`import_commit`).
+The recount is always made when the import commit holds the origins; the stored count is only
+reused for a file whose origins it does not hold, and only if the file's sha256, origin paths,
+commit and state all equal the ones stored with it.
 """
 
 from __future__ import annotations
@@ -169,14 +172,42 @@ def _read(path: Path) -> str:
     return path.read_bytes().decode("utf-8") if path.is_file() else ""
 
 
-def _load_stored(root: Path) -> dict[str, tuple[str, int]]:
-    """``path -> (sha256, lines_copied)`` from the JSON on disk; empty if there is none."""
+@dataclass(frozen=True)
+class Stored:
+    """What ``reports/provenance.json`` recorded for one file."""
+
+    sha256: str
+    origins: tuple[str, ...]
+    commit: str
+    state: str
+    lines_copied: int
+
+    def describes(self, row: Row, digest: str) -> bool:
+        return (self.sha256, self.origins, self.commit, self.state) == (
+            digest,
+            row.origins,
+            row.commit,
+            row.state,
+        )
+
+
+def _load_stored(root: Path) -> dict[str, Stored]:
+    """``path -> Stored`` from the JSON on disk; empty if there is none."""
     path = root / REPORT
     if not path.is_file():
         return {}
     try:
         files = json.loads(_read(path))["files"]
-        return {f["path"]: (str(f["sha256"]), int(f["lines_copied"])) for f in files}
+        return {
+            f["path"]: Stored(
+                str(f["sha256"]),
+                tuple(str(o) for o in f["origins"]),
+                str(f["commit"]),
+                str(f["state"]),
+                int(f["lines_copied"]),
+            )
+            for f in files
+        }
     except (ValueError, KeyError, TypeError):
         return {}
 
@@ -188,10 +219,16 @@ def _original(repo: Path, commit: str, origins: tuple[str, ...]) -> list[str]:
     return original
 
 
-def _recount_offline(root: Path, row: Row, current: list[str]) -> int:
-    """Copied lines of an edited file, against the original in this repository's import."""
+def _recount_offline(root: Path, row: Row, current: list[str], kept: Stored | None) -> int:
+    """Copied lines of a file against the original in this repository's import commit.
+
+    When that commit does not hold the origins, the stored count is kept if it still describes
+    this exact file and row; otherwise there is nothing to count against.
+    """
     imported = import_commit(root, row.commit)
     if imported is None:
+        if kept is not None:
+            return kept.lines_copied
         raise ProvenanceError(
             f"{row.path}: edited since {REPORT} was written and the original cannot be read: "
             f"no commit '{import_message(row.commit)}' is reachable from {root} (a shallow "
@@ -200,6 +237,8 @@ def _recount_offline(root: Path, row: Row, current: list[str]) -> int:
     try:
         original = _original(root, imported, row.origins)
     except ProvenanceError as exc:
+        if kept is not None:
+            return kept.lines_copied
         raise ProvenanceError(
             f"{row.path}: edited since {REPORT} was written, and its origin "
             f"{', '.join(row.origins)} is not in the import commit {imported[:7]}: "
@@ -208,13 +247,12 @@ def _recount_offline(root: Path, row: Row, current: list[str]) -> int:
     return count_copied(original, current)
 
 
-def build(
-    root: Path, tracklab: Path | None, stored: Mapping[str, tuple[str, int]] | None
-) -> Report:
+def build(root: Path, tracklab: Path | None, stored: Mapping[str, Stored] | None) -> Report:
     """Count every row. Copied lines come from tracklab when given.
 
-    Without it: a ``nuevo`` row has none; a file whose sha256 is the stored one keeps its stored
-    count; an edited file is recounted against the original in this repository's import commit.
+    Without it: a ``nuevo`` row has none; any other file is recounted against the original in
+    this repository's import commit, and keeps its stored count only if that commit does not hold
+    the origins and the stored entry matches the file's sha256 and its row (see :class:`Stored`).
     """
     rows = read_rows(_read(root / DOC))
     scoped = set(scope_files(root))
@@ -241,10 +279,10 @@ def build(
             try:
                 if tracklab is not None:
                     copied = count_copied(_original(tracklab, row.commit, row.origins), current)
-                elif stored is not None and stored.get(row.path, ("", 0))[0] == digest:
-                    copied = stored[row.path][1]
                 else:
-                    copied = _recount_offline(root, row, current)
+                    entry_kept = (stored or {}).get(row.path)
+                    kept = entry_kept if entry_kept and entry_kept.describes(row, digest) else None
+                    copied = _recount_offline(root, row, current, kept)
             except ProvenanceError as exc:
                 problems.append(str(exc))
                 continue
@@ -325,9 +363,9 @@ def write(root: Path, tracklab: Path | None) -> Report:
 def check(root: Path, tracklab: Path | None) -> list[str]:
     """What differs from the files as they are now; an empty list means they agree.
 
-    Without ``tracklab`` a file that still has the sha256 in the JSON keeps its stored count and
-    an edited one is recounted against this repository's import commit. With ``tracklab`` every
-    file is recounted there.
+    Without ``tracklab`` every file is recounted against this repository's import commit (a file
+    whose origins it does not hold keeps a stored count that still matches). With ``tracklab``
+    every file is recounted there.
     """
     try:
         report = build(root, tracklab, _load_stored(root))
