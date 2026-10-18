@@ -80,7 +80,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/silver/read.py` | - | - | nuevo | 0 | 212 |
 | `src/ftbase/silver/__init__.py` | - | - | nuevo | 0 | 9 |
 | `tests/unit/test_silver_orientation.py` | `pipeline/tests/unit/test_silver_orientation.py` | `686508a` | reescrito | 119 | 57 |
-| `tests/unit/test_silver_build.py` | - | - | nuevo | 0 | 448 |
+| `tests/unit/test_silver_build.py` | - | - | nuevo | 0 | 472 |
 | `tests/contracts/test_silver.py` | - | - | nuevo | 0 | 77 |
 | `src/ftbase/manifest/sources.json` | `pipeline/manifest/sources.json` | `686508a` | copiado | 698 | 0 |
 | `src/ftbase/__init__.py` | `pipeline/src/tracklab/__init__.py` | `686508a` | copiado | 2 | 1 |

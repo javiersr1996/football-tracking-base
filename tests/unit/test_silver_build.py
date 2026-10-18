@@ -23,9 +23,11 @@ pass by construction.
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 from typing import Any
 
+import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
@@ -334,6 +336,28 @@ def test_readers_open_only_the_matches_they_are_given(built: Path) -> None:
         assert set(events.column("match_id").to_pylist()) == {f"fb:{match}"}
     both = read_frames([OTHER, MATCH], columns=["native_match_id"], data_dir=built)
     assert both.column("native_match_id").to_pylist() == [MATCH] * 29 + [OTHER] * 29
+
+
+def test_readers_never_open_the_files_of_a_match_they_were_not_given(
+    built: Path, tmp_path: Path
+) -> None:
+    """The other match's fact files are replaced by bytes no Parquet reader can open.
+
+    A reader that opens every match and filters afterwards, by a glob, the list of built
+    matches or a view over all of them, has to read those bytes and fail.
+    """
+    data_dir = tmp_path / "data"
+    shutil.copytree(built, data_dir)
+    for fact in ("frames", "events"):
+        (data_dir / "silver" / fact / f"{OTHER}.parquet").write_bytes(b"not parquet")
+    frames = read_frames([MATCH], data_dir=data_dir)
+    attacking = read_frames([MATCH], attacking=True, data_dir=data_dir)
+    events = read_events([MATCH], data_dir=data_dir)
+    assert set(frames.column("native_match_id").to_pylist()) == {MATCH}
+    assert attacking.num_rows > 0
+    assert events.num_rows > 0
+    with pytest.raises(duckdb.Error):
+        read_frames([OTHER], data_dir=data_dir)
 
 
 def test_readers_refuse_what_they_cannot_read(built: Path) -> None:

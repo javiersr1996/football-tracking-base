@@ -710,12 +710,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 448,
+      "lines_changed": 472,
       "lines_copied": 0,
-      "lines_total": 448,
+      "lines_total": 472,
       "origins": [],
       "path": "tests/unit/test_silver_build.py",
-      "sha256": "e9f8ce9a76a98b6c3baa973a51747057fbf4a236209e32b40aed66b9203af162",
+      "sha256": "a51a6ee30b683333d8259a32865b6c790655c699760aea565fde4678478ca37d",
       "state": "nuevo"
     },
     {
@@ -740,9 +740,9 @@
     },
     "nuevo": {
       "files": 14,
-      "lines_changed": 2037,
+      "lines_changed": 2061,
       "lines_copied": 0,
-      "lines_total": 2037
+      "lines_total": 2061
     },
     "reescrito": {
       "files": 18,
