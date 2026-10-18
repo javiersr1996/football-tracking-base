@@ -1,7 +1,11 @@
 # Provenance
 
 The import commit (`Import football base from tracklab@686508a`) holds 49 files of tracklab
-(the author's private repository, MIT) at commit `686508a`. The table has one row for every
+(the author's private repository, MIT) at commit `686508a`. 47 of them are byte-identical to
+tracklab; in the other two, comment lines were withdrawn before this repository was made public
+(`pipeline/dbt/models/silver/frames.sql`: six lines replaced by two;
+`pipeline/dbt/models/silver/schema.yml`: one sentence of a column description). No code or SQL
+statement changed. The table has one row for every
 file of this repository under `src/ftbase/` and `tests/`. The ones marked `copiado` started as
 literal copies of imported files. On origins:
 
