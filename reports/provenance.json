@@ -110,14 +110,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 162,
-      "lines_copied": 105,
-      "lines_total": 267,
+      "lines_changed": 167,
+      "lines_copied": 106,
+      "lines_total": 273,
       "origins": [
         "pipeline/src/tracklab/cli.py"
       ],
       "path": "src/ftbase/cli.py",
-      "sha256": "3bc485adc28b96b7fa874befad22c2699cfe884f2a59f00f0c545af7107591a0",
+      "sha256": "a33700bfb7b1b408789d11062632af738d0e2aac6761352c17a951ea066951c8",
       "state": "reescrito"
     },
     {
@@ -748,9 +748,9 @@
     },
     "reescrito": {
       "files": 18,
-      "lines_changed": 1130,
-      "lines_copied": 1342,
-      "lines_total": 2472
+      "lines_changed": 1135,
+      "lines_copied": 1343,
+      "lines_total": 2478
     }
   }
 }

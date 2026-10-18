@@ -62,8 +62,14 @@ def _cmd_ingest(args: argparse.Namespace) -> int:
 
 
 def receipt_match_id(data_dir: Path) -> int | None:
-    """The match a partial ``ingest --match`` verified, from its receipt; None for a full ingest."""
-    receipt = json.loads((data_dir / "raw" / SOURCE_ID / RECEIPT_NAME).read_text(encoding="utf-8"))
+    """The match a partial ``ingest --match`` verified, from its receipt.
+
+    None for a full ingest, and for a data dir with no receipt (bronze built some other way).
+    """
+    path = data_dir / "raw" / SOURCE_ID / RECEIPT_NAME
+    if not path.is_file():
+        return None
+    receipt = json.loads(path.read_text(encoding="utf-8"))
     value = receipt.get("match_id")
     return None if value is None else int(value)
 
