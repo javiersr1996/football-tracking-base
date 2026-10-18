@@ -20,16 +20,12 @@
 -- A row whose side is neither `left_to_right` nor `right_to_left` gets NULL
 -- coordinates rather than a default sign.
 --
--- **The team possession is read, not guessed.** tracklab scored two candidate
--- rules against a third source neither uses, the per-frame `possession_group` of
--- the tracking: merging consecutive phases of the same team gives 5,092
--- possessions covering 96.67% of the frames the provider itself attributes to a
--- team, but 3,030 of them overlap their neighbour and they agree with the tracking
--- on the team in 76.87% of the frames of the worst match. Following the provider's
--- own `first_player_possession_in_team_possession` flag gives 3,998 (4,009 once a
--- new period opens one too, below), covering 85.82%, overlapping none and agreeing
--- 79.78% in the worst match. The chain rule wins: it never overlaps, it agrees
--- more, and it is the provider delimiting its own team possessions rather than
+-- **The team possession is read, not guessed.** Two candidate rules
+-- were considered. Merging consecutive phases of the same team makes possessions
+-- that overlap their neighbour. Following the provider's own
+-- `first_player_possession_in_team_possession` flag (and opening one more when a
+-- new period starts, below) overlaps none. The chain rule wins: it never overlaps,
+-- and it is the provider delimiting its own team possessions rather than
 -- this project inferring them from phases that the file itself says can contain a
 -- loss.
 

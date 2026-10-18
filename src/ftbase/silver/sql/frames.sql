@@ -17,10 +17,10 @@
 -- absence stays an absence.
 --
 -- The boundary rule of the schema, and what it actually removes: frames with a
--- null period are excluded. 62,570 frames carry one (pre-match, half-time and
--- post-match footage in 5 of the 20 matches). The provider already gives no
--- player and no ball on any of them, so the filter removes 0 rows; it stays
--- because the rule is the rule and the next bundle may not be so tidy.
+-- null period are excluded. Some matches carry such frames (pre-match, half-time and
+-- post-match footage). The provider gives no player and no ball on them, so the
+-- filter removes no row; it stays because the rule is the rule and the next bundle
+-- may not be so tidy.
 --
 -- z_m is NULL for every player, because football sends nothing. The ball carries
 -- the provider's value, uncorrected, with `dim_match.z_ball_status` saying what is
@@ -31,8 +31,7 @@
 --
 -- clock_s is the official clock in its own semantics: the seconds elapsed since
 -- the period's first frame, which is the period half of the match clock
--- (`timestamp = 45:00 x (period - 1) + (frame - start_frame) / 10`, verified in
--- tracklab on 100% of non-null timestamps).
+-- (`timestamp = 45:00 x (period - 1) + (frame - start_frame) / 10`).
 
 WITH football_players AS (
     SELECT
@@ -106,5 +105,5 @@ JOIN dim_entity e ON e.match_id = k.match_id AND e.entity_id = k.entity_id
 -- Sorted on integer keys only. The period rises with the frame, so this is the
 -- order of the naming convention minus the tie-break on entity_id inside a frame,
 -- which nothing reads. That tie-break is a VARCHAR sort key, and with it the sort
--- of the whole table ran out of memory under a 6 GB limit in tracklab.
+-- of the whole table can run out of memory.
 ORDER BY k.native_match_id, k.frame_native

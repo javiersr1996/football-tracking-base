@@ -4,7 +4,7 @@
 --
 -- Every entity in `frames` has its row in `dim_entity`, for the same match. A
 -- relationships check on `entity_id` alone would pass on a wrong match: the ball
--- is `fb:ball` in all twenty matches, so the key is the pair.
+-- is `fb:ball` in every match, so the key is the pair.
 
 SELECT f.match_id, f.entity_id, count(*) AS n_rows
 FROM frames f

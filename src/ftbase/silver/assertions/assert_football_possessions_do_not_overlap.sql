@@ -4,7 +4,7 @@
 --
 -- The invariant the chain rule was chosen for. The team possessions are derived
 -- here, so nothing outside this project guarantees they tile the match without
--- stepping on each other; merging the phases of play instead would put 3,030 of
+-- stepping on each other; merging the phases of play instead would put some of
 -- them on top of their neighbour.
 
 WITH ordered AS (

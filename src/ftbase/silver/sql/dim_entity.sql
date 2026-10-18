@@ -6,9 +6,8 @@
 -- and the ball, one row each, per match.
 --
 -- The roster is the source and not the tracking, on purpose. Every id the
--- tracking uses is in the roster of its match (checked in tracklab: 0
--- exceptions), while the roster holds 96 players who never appear in a frame.
--- Building the dimension from the roster therefore covers `frames` without
+-- tracking uses is in the roster of its match, while the roster also holds players who
+-- never appear in a frame. Building the dimension from the roster therefore covers `frames` without
 -- inventing anyone, and a player who sat the whole match is still an entity of
 -- that match.
 --

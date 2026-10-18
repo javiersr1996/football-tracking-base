@@ -4,14 +4,13 @@
 -- ftbase.silver.build fills from the manifest, instead of a dbt source over the JSON;
 -- dbt source() and ref() replaced by table names.
 --
--- One row per match, 20 of them, and the place a reader goes to find out what a
--- match is made of before touching 20 million frames.
+-- One row per match, and the place a reader goes to find out what a
+-- match is made of before touching the frames.
 --
 -- Three columns here are conclusions rather than copies:
 --
 -- * surface_*. Football declares its pitch and it is not the same in every
---   match (104, 105 and 106 m long, all 68 wide), so it is read per match from
---   match.json.
+--   match, so it is read per match from match.json.
 -- * z_ball_status. 'unverified': the provider delivers ball_z whenever the ball
 --   is present and nothing here has checked it against physics. Silver corrects
 --   nothing either way.

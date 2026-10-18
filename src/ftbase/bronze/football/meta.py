@@ -5,37 +5,35 @@
 ``matches``.
 
 ``match.json`` is read once per match and split into three tables at three grains: one
-row of ``match`` (the flat header), one row of ``match_periods`` per period (2 per
-match, 40 across the 20) and one row of ``match_players`` per roster entry (35-36 per
-match). ``matches`` is the one exception to per-match files, exactly as in
-``bronze/basketball/meta.py``: ``data/matches.json`` already holds all 20 matches
+row of ``match`` (the flat header), one row of ``match_periods`` per period and one row of
+``match_players`` per roster entry. ``matches`` is the one exception to per-match files, exactly
+as in ``bronze/basketball/meta.py``: ``data/matches.json`` already holds all the matches
 together, so bronze keeps it as a single season file while every row still carries its
 own ``match_id`` (the native ``id``) in ``LINEAGE_FIELDS``.
 
 **Every nested dict and list of dicts read from ``match.json`` has its key set imposed
-against the set measured over the 20 matches, before any value is read from it**
+against the set of the pinned commit, before any value is read from it**
 (``_check_keys``), the same discipline ``bronze/basketball/tracking.py`` applies to
 ``FRAME_KEYS``/``PLAYER_KEYS``: a column built from
 the schema instead of from the raw row lets a provider key silently disappear. A key
 missing or a key extra fails the run naming the file, the path inside the JSON, and the
 keys that differ.
 
-Two things measured over the 20 ``match.json`` files while writing this module:
+Two things true of the ``match.json`` files of the pinned commit:
 
-- **``players[]`` has two regimes, split by match, not by player.** 10 of the 20
+- **``players[]`` has two regimes, split by match, not by player.** Some
   matches carry ``last_modified`` (a per-player processing timestamp) and
   ``playing_time.sequences`` (a list of ``{period, start_frame, end_frame}``, the
-  actual on-pitch windows, a finer grain than ``playing_time.by_period``); the other
-  10 have neither key. Uniform within a match, never mixed. Both are optional columns:
+  actual on-pitch windows, a finer grain than ``playing_time.by_period``); the others
+  have neither key. Uniform within a match, never mixed. Both are optional columns:
   ``last_modified`` is NULL and ``playing_time_sequences`` is NULL (not an empty list,
   which is a delivered value in the regime that has the key) when the match's regime
   omits them.
 - **``playing_time.total`` is NULL for a player who never played** (``start_time`` and
-  ``end_time`` both null, ``playing_time.by_period`` an empty list): 96 such players
-  across the 20 matches. Bronze keeps ``playing_time_total_*`` all-NULL for that row
-  rather than inventing zeros.
+  ``end_time`` both null, ``playing_time.by_period`` an empty list).
+  Bronze keeps ``playing_time_total_*`` all-NULL for that row rather than inventing zeros.
 
-``referees`` is an empty list in all 20 matches (and ``home_team_coach``/
+``referees`` is an empty list in every match (and ``home_team_coach``/
 ``away_team_coach`` are always null): bronze carries a nullable ``home_team_coach``/
 ``away_team_coach`` column (the leaf exists, its value is always null) but no column for
 ``referees`` (the list itself is a leaf with zero scalar leaves under it in every match
@@ -66,7 +64,7 @@ from ftbase.ingest.manifest import FileEntry, Source
 SPORT = "football"
 Log = Callable[[str], None]
 
-# --- key sets measured over the 20 matches of manifest.commit 4340d274... -----------
+# --- key sets of the commit pinned in the manifest ------------------------------------
 
 MATCH_KEYS = frozenset(
     {
@@ -232,7 +230,7 @@ MATCH_SCHEMA = pa.schema(
         pa.field("away_team_kit_season_start_year", pa.int64(), nullable=False),
         pa.field("away_team_kit_season_end_year", pa.int64(), nullable=False),
         pa.field("away_team_kit_season_name", pa.string(), nullable=False),
-        # Always null in the 20 matches; typed on the one shape ever observed (see docstring).
+        # Always null in the pinned commit; typed on the one shape ever observed (see docstring).
         pa.field("home_team_coach", pa.string()),
         pa.field("away_team_coach", pa.string()),
         pa.field("home_team_playing_time_minutes_tip", pa.float64(), nullable=False),
@@ -294,12 +292,12 @@ MATCH_PLAYERS_SCHEMA = pa.schema(
         pa.field("injured", pa.bool_(), nullable=False),
         pa.field("goal", pa.int64(), nullable=False),
         pa.field("own_goal", pa.int64(), nullable=False),
-        pa.field("last_modified", pa.string()),  # null in 10 of 20 matches: see docstring
+        pa.field("last_modified", pa.string()),  # null in some matches: see docstring
         pa.field("player_role_id", pa.int64(), nullable=False),
         pa.field("position_group", pa.string(), nullable=False),
         pa.field("player_role_name", pa.string(), nullable=False),
         pa.field("player_role_acronym", pa.string(), nullable=False),
-        # null in every field together: the player never played (96 rows across 20 matches)
+        # null in every field together: the player never played
         pa.field("playing_time_total_minutes_tip", pa.float64()),
         pa.field("playing_time_total_minutes_otip", pa.float64()),
         pa.field("playing_time_total_start_frame", pa.int64()),
@@ -459,7 +457,7 @@ def _match_row(m: Mapping[str, Any], source_file: str) -> dict[str, Any]:
     }
 
 
-# --- match.json.match_periods[] -> match_periods (2 rows) ------------------------------
+# --- match.json.match_periods[] -> match_periods --------------------------------------
 
 
 def _period_columns(periods: list[Mapping[str, Any]], source_file: str) -> dict[str, list[Any]]:
@@ -475,7 +473,7 @@ def _period_columns(periods: list[Mapping[str, Any]], source_file: str) -> dict[
     }
 
 
-# --- match.json.players[] -> match_players (35-36 rows) --------------------------------
+# --- match.json.players[] -> match_players --------------------------------------------
 
 _TOTAL_NULL_COLUMNS = (
     "playing_time_total_minutes_tip",
@@ -645,7 +643,7 @@ def build_match_tables(
     return stats
 
 
-# --- data/matches.json -> matches (season file, 20 rows) -------------------------------
+# --- data/matches.json -> matches (season file) ---------------------------------------
 
 
 def build_matches(

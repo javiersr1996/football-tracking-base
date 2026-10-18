@@ -4,12 +4,12 @@
 """Bronze of the football tracking: ``tracking_frames`` and ``tracking_objects``.
 
 Reads ``<match_id>_tracking_extrapolated.jsonl`` line by line (never whole in memory,
-each file is 90-102 MB) in batches of 100k frames and writes one Parquet per match and
+each file is large) in batches of 100k frames and writes one Parquet per match and
 table with the schemas declared below. Bronze does not correct, filter or fill in anything:
 every line becomes a row of ``tracking_frames``, every ``player_data`` entry a row of
 ``tracking_objects``, and values are stored as delivered. Every correction belongs to
 silver. The measurements this module relies on (key sets, contiguous ``frame``) were
-taken once over the 20 matches and are enforced on every run instead of re-derived.
+taken once over the pinned commit and are enforced on every run instead of re-derived.
 
 What is different from basketball's ``tracking.py`` (``bronze/basketball/tracking.py``),
 whose layout and key-imposition idiom this module copies:
@@ -19,8 +19,8 @@ whose layout and key-imposition idiom this module copies:
   ``false``), for players and for the ball: no 0/1 cast is needed, unlike basketball's
   ``isDetected``. Stored as-is.
 - ``ball_data`` always has all four keys (``is_detected, x, y, z``); the four are
-  either all non-null (the ball is present) or all null together (measured: 0 frames
-  with a partial ball in the 20 matches). Bronze keeps that grouping as four nullable
+  either all non-null (the ball is present) or all null together (no frame of the pinned
+  commit has a partial ball). Bronze keeps that grouping as four nullable
   columns rather than a presence flag, because the flag would be a derived fact.
 - ``image_corners_projection`` is null independently of ``period``: most of its
   null frames are inside a period, not just the frames outside every period. Bronze
@@ -28,8 +28,8 @@ whose layout and key-imposition idiom this module copies:
 - Out-of-period frames (``period`` and ``timestamp`` null, ``player_data`` empty,
   ``ball_data`` all null) are a row of ``tracking_frames`` with ``n_players = 0`` and
   no row in ``tracking_objects``: the full timeline the provider delivered, pre-match
-  and half-time footage included in the 5 matches that carry it, lives in bronze.
-  ``frame`` is contiguous from 0 in the 20 matches (measured); a frame the
+  and half-time footage included in the matches that carry it, lives in bronze.
+  ``frame`` is contiguous from 0 in the pinned commit; a frame the
   file never delivered stays absent, never filled with ``range()``.
 - ``source_row`` is the JSONL line index and ``frame`` is the provider's own counter;
   they were measured equal in the matches checked so far, but bronze keeps both
@@ -55,7 +55,7 @@ SPORT = "football"
 BATCH_FRAMES = 100_000
 Log = Callable[[str], None]
 
-# Exactly the keys the provider delivers, measured over the 20 matches. One
+# Exactly the keys the provider delivers, of the pinned commit. One
 # more or one less fails the run.
 FRAME_KEYS = frozenset(
     {
@@ -97,7 +97,7 @@ TRACKING_FRAMES = pa.schema(
         pa.field("ball_is_detected", pa.bool_()),
         pa.field("possession_group", pa.string()),  # 'home team' | 'away team' | null
         pa.field("possession_player_id", pa.int64()),
-        pa.field("n_players", pa.int16(), nullable=False),  # len(player_data): 0 or 22 in-period
+        pa.field("n_players", pa.int16(), nullable=False),  # len(player_data)
         *(pa.field(name, pa.float64()) for name in CORNER_ORDER),
     ]
 )
@@ -109,7 +109,7 @@ TRACKING_OBJECTS = pa.schema(
         pa.field("player_id", pa.int64(), nullable=False),
         pa.field("x", pa.float64(), nullable=False),
         pa.field("y", pa.float64(), nullable=False),
-        pa.field("is_detected", pa.bool_(), nullable=False),  # never null (0 of 20 matches)
+        pa.field("is_detected", pa.bool_(), nullable=False),  # never null
     ]
 )
 

@@ -12,9 +12,8 @@ removed or retyped since the freeze fails the run naming the file. Each file is 
 a few thousand rows, so it is read whole into pyarrow, no streaming.
 
 One thing this module resolves that no other bronze table has needed: **both CSVs
-carry a native column literally named ``match_id``**. Measured with DuckDB over the 20
-files of each table: the native ``match_id`` equals the file's own match id in every
-row, 0 mismatches in ``dynamic_events`` and in ``phases_of_play``.
+carry a native column literally named ``match_id``**. In the files of the pinned
+commit the native ``match_id`` equals the file's own match id in every row.
 Since ``bronze.common.LINEAGE_FIELDS`` already reserves ``match_id`` (BIGINT NOT
 NULL) for every table, and a pyarrow schema cannot usefully carry two fields of the
 same name (``column("match_id")`` turns ambiguous, DuckDB and the contract tests
@@ -25,10 +24,9 @@ other native column is kept verbatim, native name, native position. Net columns:
 ``dynamic_events`` 4 lineage + 321 native (322 minus the folded ``match_id``) = 325;
 ``phases_of_play`` 4 + 43 = 47.
 
-Nothing here drops a row. Match 1953632's `player_id` 973077 has 35
-``dynamic_events`` rows and is not a foreign key bronze enforces
-(the id is in no ``players[]`` of ``match.json`` and in no tracking frame); those rows are
-loaded like any other.
+Nothing here drops a row. A ``player_id`` in ``dynamic_events`` that is in no ``players[]``
+of ``match.json`` and in no tracking frame is not a foreign key bronze enforces; its rows
+are loaded like any other.
 """
 
 from __future__ import annotations

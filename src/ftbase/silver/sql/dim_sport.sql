@@ -2,12 +2,11 @@
 -- Changes: football only (the basketball row and its comments dropped).
 --
 -- The row that makes `sport` a column and not a fork in the code. Everything
--- here is a constant of the bundle, measured in tracklab and cited next to it; no
--- model is allowed to hard-code any of these values again.
+-- here is a constant of the bundle; no model is allowed to hard-code any of these
+-- values again.
 --
 -- native_event_frame: football is 'attacking_pos_x': the attacker goes towards +x
--- and the rotation is chosen by `attacking_side`. Measured in tracklab: the attack
--- frame wins in 20 of 20 matches (94.66-100% within 1 m against 40.04-56.41%).
+-- and the rotation is chosen by `attacking_side`.
 
 SELECT
     'football'::VARCHAR AS sport,

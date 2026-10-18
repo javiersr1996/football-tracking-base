@@ -2,12 +2,11 @@
 -- Changes: football only (the basketball branch and the union dropped); dbt source() and
 -- ref() replaced by the table names ftbase.silver.build registers.
 --
--- One row per team seen in the bundle, 13 of them, with the sport's prefix on the
+-- One row per team seen in the bundle, with the sport's prefix on the
 -- id (`fb:<id>`), the key every other silver table uses.
 --
--- The name is read once per team and not per match: the bundle is stable, 0 teams
--- carry two different names across their matches (checked in tracklab before
--- writing this model, and the unique check on team_id keeps it checked).
+-- The name is read once per team and not per match: a team carries one
+-- name across its matches, and the unique check on team_id keeps it so.
 
 WITH football AS (
     SELECT home_team_id AS native_team_id, home_team_name AS name, home_team_short_name AS short_name
