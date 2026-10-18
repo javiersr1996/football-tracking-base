@@ -110,14 +110,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 156,
+      "lines_changed": 160,
       "lines_copied": 105,
-      "lines_total": 261,
+      "lines_total": 265,
       "origins": [
         "pipeline/src/tracklab/cli.py"
       ],
       "path": "src/ftbase/cli.py",
-      "sha256": "5afb014088424a7000a078cb20611a897adab595347f3b5b38e7007476718be1",
+      "sha256": "301546f45a1bf73af1f6d509b637d883afd7e2f6506a3ffa3c832748d33f7557",
       "state": "reescrito"
     },
     {
@@ -688,14 +688,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 222,
+      "lines_changed": 226,
       "lines_copied": 209,
-      "lines_total": 431,
+      "lines_total": 435,
       "origins": [
         "pipeline/tests/unit/test_ingest.py"
       ],
       "path": "tests/unit/test_ingest.py",
-      "sha256": "8a96b204da8866b39bc59108b83c7d8982e1f305d5d777e271af82b250d31fb2",
+      "sha256": "54f80daecea744a988ed30b4dfd17ba3da6bb68729f46a71e65123a2dc10bbd0",
       "state": "reescrito"
     },
     {
@@ -746,9 +746,9 @@
     },
     "reescrito": {
       "files": 18,
-      "lines_changed": 1108,
+      "lines_changed": 1116,
       "lines_copied": 1345,
-      "lines_total": 2453
+      "lines_total": 2461
     }
   }
 }

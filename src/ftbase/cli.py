@@ -46,6 +46,10 @@ def _cmd_ingest(args: argparse.Namespace) -> int:
     source = load_manifest(args.manifest).source(SOURCE_ID)
     raw_root: Path = args.data_dir / "raw" / source.source_id
     try:
+        if args.match is not None:
+            chosen = select_match(source, args.match).files
+            total = sum(f.bytes for f in chosen)
+            print(f"match {args.match}: {len(chosen)} files, {total} bytes")
         if args.from_existing is not None:
             receipt = ingest_local(source, args.from_existing, raw_root, match_id=args.match)
         else:

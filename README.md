@@ -6,7 +6,7 @@ phases of play). It was extracted in October 2026 from tracklab, the author's pr
 written new. It keeps the provider's `is_detected` flag for every tracked object (the provider's
 tracking files are named `*_tracking_extrapolated.jsonl`) and does no analysis of it.
 
-**Status: pre-release.** `ingest`, `bronze`, `silver` and the synthetic fixtures are in place; v0.1.0 is not tagged yet.
+**Status: v0.1.0.** Five subcommands: `ingest`, `bronze`, `silver`, `fixtures` and `provenance`.
 
 ## Install
 
@@ -20,8 +20,10 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
 ## Commands
 
 - `ftbase ingest`: download and verify the 85 source files against a sha256 manifest (`--match <id>`
-  for one match and `matches.json`, about 91 MB; `--from-existing <dir>` to verify a local clone
-  in place, read-only). Set `FTBASE_DATA_ROOT` or `--data-dir` to move `data/`.
+  for one match and `matches.json`, and it prints how many files and bytes that is before it
+  starts; `--from-existing <dir>` to verify a local clone in place, read-only). Set
+  `FTBASE_DATA_ROOT` or `--data-dir` to move `data/`. After `ingest --match`, `bronze` and
+  `silver` build that match alone.
 - `ftbase bronze`: write typed Parquet tables (tracking, events, match metadata) under
   `<data root>/bronze/football/`, one file per match, from what `ingest` verified. The contract tests
   that read the real bundle are deselected by default: `uv run pytest -m realdata` runs them.
@@ -31,11 +33,14 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
   flag), one Parquet file per match; the `frames_attacking` view turns the frames of each team
   possession so the team with the ball attacks towards +x. The build runs its checks and exits 1 if any fails. From Python:
   `ftbase.silver.read_frames([match_id])`, `read_events` and `read_dim` (columns in the docstrings).
-
 - `ftbase fixtures --out <dir>`: write a short synthetic match in the provider's raw format plus a
   manifest with the real sha256 of what it wrote, so `ingest --from-existing <dir>/bundle`, `bronze`
   and `silver` (all with `--manifest <dir>/manifest.json`) run on it with no network and no
   provider data.
+- `ftbase provenance`: count by script how many lines of each file were copied from tracklab and
+  rewrite `reports/provenance.json` and the count columns of `docs/provenance.md`; `--check`
+  verifies them (the CI runs it). See [`docs/provenance.md`](docs/provenance.md) for how to
+  regenerate them with or without a tracklab clone.
 
 ## Synthetic fixtures and CI
 

@@ -122,7 +122,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/unit/test_bronze_football_meta.py` | `pipeline/tests/unit/test_bronze_football_meta.py` | `686508a` | copiado | 446 | 7 |
 | `tests/unit/test_bronze_football_tracking.py` | `pipeline/tests/unit/test_bronze_football_tracking.py` | `686508a` | copiado | 332 | 12 |
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 35 |
-| `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 222 |
+| `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 226 |
 | `src/ftbase/ingest/select.py` | - | - | nuevo | 0 | 24 |
-| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 156 |
+| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 160 |
 | `tests/unit/manifest_helper.py` | - | - | nuevo | 0 | 14 |

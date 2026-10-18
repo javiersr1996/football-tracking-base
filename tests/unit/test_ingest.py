@@ -332,7 +332,11 @@ def test_match_ingest_downloads_only_that_match_and_says_partial(
 
     n = MATCH_SIZE
     expected = f"downloaded={n} verified={n} failed=0 PARTIAL {n}/{BUNDLE_SIZE}"
-    assert capsys.readouterr().out.splitlines()[-1] == expected
+    out = capsys.readouterr().out.splitlines()
+    assert out[-1] == expected
+    own = [c for path, c in {**RAW_FILES, **MEDIA_FILES}.items() if f"/{MATCH}/" in path]
+    index = len(RAW_FILES["data/matches.json"])
+    assert f"match {MATCH}: {n} files, {sum(map(len, own)) + index} bytes" in out
     landed = {p.relative_to(raw_root).as_posix() for p in raw_root.rglob("*") if p.is_file()}
     assert landed == {f.path for f in select_match(frozen_source(), MATCH).files} | {RECEIPT_NAME}
     assert not (raw_root / OTHER_TRACKING).exists()
