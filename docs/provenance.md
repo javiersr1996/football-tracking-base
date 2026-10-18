@@ -25,6 +25,11 @@ per-connection views) has no tracklab origin: tracklab read silver through the v
 DuckDB file. `pipeline/` no longer exists; its last file, `pipeline/src/tracklab/__init__.py`, was
 the origin of `src/ftbase/__init__.py` and is removed.
 
+Task 6 adds `fixtures.py` (the synthetic match and `ftbase fixtures`, which also touches `cli.py`),
+its end-to-end test, and a `conftest.py` that makes a skipped test a failure (with its own test).
+`.github/workflows/ci.yml` is new and sits outside this table. `checks.py` gains two `not_null`
+checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` had and task 5 left out.
+
 | File in ftbase | Path in tracklab | tracklab commit | State | Lines copied | Lines changed |
 |---|---|---|---|---|---|
 | `src/ftbase/silver/sql/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | reescrito | | |
@@ -47,6 +52,10 @@ the origin of `src/ftbase/__init__.py` and is removed.
 | `src/ftbase/silver/checks.py` | `pipeline/dbt/models/silver/schema.yml` and `pipeline/dbt/macros/test_unique_combination.sql` | `686508a` | reescrito | | |
 | `src/ftbase/silver/build.py` | `pipeline/dbt/models/sources/football.yml` and `pipeline/dbt/models/sources/common.yml` | `686508a` | reescrito | | |
 | `src/ftbase/silver/orientation.py` | `pipeline/src/tracklab/silver/orientation.py` | `686508a` | reescrito | | |
+| `src/ftbase/fixtures.py` | - | - | nuevo | | |
+| `tests/unit/test_fixtures.py` | - | - | nuevo | | |
+| `tests/conftest.py` | - | - | nuevo | | |
+| `tests/test_skips_fail.py` | - | - | nuevo | | |
 | `src/ftbase/silver/read.py` | - | - | nuevo | | |
 | `src/ftbase/silver/__init__.py` | - | - | nuevo | | |
 | `tests/unit/test_silver_orientation.py` | `pipeline/tests/unit/test_silver_orientation.py` | `686508a` | reescrito | | |

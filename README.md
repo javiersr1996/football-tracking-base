@@ -5,7 +5,7 @@ phases of play). It was extracted in October 2026 from tracklab, the author's pr
 which is where the code was first written (MIT). The pipeline keeps the provider's `is_detected`
 flag, which separates what the cameras saw from what the provider extrapolated.
 
-**Status: pre-release.** `ingest`, `bronze` and `silver` are in place; v0.1.0 is not tagged yet.
+**Status: pre-release.** `ingest`, `bronze`, `silver` and the synthetic fixtures are in place; v0.1.0 is not tagged yet.
 
 ## Install
 
@@ -30,6 +30,23 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
   flag), one Parquet file per match; the `frames_attacking` view turns the frames of each team
   possession so the team with the ball attacks towards +x. The build runs its checks and exits 1 if any fails. From Python:
   `ftbase.silver.read_frames([match_id])`, `read_events` and `read_dim` (columns in the docstrings).
+
+- `ftbase fixtures --out <dir>`: write a short synthetic match in the provider's raw format plus a
+  manifest with the real sha256 of what it wrote, so `ingest --from-existing <dir>/bundle`, `bronze`
+  and `silver` (all with `--manifest <dir>/manifest.json`) run on it with no network and no
+  provider data.
+
+## Synthetic fixtures and CI
+
+`ftbase.fixtures.write_synthetic_match` is deterministic (fixed seed) and plants runs of
+`is_detected = false` of known length per player and period, and returns them. The tests compare
+what silver recovers against that record, never against silver itself. The match is synthetic:
+no number computed on it is a result, and none appears in this README.
+
+CI (`.github/workflows/ci.yml`, `ubuntu-latest`) checks out without LFS and runs `uv sync --locked`,
+`ruff check`, `ruff format --check`, `mypy src` and `pytest -q` on the fixtures alone. The `realdata`
+tests are deselected there (the run prints how many) and a skipped test fails the run
+(`tests/conftest.py`). `uv run pytest -m realdata` runs them locally against the real bundle.
 
 ## Data and LFS
 
