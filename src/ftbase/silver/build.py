@@ -13,7 +13,7 @@
 3. The facts, one match at a time: the bronze views ``bronze_tracking_*`` and
    ``bronze_dynamic_events``/``bronze_phases_of_play`` are pointed at that match's files
    and ``frames.sql`` and ``events.sql`` are copied to ``silver/<fact>/<match_id>.parquet``.
-   One match at a time keeps memory bounded by a match, not by 20 million rows.
+   One match at a time keeps memory bounded by a match, not by the rows of all matches.
 4. The checks (:mod:`ftbase.silver.checks`) on a fresh connection over what was written,
    so they read the files a consumer will read.
 
@@ -80,11 +80,17 @@ class SilverResult:
         return [*self.orientation_failures, *failed_checks]
 
 
-def bronze_match_ids(data_dir: Path) -> list[int]:
+def bronze_match_ids(data_dir: Path, match_id: int | None = None) -> list[int]:
+    """The matches in bronze, or just ``match_id`` when given (it must be there)."""
     folder = data_dir / "bronze" / "football" / "match"
     ids = sorted(int(p.stem) for p in folder.glob("*.parquet")) if folder.is_dir() else []
+    if match_id is not None:
+        ids = [match_id] if match_id in ids else []
     if not ids:
-        raise FileNotFoundError(f"no bronze match under {folder}; run `ftbase bronze` first")
+        wanted = "" if match_id is None else f" {match_id}"
+        raise FileNotFoundError(
+            f"no bronze match{wanted} under {folder}; run `ftbase bronze` first"
+        )
     return ids
 
 
@@ -107,8 +113,13 @@ def _point(con: duckdb.DuckDBPyConnection, data_dir: Path, table: str, file: str
     )
 
 
-def build_silver(data_dir: Path, manifest_path: Path, log: Log = print) -> SilverResult:
+def build_silver(
+    data_dir: Path, manifest_path: Path, log: Log = print, match_id: int | None = None
+) -> SilverResult:
     """Builds every silver table under ``data_dir`` and runs the checks on what it wrote.
+
+    With ``match_id`` (the match of a partial ``ingest --match``) only that match is built,
+    even if bronze holds others from an earlier run.
 
     Never raises on a failed check: the failures are in :attr:`SilverResult.failures`,
     after every file is written, because the files are how the shortfall is inspected.
@@ -118,7 +129,7 @@ def build_silver(data_dir: Path, manifest_path: Path, log: Log = print) -> Silve
     source = load_manifest(manifest_path).source(SOURCE_ID)
     if source.commit is None:
         raise RuntimeError(f"{source.source_id} has no pinned commit in {manifest_path}")
-    match_ids = bronze_match_ids(data_dir)
+    match_ids = bronze_match_ids(data_dir, match_id)
     log(f"silver: {len(match_ids)} matches from {data_dir / 'bronze' / 'football'}")
 
     with duckdb.connect() as con:
@@ -132,7 +143,7 @@ def build_silver(data_dir: Path, manifest_path: Path, log: Log = print) -> Silve
                 f"read_csv({literal(seed_path(name))}, header = true, all_varchar = true)"
             )
         for table in DIM_SOURCES:
-            _point(con, data_dir, table, "*.parquet")
+            _point(con, data_dir, table, "*.parquet" if match_id is None else f"{match_id}.parquet")
 
         orientations = [football_signs(con, data_dir, m) for m in match_ids]
         result.orientation_failures = [

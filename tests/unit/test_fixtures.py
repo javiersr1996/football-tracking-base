@@ -215,12 +215,8 @@ def test_a_changed_byte_in_the_bundle_fails_ingest(tmp_path: Path) -> None:
     assert main([*args, "--from-existing", str(match.root)]) == 1
 
 
-def test_a_partial_ingest_runs_bronze_and_silver_on_that_match_alone(tmp_path: Path) -> None:
-    """`ingest --match` then `bronze` and `silver`: the other match of the manifest is not read.
-
-    The manifest lists two matches and the second one's files are deleted after the manifest
-    is written, so a bronze that walks the whole manifest instead of the receipt's match fails.
-    """
+def _two_matches(tmp_path: Path) -> tuple[Path, Path]:
+    """A bundle of two synthetic matches and a manifest that lists both."""
     first = write_synthetic_match(tmp_path / "a", match_id=900001)
     second = write_synthetic_match(tmp_path / "b", match_id=900002)
     bundle = first.root
@@ -246,6 +242,16 @@ def test_a_partial_ingest_runs_bronze_and_silver_on_that_match_alone(tmp_path: P
     files.extend(other)
     manifest_path = tmp_path / "two.json"
     manifest_path.write_bytes(json.dumps(manifest).encode("utf-8"))
+    return bundle, manifest_path
+
+
+def test_a_partial_ingest_runs_bronze_and_silver_on_that_match_alone(tmp_path: Path) -> None:
+    """`ingest --match` then `bronze` and `silver`: the other match of the manifest is not read.
+
+    The manifest lists two matches and the second one's files are deleted after the manifest
+    is written, so a bronze that walks the whole manifest instead of the receipt's match fails.
+    """
+    bundle, manifest_path = _two_matches(tmp_path)
     shutil.rmtree(bundle / "data/matches/900002")
 
     data_dir = tmp_path / "data"
@@ -262,3 +268,30 @@ def test_a_partial_ingest_runs_bronze_and_silver_on_that_match_alone(tmp_path: P
     assert stems("bronze/football/match") == ["900001"]
     assert stems("silver/frames") == ["900001"]
     assert read_dim("dim_match", data_dir=data_dir).num_rows == 1
+
+
+def test_a_partial_ingest_after_a_full_build_makes_silver_of_that_match_alone(
+    tmp_path: Path,
+) -> None:
+    """A data dir that already holds both matches: `ingest --match` then silver keeps one."""
+    bundle, manifest_path = _two_matches(tmp_path)
+    data_dir = tmp_path / "data"
+    args = ["--manifest", str(manifest_path), "--data-dir", str(data_dir)]
+    full = ["ingest", *args, "--from-existing", str(bundle)]
+    assert main(full) == 0
+    assert main(["bronze", *args]) == 0
+    assert main(["silver", *args]) == 0
+    assert read_dim("dim_match", data_dir=data_dir).num_rows == 2
+
+    assert main([*full, "--match", "900001"]) == 0
+    assert main(["bronze", *args]) == 0
+    assert main(["silver", *args]) == 0
+
+    def stems(folder: str) -> list[str]:
+        return sorted(p.stem for p in (data_dir / folder).glob("*.parquet"))
+
+    assert stems("bronze/football/match") == ["900001", "900002"], "bronze is not pruned"
+    assert stems("silver/frames") == ["900001"]
+    assert stems("silver/events") == ["900001"]
+    assert read_dim("dim_match", data_dir=data_dir).num_rows == 1
+    assert read_dim("dim_team", data_dir=data_dir).num_rows == 2

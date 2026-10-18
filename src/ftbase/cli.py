@@ -91,7 +91,9 @@ def _cmd_bronze(args: argparse.Namespace) -> int:
 
 def _cmd_silver(args: argparse.Namespace) -> int:
     try:
-        result = build_silver(args.data_dir, args.manifest)
+        result = build_silver(
+            args.data_dir, args.manifest, match_id=receipt_match_id(args.data_dir)
+        )
     except (KeyError, FileNotFoundError, RuntimeError, ValueError) as exc:
         sys.exit(f"ftbase: {exc.args[0]}")
     passed = sum(c.ok for c in result.checks)
