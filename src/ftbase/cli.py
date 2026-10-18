@@ -4,17 +4,29 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 from importlib.resources import files
 from pathlib import Path
 
 from ftbase import __version__
+from ftbase.bronze.common import raw_root_for
+from ftbase.bronze.football.events import build_events
+from ftbase.bronze.football.meta import build_meta
+from ftbase.bronze.football.tracking import build_tracking
 from ftbase.ingest.fetch import ingest_source, make_client
 from ftbase.ingest.local import ingest_local
-from ftbase.ingest.manifest import load_manifest
+from ftbase.ingest.manifest import Source, load_manifest
 from ftbase.paths import data_root
 
 SOURCE_ID = "opendata-football"
+
+# Table group -> builder(source, raw_root, data_dir). Registered in the order they run.
+BRONZE_BUILDERS: dict[str, Callable[[Source, Path, Path], object]] = {
+    "tracking": build_tracking,
+    "meta": build_meta,
+    "events": build_events,
+}
 
 
 def default_manifest() -> Path:
@@ -35,6 +47,24 @@ def _cmd_ingest(args: argparse.Namespace) -> int:
         sys.exit(f"ftbase: {exc.args[0]}")
     print(receipt.summary)
     return 1 if receipt.failed else 0
+
+
+def _cmd_bronze(args: argparse.Namespace) -> int:
+    groups = [g for g in args.tables.split(",") if g] if args.tables else list(BRONZE_BUILDERS)
+    unknown = [g for g in groups if g not in BRONZE_BUILDERS]
+    if unknown:
+        sys.exit(f"ftbase: no bronze builder for {unknown} (known: {sorted(BRONZE_BUILDERS)})")
+    try:
+        source = load_manifest(args.manifest).source(SOURCE_ID)
+        raw_root = raw_root_for(args.data_dir, SOURCE_ID)
+    except (KeyError, FileNotFoundError, RuntimeError) as exc:
+        sys.exit(f"ftbase: {exc.args[0]}")
+    started = time.perf_counter()
+    for group in groups:
+        print(f"bronze {group}: {raw_root}")
+        BRONZE_BUILDERS[group](source, raw_root, args.data_dir)
+    print(f"total seconds={time.perf_counter() - started:.1f}")
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -76,6 +106,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only this match (its four files plus matches.json); the run reports PARTIAL.",
     )
     ingest.set_defaults(func=_cmd_ingest)
+
+    bronze = subparsers.add_parser(
+        "bronze", help="Convert the verified raw files to typed Parquet (one file per match)."
+    )
+    bronze.add_argument(
+        "--tables",
+        default=None,
+        help="Comma-separated table groups to build: tracking, meta, events (default: all).",
+    )
+    bronze.add_argument(
+        "--manifest",
+        type=Path,
+        default=default_manifest(),
+        help="Path to sources.json (default: the manifest shipped with ftbase).",
+    )
+    bronze.add_argument(
+        "--data-dir",
+        type=Path,
+        default=data_root(),
+        help="Data root: reads raw/opendata-football/, writes bronze/football/<table>/ "
+        "(default: data).",
+    )
+    bronze.set_defaults(func=_cmd_bronze)
     return parser
 
 

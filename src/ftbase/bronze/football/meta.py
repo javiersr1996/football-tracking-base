@@ -1,3 +1,5 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/meta.py
+# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit.
 """Bronze of the football metadata: ``match``, ``match_periods``, ``match_players``,
 ``matches``.
 
@@ -52,14 +54,14 @@ from typing import Any
 
 import pyarrow as pa
 
-from tracklab.bronze.common import (
+from ftbase.bronze.common import (
     LINEAGE_FIELDS,
     ParquetSink,
     batch_from_columns,
     bronze_path,
     bronze_season_path,
 )
-from tracklab.ingest.manifest import FileEntry, Source
+from ftbase.ingest.manifest import FileEntry, Source
 
 SPORT = "football"
 Log = Callable[[str], None]
@@ -612,10 +614,10 @@ def build_match_tables(
         )
 
         metadata = {
-            "tracklab.sport": SPORT,
-            "tracklab.source_file": entry.path,
-            "tracklab.source_sha256": entry.sha256,
-            "tracklab.source_commit": commit,
+            "ftbase.sport": SPORT,
+            "ftbase.source_file": entry.path,
+            "ftbase.source_sha256": entry.sha256,
+            "ftbase.source_commit": commit,
         }
         match_path = bronze_path(data_dir, SPORT, "match", entry.match_id)
         periods_path = bronze_path(data_dir, SPORT, "match_periods", entry.match_id)
@@ -679,10 +681,10 @@ def build_matches(
     }
     batch = batch_from_columns(MATCHES_SCHEMA, columns, n)
     metadata = {
-        "tracklab.sport": SPORT,
-        "tracklab.source_file": entry.path,
-        "tracklab.source_sha256": entry.sha256,
-        "tracklab.source_commit": commit,
+        "ftbase.sport": SPORT,
+        "ftbase.source_file": entry.path,
+        "ftbase.source_sha256": entry.sha256,
+        "ftbase.source_commit": commit,
     }
     path = bronze_season_path(data_dir, SPORT, "matches")
     with ParquetSink(path, MATCHES_SCHEMA, metadata) as sink:
@@ -696,7 +698,7 @@ def build_meta(source: Source, raw_root: Path, data_dir: Path, log: Log = print)
     """``match``, ``match_periods``, ``match_players`` and ``matches``, in that order."""
     commit = source.commit
     if commit is None:
-        raise RuntimeError(f"{source.source_id} is not frozen; run `tracklab freeze` first")
+        raise RuntimeError(f"{source.source_id} has no pinned commit in the manifest")
     log(f"{'table':>17} {'match_id':>8} {'rows':>6} {'seconds':>8} {'MB':>7}")
     stats = build_match_tables(source, raw_root, data_dir, commit, log)
     stats.append(build_matches(source, raw_root, data_dir, commit, log))

@@ -1,6 +1,8 @@
-"""Format probes: measure a provider bundle and freeze its wide CSV schemas.
+# Copied from tracklab@686508a: pipeline/src/tracklab/formats/__init__.py
+# Changes: docstring: the freeze command is not part of ftbase.
+"""Format helpers: the frozen CSV schemas that bronze imposes on the provider's CSVs.
 
-`tracklab freeze-schema <sport>` lives here. Each sport module walks the raw
-bundle once, writes one report row per match and the `*.schema.json` files
-that bronze later imposes on the CSVs (see tasks/todo.md, "Capa bronze").
+`csvschema` loads a `*.schema.json` and reads a CSV against it. The freeze itself
+(walking the raw bundle to write those files) stayed in tracklab; ftbase ships the
+two football schemas it produced.
 """

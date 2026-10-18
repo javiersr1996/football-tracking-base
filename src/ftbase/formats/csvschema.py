@@ -1,3 +1,5 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/formats/csvschema.py
+# Changes: none (header only).
 """Freeze the schema of a family of CSV files into a `*.schema.json` that bronze imposes.
 
 DuckDB sniffs every file of the family over all its rows. Per column, the votes of

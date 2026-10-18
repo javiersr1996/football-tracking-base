@@ -1,27 +1,26 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/events.py
+# Changes: imports; Parquet metadata keys ftbase.*; docstring no longer cites tracklab
+# commands or basketball; error for a missing pinned commit.
 """Bronze of the football event CSVs: ``dynamic_events`` and ``phases_of_play``.
 
-Both are per-match CSVs whose 322 and 44 columns were frozen once by
-``tracklab freeze-schema football`` (``bronze/schemas/football/{dynamic_events,
-phases_of_play}.schema.json``, task 4). Bronze never sniffs them again: it loads the
-frozen schema and imposes it with ``formats.csvschema.read_typed`` (DuckDB
-``read_csv(columns=...)``), so a column added, removed or retyped since the freeze
-fails the run naming the file, the same discipline the season aggregates already
-apply (``bronze/basketball/aggregates.py``, ``bronze/football/aggregates.py``). Each
-file is at most a few thousand rows, so it is read whole into pyarrow, no streaming.
+Both are per-match CSVs whose 322 and 44 columns were frozen once, in tracklab
+(``bronze/schemas/football/{dynamic_events,phases_of_play}.schema.json``). Bronze never
+sniffs them again: it loads the frozen schema and imposes it with
+``formats.csvschema.read_typed`` (DuckDB ``read_csv(columns=...)``), so a column added,
+removed or retyped since the freeze fails the run naming the file. Each file is at most
+a few thousand rows, so it is read whole into pyarrow, no streaming.
 
 One thing this module resolves that no other bronze table has needed: **both CSVs
-carry a native column literally named ``match_id``** (basketball's equivalent,
-``gameId``, has a different name and does not collide with lineage). Measured with
-DuckDB over the 20 files of each table: the native ``match_id`` equals the file's own
-match id in every row, 0 mismatches in ``dynamic_events`` and in ``phases_of_play``.
+carry a native column literally named ``match_id``**. Measured with DuckDB over the 20
+files of each table: the native ``match_id`` equals the file's own match id in every
+row, 0 mismatches in ``dynamic_events`` and in ``phases_of_play``.
 Since ``bronze.common.LINEAGE_FIELDS`` already reserves ``match_id`` (BIGINT NOT
 NULL) for every table, and a pyarrow schema cannot usefully carry two fields of the
 same name (``column("match_id")`` turns ambiguous, DuckDB and the contract tests
 would break), the native column is folded into the lineage one: its value is
 checked row by row against the file's match id, failing loudly and naming the file
-and row on any future disagreement (the same check basketball's events builder does
-for ``gameId``), and it is not written as a second column. Every other native
-column is kept verbatim, native name, native position. Net columns:
+and row on any future disagreement, and it is not written as a second column. Every
+other native column is kept verbatim, native name, native position. Net columns:
 ``dynamic_events`` 4 lineage + 321 native (322 minus the folded ``match_id``) = 325;
 ``phases_of_play`` 4 + 43 = 47.
 
@@ -42,15 +41,15 @@ from typing import Any
 import duckdb
 import pyarrow as pa
 
-from tracklab.bronze.common import LINEAGE_FIELDS, ParquetSink, batch_from_columns, bronze_path
-from tracklab.formats.csvschema import FrozenSchema, load_schema, pa_schema, read_typed
-from tracklab.ingest.manifest import FileEntry, Source
+from ftbase.bronze.common import LINEAGE_FIELDS, ParquetSink, batch_from_columns, bronze_path
+from ftbase.formats.csvschema import FrozenSchema, load_schema, pa_schema, read_typed
+from ftbase.ingest.manifest import FileEntry, Source
 
 SPORT = "football"
 SCHEMAS_DIR = Path(__file__).resolve().parents[1] / "schemas" / "football"
 Log = Callable[[str], None]
 
-# table name -> manifest role (tracklab.ingest.manifest._ROLE_PATTERNS).
+# table name -> manifest role (ftbase.ingest.manifest._ROLE_PATTERNS).
 _TABLE_ROLES = {"dynamic_events": "events", "phases_of_play": "phases"}
 # Folded into the lineage `match_id` column; see the module docstring.
 _NATIVE_MATCH_ID_COLUMN = "match_id"
@@ -110,10 +109,10 @@ def build_table_match(
     }
     batch = batch_from_columns(schema, columns, n)
     metadata = {
-        "tracklab.sport": SPORT,
-        "tracklab.source_file": entry.path,
-        "tracklab.source_sha256": entry.sha256,
-        "tracklab.source_commit": commit,
+        "ftbase.sport": SPORT,
+        "ftbase.source_file": entry.path,
+        "ftbase.source_sha256": entry.sha256,
+        "ftbase.source_commit": commit,
     }
     out_path = bronze_path(data_dir, SPORT, table, entry.match_id)
     with ParquetSink(out_path, schema, metadata) as sink:
@@ -129,7 +128,7 @@ def build_events(
     """``dynamic_events`` then ``phases_of_play`` for every match, in match id order."""
     commit = source.commit
     if commit is None:
-        raise RuntimeError(f"{source.source_id} is not frozen; run `tracklab freeze` first")
+        raise RuntimeError(f"{source.source_id} has no pinned commit in the manifest")
     frozen = load_frozen_tables()
     schemas = {table: table_schema(f) for table, f in frozen.items()}
     entries_by_table = {

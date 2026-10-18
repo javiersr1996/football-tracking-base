@@ -1,3 +1,5 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/tracking.py
+# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit.
 """Bronze of the football tracking: ``tracking_frames`` and ``tracking_objects``.
 
 Reads ``<match_id>_tracking_extrapolated.jsonl`` line by line (never whole in memory,
@@ -45,8 +47,8 @@ from typing import Any
 
 import pyarrow as pa
 
-from tracklab.bronze.common import LINEAGE_FIELDS, ParquetSink, batch_from_columns, bronze_path
-from tracklab.ingest.manifest import FileEntry, Source
+from ftbase.bronze.common import LINEAGE_FIELDS, ParquetSink, batch_from_columns, bronze_path
+from ftbase.ingest.manifest import FileEntry, Source
 
 SPORT = "football"
 BATCH_FRAMES = 100_000
@@ -210,10 +212,10 @@ def build_tracking_match(
     assert entry.match_id is not None
     started = time.perf_counter()
     metadata = {
-        "tracklab.sport": SPORT,
-        "tracklab.source_file": entry.path,
-        "tracklab.source_sha256": entry.sha256,
-        "tracklab.source_commit": commit,
+        "ftbase.sport": SPORT,
+        "ftbase.source_file": entry.path,
+        "ftbase.source_sha256": entry.sha256,
+        "ftbase.source_commit": commit,
     }
     frames_path = bronze_path(data_dir, SPORT, "tracking_frames", entry.match_id)
     objects_path = bronze_path(data_dir, SPORT, "tracking_objects", entry.match_id)
@@ -240,7 +242,7 @@ def build_tracking(
 ) -> list[TrackingStats]:
     """Every tracking file the manifest pins, in match id order, one line printed per match."""
     if source.commit is None:
-        raise RuntimeError(f"{source.source_id} is not frozen; run `tracklab freeze` first")
+        raise RuntimeError(f"{source.source_id} has no pinned commit in the manifest")
     entries = sorted(
         (f for f in source.files if f.role == "tracking" and f.match_id is not None),
         key=lambda f: f.match_id or 0,

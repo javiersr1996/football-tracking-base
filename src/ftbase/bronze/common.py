@@ -1,9 +1,12 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/bronze/common.py
+# Changes: imports; ftbase names in docs and messages; Parquet metadata keys ftbase.*;
+# basketball mentions dropped.
 """What every bronze table shares: where the raw bytes are, where Parquet goes, how it is written.
 
 Bronze is the provider in Parquet: native names, native rows, no filtering and no
 derivation. The only transformations are type casts declared in the schema of each
 table and documented next to it. This module fixes the conventions that every bronze
-builder (basketball tracking and events, football tracking and CSV families) copies:
+builder (football tracking, events and meta) copies:
 
 - Layout: one file per match and table, ``<data_dir>/bronze/<sport>/<table>/<match_id>.parquet``.
   The match id is also a column of every row, so the path is never load-bearing and
@@ -12,8 +15,7 @@ builder (basketball tracking and events, football tracking and CSV families) cop
 - Lineage: every table starts with ``sport``, ``match_id``, ``source_file`` (the
   bundle-relative path of the raw file the row was read from) and ``source_row`` (the
   0-based position of the record in that file: line of a JSONL, index in a JSON array,
-  data row of a CSV). ``source_row`` is not a frame or event number: in basketball
-  tracking ``frameIdx`` jumps at every break, so line N is not frame N, and keeping
+  data row of a CSV). ``source_row`` is not a frame or event number, and keeping
   both columns makes the difference visible instead of hiding it.
 - Typing: a batch is built from named columns against the declared schema. A column
   missing, a column too many, a value that does not cast, or a null in a non-nullable
@@ -21,12 +23,11 @@ builder (basketball tracking and events, football tracking and CSV families) cop
 - Writing: ZSTD, 100k-row row groups, and atomic (temp file then rename) so an
   interrupted run never leaves a truncated file that still opens. The pinned commit
   and the sha256 of the raw file travel in the Parquet key-value metadata.
-- Input: bronze reads the raw root that ``tracklab ingest`` verified, resolved from
+- Input: bronze reads the raw root that ``ftbase ingest`` verified, resolved from
   the receipt it wrote (``source_path`` when the bytes live in an outside clone).
 
-Exception to lineage: a handful of basketball tables have no match in their grain at
-all (``player_id_aliases``, the 3 ``aggregates_*``: they are one row per player-team-
-season or per CSV data row, not per match). Those use ``SEASON_LINEAGE_FIELDS``
+Exception to lineage: season-grain tables have no match in their grain (one row per
+player-team-season or per CSV data row, not per match). Those use ``SEASON_LINEAGE_FIELDS``
 (``sport, source_file, source_row``, no ``match_id``) and live at
 ``bronze_season_path()`` instead of ``bronze_path()``.
 """
@@ -46,9 +47,9 @@ import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from tracklab.formats.csvschema import FrozenSchema, pa_schema, read_typed
-from tracklab.ingest.fetch import RECEIPT_NAME
-from tracklab.ingest.manifest import FileEntry
+from ftbase.formats.csvschema import FrozenSchema, pa_schema, read_typed
+from ftbase.ingest.fetch import RECEIPT_NAME
+from ftbase.ingest.manifest import FileEntry
 
 ROW_GROUP_ROWS = 100_000
 COMPRESSION = "zstd"
@@ -71,21 +72,19 @@ SEASON_LINEAGE_FIELDS: tuple[pa.Field, ...] = (
 def raw_root_for(data_dir: Path, source_id: str) -> Path:
     """Directory holding the verified raw bundle of ``source_id`` (its ``data/`` is inside).
 
-    Read from the receipt ``tracklab ingest`` wrote: ``source_path`` when the bytes
+    Read from the receipt ``ftbase ingest`` wrote: ``source_path`` when the bytes
     were verified in place inside an outside clone, else the receipt's own directory.
     A missing receipt or a receipt with failures means nothing verified is on disk.
     """
     receipt_dir = data_dir / "raw" / source_id
     receipt_path = receipt_dir / RECEIPT_NAME
     if not receipt_path.is_file():
-        raise FileNotFoundError(
-            f"{receipt_path} not found; run `tracklab ingest {source_id}` first"
-        )
+        raise FileNotFoundError(f"{receipt_path} not found; run `ftbase ingest` first")
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     if receipt["failed"]:
         raise RuntimeError(
             f"{source_id}: {len(receipt['failed'])} file(s) failed verification; "
-            f"re-run `tracklab ingest {source_id}`"
+            f"re-run `ftbase ingest`"
         )
     source_path = receipt.get("source_path")
     return Path(source_path) if source_path else receipt_dir
@@ -197,8 +196,8 @@ def build_season_csv_table(
     con: duckdb.DuckDBPyConnection,
 ) -> SeasonCsvStats:
     """One frozen, season-grain CSV (no match dimension) to Parquet with
-    ``SEASON_LINEAGE_FIELDS``. Shared by basketball's and football's season
-    aggregates (``bronze/{basketball,football}/aggregates.py``): bronze does not
+    ``SEASON_LINEAGE_FIELDS``. Used by season-grain CSV families (the
+    football aggregates are not part of ftbase yet): bronze does not
     sniff the file, it loads the ``*.schema.json`` the sport's ``freeze-schema``
     already froze and imposes it with ``formats.csvschema.read_typed`` (DuckDB
     ``read_csv(columns=...)``, so a value that does not parse fails here with the
@@ -217,10 +216,10 @@ def build_season_csv_table(
     }
     batch = batch_from_columns(schema, columns, n)
     metadata = {
-        "tracklab.sport": sport,
-        "tracklab.source_file": entry.path,
-        "tracklab.source_sha256": entry.sha256,
-        "tracklab.source_commit": commit,
+        "ftbase.sport": sport,
+        "ftbase.source_file": entry.path,
+        "ftbase.source_sha256": entry.sha256,
+        "ftbase.source_commit": commit,
     }
     out_path = bronze_season_path(data_dir, sport, table)
     with ParquetSink(out_path, schema, metadata) as sink:
