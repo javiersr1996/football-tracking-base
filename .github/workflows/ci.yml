@@ -32,4 +32,6 @@ jobs:
       - name: Tests (a skipped test fails the run, see tests/conftest.py)
         run: uv run pytest -q
       - name: Real-data tests deselected here
-        run: uv run pytest -m realdata --collect-only -q | tail -n 1
+        run: |
+          n=$(uv run pytest -m realdata --collect-only -q | grep -c '::')
+          echo "$n realdata tests are deselected in this run (they need the real bundle)"
