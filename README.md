@@ -19,7 +19,9 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
 
 ## Commands (coming in v0.1.0)
 
-- `ftbase ingest`: download and verify the source files against a sha256 manifest.
+- `ftbase ingest`: download and verify the 85 source files against a sha256 manifest (`--match <id>`
+  for one match and `matches.json`, about 91 MB; `--from-existing <dir>` to verify a local clone
+  in place, read-only). Set `FTBASE_DATA_ROOT` or `--data-dir` to move `data/`.
 - `ftbase bronze`: write typed Parquet tables from the raw files.
 - `ftbase silver`: build frames and events oriented to the attacking direction, with DuckDB.
 
