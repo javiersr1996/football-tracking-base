@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from ftbase import provenance
 from ftbase.cli import main
 
@@ -101,3 +103,141 @@ def test_recount_against_tracklab_uses_git_show(tmp_path: Path) -> None:
     report = provenance.write(root, tracklab)
     entry = {e.row.path: e for e in report.entries}["src/ftbase/new.py"]
     assert (entry.lines_copied, entry.lines_changed) == (2, 1)
+
+
+# --- regenerating without tracklab ---------------------------------------------------------
+
+ORIGINAL = "".join(f"line {n}\n" for n in range(10))
+
+
+def _git(repo: Path, *args: str) -> str:
+    base = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@example.invalid"]
+    done = subprocess.run([*base, *args], capture_output=True, text=True, check=True)
+    return done.stdout.strip()
+
+
+def _tracklab(tmp_path: Path) -> tuple[Path, str]:
+    """A tracklab stand-in holding the two originals, and its commit."""
+    tracklab = tmp_path / "tracklab"
+    (tracklab / "pipeline").mkdir(parents=True)
+    _git(tracklab, "init", "-q")
+    (tracklab / "pipeline/old.py").write_bytes(ORIGINAL.encode())
+    (tracklab / "pipeline/gone.py").write_bytes(b"a\nb\nz\n")
+    _git(tracklab, "add", "-A")
+    _git(tracklab, "commit", "-q", "-m", "origin")
+    return tracklab, _git(tracklab, "rev-parse", "--short", "HEAD")
+
+
+def _contributor_repo(tmp_path: Path, tracklab_commit: str) -> Path:
+    """A repo like ftbase: an import commit holding one original, then the files in place.
+
+    `src/ftbase/moved.py` is `copiado` from `pipeline/old.py` (in the import commit);
+    `src/ftbase/outside.py` is `reescrito` from `pipeline/gone.py` (not in it).
+    """
+    repo = tmp_path / "base"
+    (repo / "pipeline").mkdir(parents=True)
+    _git(repo, "init", "-q")
+    (repo / "pipeline/old.py").write_bytes(ORIGINAL.encode())
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", f"Import football base from tracklab@{tracklab_commit} (x)")
+    for folder in ("src/ftbase", "tests", "docs"):
+        (repo / folder).mkdir(parents=True)
+    (repo / "pipeline/old.py").rename(repo / "src/ftbase/moved.py")
+    (repo / "src/ftbase/outside.py").write_bytes(b"a\nb\nc\n")
+    (repo / "src/ftbase/fresh.py").write_bytes(b"x = 1\n")
+    (repo / "tests/test_fresh.py").write_bytes(b"")
+    c = tracklab_commit
+    rows = [
+        f"| `src/ftbase/moved.py` | `pipeline/old.py` | `{c}` | copiado | | |",
+        f"| `src/ftbase/outside.py` | `pipeline/gone.py` | `{c}` | reescrito | | |",
+        "| `src/ftbase/fresh.py` | - | - | nuevo | | |",
+        "| `tests/test_fresh.py` | - | - | nuevo | | |",
+    ]
+    (repo / "docs/provenance.md").write_bytes((HEADER + "\n".join(rows) + "\n").encode())
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "Move the file and add the others")
+    return repo
+
+
+def _regenerated(tmp_path: Path) -> tuple[Path, str]:
+    tracklab, commit = _tracklab(tmp_path)
+    repo = _contributor_repo(tmp_path, commit)
+    provenance.write(repo, tracklab)
+    return repo, commit
+
+
+def _stored(repo: Path) -> dict[str, dict[str, int]]:
+    files = json.loads((repo / provenance.REPORT).read_text(encoding="utf-8"))["files"]
+    return {f["path"]: f for f in files}
+
+
+def test_a_new_line_in_a_nuevo_file_regenerates_without_tracklab(tmp_path: Path) -> None:
+    repo, _ = _regenerated(tmp_path)
+    before = _stored(repo)
+    (repo / "src/ftbase/fresh.py").write_bytes(b"x = 1\ny = 2\n")
+    assert main(["provenance", "--check", "--root", str(repo)]) == 1
+
+    assert main(["provenance", "--root", str(repo)]) == 0
+
+    after = _stored(repo)
+    assert (
+        after["src/ftbase/fresh.py"]["lines_total"],
+        after["src/ftbase/fresh.py"]["lines_copied"],
+    ) == (2, 0)
+    for untouched in ("src/ftbase/moved.py", "src/ftbase/outside.py"):
+        assert after[untouched] == before[untouched], "an unchanged file keeps its stored count"
+    assert main(["provenance", "--check", "--root", str(repo)]) == 0
+
+
+def test_an_edited_copiado_file_is_recounted_against_the_import_commit(tmp_path: Path) -> None:
+    repo, _ = _regenerated(tmp_path)
+    edited = ORIGINAL.replace("line 3\n", "") + "added\n"
+    (repo / "src/ftbase/moved.py").write_bytes(edited.encode())
+
+    assert main(["provenance", "--root", str(repo)]) == 0
+
+    entry = _stored(repo)["src/ftbase/moved.py"]
+    assert (entry["lines_total"], entry["lines_copied"], entry["lines_changed"]) == (10, 9, 1)
+    assert main(["provenance", "--check", "--root", str(repo)]) == 0
+
+
+def test_an_edited_file_with_no_reachable_import_says_what_is_missing(tmp_path: Path) -> None:
+    repo, commit = _regenerated(tmp_path)
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "Record provenance")
+    shallow = tmp_path / "shallow"
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "-q",
+            "-c",
+            "core.autocrlf=false",
+            "--depth",
+            "1",
+            repo.as_uri(),
+            str(shallow),
+        ],
+        check=True,
+    )
+    (shallow / "src/ftbase/moved.py").write_bytes(b"changed\n")
+
+    problems = provenance.check(shallow, None)
+
+    assert len(problems) == 1
+    assert f"Import football base from tracklab@{commit}" in problems[0]
+    assert "--tracklab" in problems[0]
+
+
+def test_an_edited_file_whose_origin_is_outside_the_import_asks_for_tracklab(
+    tmp_path: Path,
+) -> None:
+    repo, _ = _regenerated(tmp_path)
+    (repo / "src/ftbase/outside.py").write_bytes(b"a\nb\nc\nd\n")
+
+    problems = provenance.check(repo, None)
+
+    assert len(problems) == 1
+    assert "pipeline/gone.py is not in the import commit" in problems[0]
+    with pytest.raises(SystemExit, match="not in the import commit"):
+        main(["provenance", "--root", str(repo)])

@@ -10,6 +10,11 @@ copied are the lines of the current file that ``difflib`` matches, in order, to 
 the origin paths of the row read with ``git show <commit>:<path>`` in tracklab, concatenated in
 the order the table lists them. Lines changed are the rest. A ``nuevo`` file has no origin, so
 none of its lines is copied.
+
+Where the originals come from: ``--tracklab <clone>`` reads them from tracklab; without it, a
+``nuevo`` row needs none, a file whose sha256 is the one in ``reports/provenance.json`` keeps
+its stored count, and an edited ``copiado`` or ``reescrito`` file is recounted against the
+original as it sits in this repository's own import commit (see :func:`import_commit`).
 """
 
 from __future__ import annotations
@@ -117,36 +122,99 @@ def read_rows(doc: str) -> list[Row]:
     return rows
 
 
-def _git_show(tracklab: Path, commit: str, path: str) -> bytes:
+def _git_show(repo: Path, commit: str, path: str) -> bytes:
     # Read only: `git show` does not touch the clone.
     result = subprocess.run(
-        ["git", "-C", str(tracklab), "show", f"{commit}:{path}"],
+        ["git", "-C", str(repo), "show", f"{commit}:{path}"],
         capture_output=True,
         check=False,
     )
     if result.returncode != 0:
         detail = result.stderr.decode("utf-8", "replace").strip()
-        raise ProvenanceError(f"git show {commit}:{path} in {tracklab} failed: {detail}")
+        raise ProvenanceError(f"git show {commit}:{path} in {repo} failed: {detail}")
     return result.stdout
+
+
+def import_message(tracklab_commit: str) -> str:
+    return f"Import football base from tracklab@{tracklab_commit}"
+
+
+def import_commit(root: Path, tracklab_commit: str) -> str | None:
+    """The commit of this repository that imported tracklab ``tracklab_commit``, or None.
+
+    Found by its message, never by a fixed sha, because the history may be rewritten. None when
+    ``root`` is not a git repository, the clone is shallow, or no such commit is reachable.
+    """
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(root),
+            "log",
+            "--fixed-strings",
+            f"--grep={import_message(tracklab_commit)}",
+            "--format=%H %s",
+        ],
+        capture_output=True,
+        check=False,
+    )
+    prefix = import_message(tracklab_commit)
+    lines = [ln for ln in result.stdout.decode("utf-8", "replace").splitlines() if ln]
+    hashes = [ln.split(" ", 1)[0] for ln in lines if ln.split(" ", 1)[-1].startswith(prefix)]
+    return hashes[-1] if result.returncode == 0 and hashes else None
 
 
 def _read(path: Path) -> str:
     return path.read_bytes().decode("utf-8") if path.is_file() else ""
 
 
-def _load_stored(root: Path) -> dict[str, int] | None:
+def _load_stored(root: Path) -> dict[str, tuple[str, int]]:
+    """``path -> (sha256, lines_copied)`` from the JSON on disk; empty if there is none."""
     path = root / REPORT
     if not path.is_file():
-        return None
+        return {}
     try:
         files = json.loads(_read(path))["files"]
-        return {f["path"]: int(f["lines_copied"]) for f in files}
+        return {f["path"]: (str(f["sha256"]), int(f["lines_copied"])) for f in files}
     except (ValueError, KeyError, TypeError):
-        return None
+        return {}
 
 
-def build(root: Path, tracklab: Path | None, stored: Mapping[str, int] | None) -> Report:
-    """Count every row. Copied lines come from tracklab; without it, from ``stored``."""
+def _original(repo: Path, commit: str, origins: tuple[str, ...]) -> list[str]:
+    original: list[str] = []
+    for origin in origins:
+        original += split_lines(_git_show(repo, commit, origin))
+    return original
+
+
+def _recount_offline(root: Path, row: Row, current: list[str]) -> int:
+    """Copied lines of an edited file, against the original in this repository's import."""
+    imported = import_commit(root, row.commit)
+    if imported is None:
+        raise ProvenanceError(
+            f"{row.path}: edited since {REPORT} was written and the original cannot be read: "
+            f"no commit '{import_message(row.commit)}' is reachable from {root} (a shallow "
+            f"clone?). Fetch the full history or pass --tracklab <clone of tracklab>"
+        )
+    try:
+        original = _original(root, imported, row.origins)
+    except ProvenanceError as exc:
+        raise ProvenanceError(
+            f"{row.path}: edited since {REPORT} was written, and its origin "
+            f"{', '.join(row.origins)} is not in the import commit {imported[:7]}: "
+            f"pass --tracklab <clone of tracklab>"
+        ) from exc
+    return count_copied(original, current)
+
+
+def build(
+    root: Path, tracklab: Path | None, stored: Mapping[str, tuple[str, int]] | None
+) -> Report:
+    """Count every row. Copied lines come from tracklab when given.
+
+    Without it: a ``nuevo`` row has none; a file whose sha256 is the stored one keeps its stored
+    count; an edited file is recounted against the original in this repository's import commit.
+    """
     rows = read_rows(_read(root / DOC))
     scoped = set(scope_files(root))
     in_table = {row.path for row in rows}
@@ -166,21 +234,23 @@ def build(root: Path, tracklab: Path | None, stored: Mapping[str, int] | None) -
         if data and not data.endswith(b"\n"):
             problems.append(f"{row.path}: does not end with LF")
         current = split_lines(data)
+        digest = hashlib.sha256(data).hexdigest()
         copied = 0
         if row.state != "nuevo":
-            if tracklab is not None:
-                original: list[str] = []
-                for origin in row.origins:
-                    original += split_lines(_git_show(tracklab, row.commit, origin))
-                copied = count_copied(original, current)
-            elif stored is not None and row.path in stored:
-                copied = stored[row.path]
-            else:
-                problems.append(f"{row.path}: no stored count; run with --tracklab <path>")
+            try:
+                if tracklab is not None:
+                    copied = count_copied(_original(tracklab, row.commit, row.origins), current)
+                elif stored is not None and stored.get(row.path, ("", 0))[0] == digest:
+                    copied = stored[row.path][1]
+                else:
+                    copied = _recount_offline(root, row, current)
+            except ProvenanceError as exc:
+                problems.append(str(exc))
+                continue
         if not 0 <= copied <= len(current):
             problems.append(f"{row.path}: copied count {copied} outside 0..{len(current)}")
             copied = min(max(copied, 0), len(current))
-        entries.append(Entry(row, hashlib.sha256(data).hexdigest(), len(current), copied))
+        entries.append(Entry(row, digest, len(current), copied))
     if problems:
         raise ProvenanceError("\n".join(problems))
     return Report(tuple(sorted(entries, key=lambda e: e.row.path)))
@@ -242,7 +312,7 @@ def render_summary(report: Report) -> str:
 
 def write(root: Path, tracklab: Path | None) -> Report:
     """Recount and rewrite ``reports/provenance.json`` and the count columns of the table."""
-    report = build(root, tracklab, None)
+    report = build(root, tracklab, _load_stored(root))
     report_path = root / REPORT
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_bytes(render_json(report).encode("utf-8"))
@@ -254,8 +324,9 @@ def write(root: Path, tracklab: Path | None) -> Report:
 def check(root: Path, tracklab: Path | None) -> list[str]:
     """What differs from the files as they are now; an empty list means they agree.
 
-    Without ``tracklab`` the copied counts are taken from the JSON on disk, so they are compared
-    with it but not recounted. With ``tracklab`` they are recounted.
+    Without ``tracklab`` a file that still has the sha256 in the JSON keeps its stored count and
+    an edited one is recounted against this repository's import commit. With ``tracklab`` every
+    file is recounted there.
     """
     try:
         report = build(root, tracklab, _load_stored(root))

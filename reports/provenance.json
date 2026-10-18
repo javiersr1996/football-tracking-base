@@ -110,14 +110,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 155,
+      "lines_changed": 156,
       "lines_copied": 105,
-      "lines_total": 260,
+      "lines_total": 261,
       "origins": [
         "pipeline/src/tracklab/cli.py"
       ],
       "path": "src/ftbase/cli.py",
-      "sha256": "dc268e15ac88653b67dd5a51a1958e37d33abf31a5b4e3c363af5717401da0e1",
+      "sha256": "5afb014088424a7000a078cb20611a897adab595347f3b5b38e7007476718be1",
       "state": "reescrito"
     },
     {
@@ -262,12 +262,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 269,
+      "lines_changed": 340,
       "lines_copied": 0,
-      "lines_total": 269,
+      "lines_total": 340,
       "origins": [],
       "path": "src/ftbase/provenance.py",
-      "sha256": "3b074510600180d44546b780238f4d3b4dffbfbf50c650b3874e5557660a82f6",
+      "sha256": "647d5dfcf3648be2cce290e338fe47ab14297a0f8707fb08a5fb743e3690e5ef",
       "state": "nuevo"
     },
     {
@@ -700,12 +700,12 @@
     },
     {
       "commit": "",
-      "lines_changed": 103,
+      "lines_changed": 243,
       "lines_copied": 0,
-      "lines_total": 103,
+      "lines_total": 243,
       "origins": [],
       "path": "tests/unit/test_provenance.py",
-      "sha256": "26ea7e88a40df1ebbfa70518a339b57931ce6ea323fcde6e90e09757a0673711",
+      "sha256": "62f79f197dea015c1b0bbc7409d459439ddd320095daa3670cc3f8adc66e064f",
       "state": "nuevo"
     },
     {
@@ -740,15 +740,15 @@
     },
     "nuevo": {
       "files": 14,
-      "lines_changed": 2061,
+      "lines_changed": 2272,
       "lines_copied": 0,
-      "lines_total": 2061
+      "lines_total": 2272
     },
     "reescrito": {
       "files": 18,
-      "lines_changed": 1102,
+      "lines_changed": 1103,
       "lines_copied": 1355,
-      "lines_total": 2457
+      "lines_total": 2458
     }
   }
 }

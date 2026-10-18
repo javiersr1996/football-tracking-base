@@ -236,9 +236,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--tracklab",
         type=Path,
         default=None,
-        help="tracklab clone to read the originals from with git show (read only). Needed to "
-        "write when a row is copiado or reescrito; with --check it recounts instead of "
-        "trusting the JSON.",
+        help="tracklab clone to read the originals from with git show (read only). Optional: "
+        "without it a new file needs none, an unchanged file keeps its stored count and an "
+        "edited copiado or reescrito file is recounted against this repository's import commit "
+        "(see docs/provenance.md). With it every file is recounted there.",
     )
     provenance.add_argument(
         "--root",

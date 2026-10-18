@@ -13,13 +13,25 @@ Every file imported from tracklab (the author's private repository, MIT) at comm
   is `git show <commit>:<path>` in tracklab for each path in the second column, concatenated in the
   order the column lists them. **Lines changed:** every other line. A `nuevo` file has no origin:
   nothing copied, every line changed.
-- **`ftbase provenance --tracklab <path>`** recounts against tracklab (read only) and rewrites
-  `reports/provenance.json` (sorted keys, LF, no dates) and the two count columns below.
-- **`ftbase provenance --check`** recomputes, without tracklab, the scope, the rows, the sha256 and
-  line count of each file and the states, and fails if `reports/provenance.json` or the count columns
-  differ. The copied counts come from the JSON, so this mode checks that they agree with the files
-  but does not recount them. **`ftbase provenance --check --tracklab <path>`** recounts them too.
-  The gate runs `--check` last in `ci.yml`.
+- **`ftbase provenance`** regenerates `reports/provenance.json` (sorted keys, LF, no dates) and the
+  two count columns below. Where the originals come from decides what it can count:
+  - `nuevo` row: nothing to read, every line is changed. Works anywhere.
+  - Any row whose file still has the sha256 stored in `reports/provenance.json`: the stored count
+    is reused.
+  - An edited `copiado` or `reescrito` file: recounted against the original as it sits in this
+    repository's own import commit, found by its message (`git log --grep='^Import football base
+    from tracklab@<commit>'`, never by a fixed sha, so a rewritten history still works). The
+    import commit holds the files at their tracklab paths, so the origin column is the path to
+    read. If that commit is not reachable (a shallow clone) or the row's origin is not in it
+    (`cli.py`, `orientation.py` and `test_silver_orientation.py` were written after the import),
+    the command exits 1 and names the file and what is missing.
+  - **`--tracklab <path>`**: every row is recounted against that clone with `git show` (read
+    only), whatever the JSON says. Use it after editing one of those three files, or to
+    cross-check the offline counts.
+- **`ftbase provenance --check`** recomputes the scope, the rows, the sha256 and line count of each
+  file and the states, with the same sources as above, and fails if `reports/provenance.json` or
+  the count columns differ. With `--tracklab` it recounts everything there. The gate runs it last
+  in `ci.yml`, without tracklab.
 
 
 The ingestion rows already point at their new location. `src/ftbase/manifest/sources.json` is the tracklab
@@ -76,7 +88,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/conftest.py` | - | - | nuevo | 0 | 24 |
 | `tests/test_skips_fail.py` | - | - | nuevo | 0 | 38 |
 | `tests/test_cli.py` | - | - | nuevo | 0 | 22 |
-| `tests/unit/test_provenance.py` | - | - | nuevo | 0 | 103 |
+| `tests/unit/test_provenance.py` | - | - | nuevo | 0 | 243 |
 | `src/ftbase/silver/read.py` | - | - | nuevo | 0 | 212 |
 | `src/ftbase/silver/__init__.py` | - | - | nuevo | 0 | 9 |
 | `tests/unit/test_silver_orientation.py` | `pipeline/tests/unit/test_silver_orientation.py` | `686508a` | reescrito | 119 | 57 |
@@ -102,7 +114,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/ingest/verify.py` | `pipeline/src/tracklab/ingest/verify.py` | `686508a` | copiado | 35 | 2 |
 | `src/ftbase/paths.py` | `pipeline/src/tracklab/paths.py` | `686508a` | copiado | 12 | 8 |
 | `src/ftbase/py.typed` | - | - | nuevo | 0 | 0 |
-| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 269 |
+| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 340 |
 | `tests/contracts/test_football_events_bronze.py` | `pipeline/tests/contracts/test_football_events_bronze.py` | `686508a` | reescrito | 174 | 30 |
 | `tests/contracts/test_football_meta_bronze.py` | `pipeline/tests/contracts/test_football_meta_bronze.py` | `686508a` | copiado | 219 | 14 |
 | `tests/contracts/test_football_tracking_bronze.py` | `pipeline/tests/contracts/test_football_tracking_bronze.py` | `686508a` | copiado | 168 | 11 |
@@ -112,5 +124,5 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 35 |
 | `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 222 |
 | `src/ftbase/ingest/select.py` | - | - | nuevo | 0 | 24 |
-| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 155 |
+| `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 156 |
 | `tests/unit/manifest_helper.py` | - | - | nuevo | 0 | 14 |
