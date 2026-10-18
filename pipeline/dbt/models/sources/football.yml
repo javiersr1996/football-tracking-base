@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: bronze_football
+    description: >
+      The A-League bundle in Parquet, native names and native rows, as
+      `tracklab bronze football` wrote it.
+    meta:
+      external_location: "{{ env_var('TRACKLAB_DATA_ROOT', 'data') }}/bronze/football/{name}/*.parquet"
+    tables:
+      - name: match
+        description: >
+          One row per match, folded from match.json. Carries the score, the
+          pitch (which is not the same in every match: 104, 105 and 106 m long)
+          and the competition edition.
+      - name: match_periods
+        description: One row per match and period, with the frame the period starts and ends at.
+      - name: match_players
+        description: >
+          One row per player and match. `id` is the key the tracking uses
+          (`tracking_objects.player_id`), not `trackable_object`.
+      - name: tracking_frames
+        description: >
+          One row per frame, the ball among its columns rather than as an object.
+          Frames outside every period carry a null period, no player and no ball.
+      - name: tracking_objects
+        description: One row per frame and player; the ball is not here, it is in tracking_frames.
+      - name: dynamic_events
+        description: >
+          The four native event types in one CSV of 322 frozen columns:
+          player_possession, passing_option, on_ball_engagement and off_ball_run.
+          Its `first_player_possession_in_team_possession` flag is the provider
+          delimiting its own team possessions, which is the rule `events` uses.
+      - name: phases_of_play
+        description: >
+          One row per phase of play. A phase is not a team possession: 3,986 of
+          the 8,834 carry `team_possession_loss_in_phase`, which is why the
+          chain rule won over merging them.
+      - name: aggregates_obr
+        description: >
+          Season table, one row per player, team and `position_group` of the A-League 2024/2025 (not per player and team: that pair repeats).
+      - name: aggregates_passing
+        description: >
+          Season table, one row per player, team and `position_group` of the A-League 2024/2025 (not per player and team: that pair repeats).
+      - name: aggregates_physical
+        description: >
+          Season table, one row per player, team and `position_group` of the A-League 2024/2025 (not per player and team: that pair repeats).

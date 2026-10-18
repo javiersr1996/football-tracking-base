@@ -1,0 +1,1321 @@
+{
+  "table": "dynamic_events",
+  "sport": "football",
+  "source_id": "opendata-football",
+  "commit": "4340d274572876239c154c90bc507a9b3250a656",
+  "n_columns": 322,
+  "header_sha256": "801a67ffefdb68b215b1205318267fae6c3bd14316e1d305ef7775f9b2a74f48",
+  "columns": [
+    {
+      "name": "event_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "index",
+      "type": "BIGINT"
+    },
+    {
+      "name": "match_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "frame_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "frame_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "frame_physical_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "time_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "time_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "minute_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "second_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "duration",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "period",
+      "type": "BIGINT"
+    },
+    {
+      "name": "attacking_side_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "attacking_side",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "event_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "event_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "event_subtype_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "event_subtype",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_position_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_position",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_position_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_position",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_shortname",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "x_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "y_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "channel_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "channel_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "third_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "third_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "penalty_area_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "x_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "y_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "channel_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "channel_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "third_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "third_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "penalty_area_end",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "associated_player_possession_event_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "associated_player_possession_frame_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "associated_player_possession_frame_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "associated_player_possession_end_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "associated_player_possession_end_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "associated_off_ball_run_event_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "associated_off_ball_run_subtype_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "associated_off_ball_run_subtype",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "game_state_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "game_state",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_score",
+      "type": "BIGINT"
+    },
+    {
+      "name": "opponent_team_score",
+      "type": "BIGINT"
+    },
+    {
+      "name": "phase_index",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_possession_phase_index",
+      "type": "BIGINT"
+    },
+    {
+      "name": "first_player_possession_in_team_possession",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "last_player_possession_in_team_possession",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "lead_to_different_phase",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "issued_from_different_phase",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "n_player_possessions_in_phase",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_possession_loss_in_phase",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "team_in_possession_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_in_possession_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_out_of_possession_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_out_of_possession_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "current_team_in_possession_next_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "current_team_in_possession_next_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "current_team_out_of_possession_next_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "current_team_out_of_possession_next_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "current_team_in_possession_previous_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "current_team_in_possession_previous_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "current_team_out_of_possession_previous_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "current_team_out_of_possession_previous_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "game_interruption_before_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "game_interruption_before",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "game_interruption_after_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "game_interruption_after",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "start_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "start_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "end_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "end_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pass_angle_received",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_direction_received_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pass_direction_received",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pass_distance_received",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_range_received_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pass_range_received",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pass_outcome_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pass_outcome",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "targeted_passing_option_event_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "high_pass",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "lead_to_shot",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "lead_to_goal",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "targeted",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "received",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "received_in_space",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "possession_danger",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "beaten_by_possession",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "beaten_by_movement",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "stop_possession_danger",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "reduce_possession_danger",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "force_backward",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "distance_covered",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "trajectory_angle",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "trajectory_direction_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "trajectory_direction",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "in_to_out",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "out_to_in",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "speed_avg",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "speed_avg_band_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "speed_avg_band",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "location_to_player_in_possession_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "location_to_player_in_possession_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "location_to_player_in_possession_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "location_to_player_in_possession_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "distance_to_player_in_possession_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "distance_to_player_in_possession_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_in_possession_x_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_in_possession_y_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_in_possession_channel_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_channel_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_third_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_third_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_penalty_area_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "player_in_possession_x_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_in_possession_y_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_in_possession_channel_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_channel_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_third_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_in_possession_third_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_in_possession_penalty_area_end",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "passing_option_at_player_possession_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "xloss_player_possession_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xloss_player_possession_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xloss_player_possession_max",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xshot_player_possession_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xshot_player_possession_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xshot_player_possession_max",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "reception_difficulty_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "reception_difficulty_start_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "time_to_impact_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "time_to_impact_start_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "space_constraint_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "space_constraint_start_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "passing_option_ease_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "passing_option_ease_start_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "overall_pressure_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "overall_pressure_start_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "time_to_impact_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "time_to_impact_end_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "passing_option_ease_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "passing_option_ease_end_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "overall_pressure_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "overall_pressure_end_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_position_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_position",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_x_pass",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_y_pass",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_channel_pass_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_channel_pass",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_third_pass_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_third_pass",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_penalty_area_pass",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "player_targeted_x_reception",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_y_reception",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_channel_reception_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_channel_reception",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_third_reception_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_third_reception",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "player_targeted_penalty_area_reception",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "player_targeted_distance_to_goal_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_distance_to_goal_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_angle_to_goal_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_angle_to_goal_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_average_speed",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_speed_avg_band_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "player_targeted_speed_avg_band",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "speed_difference",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_xpass_completion",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_difficult_pass_target",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "player_targeted_xthreat",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "player_targeted_dangerous",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "interplayer_distance",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "interplayer_distance_range_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "interplayer_distance_range",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "interplayer_distance_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "interplayer_distance_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "interplayer_distance_min",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "interplayer_distance_start_physical",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "close_at_player_possession_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "interplayer_angle",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "interplayer_direction_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "interplayer_direction",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "angle_of_engagement",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "goal_side_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "goal_side_end",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "last_defensive_line_x_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "last_defensive_line_x_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "delta_to_last_defensive_line_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "delta_to_last_defensive_line_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "delta_to_last_defensive_line_gain",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "last_defensive_line_height_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "last_defensive_line_height_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "last_defensive_line_height_gain",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "inside_defensive_shape_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "inside_defensive_shape_end",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "n_teammates_ahead_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_teammates_ahead_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_opponents_ahead_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_opponents_ahead_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_teammates_ahead_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_teammates_ahead_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_teammates_within_5m_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_teammates_within_5m_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_opponents_within_5m_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_player_targeted_opponents_within_5m_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "separation_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "separation_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "separation_gain",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_distance",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_range_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pass_range",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pass_angle",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_direction_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pass_direction",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pass_ahead",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "passing_option_at_pass_moment",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "dangerous",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "difficult_pass_target",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "xthreat",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "xpass_completion",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "passing_option_score",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "predicted_passing_option",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "peak_passing_option_frame",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_simultaneous_passing_options",
+      "type": "BIGINT"
+    },
+    {
+      "name": "organised_defense",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "defensive_structure",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_defensive_lines",
+      "type": "BIGINT"
+    },
+    {
+      "name": "first_line_break",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "first_line_break_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "first_line_break_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "second_last_line_break",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "second_last_line_break_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "second_last_line_break_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "last_line_break",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "last_line_break_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "last_line_break_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "furthest_line_break_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "furthest_line_break",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "furthest_line_break_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "furthest_line_break_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "n_opponents_ahead_player_in_possession_pass_moment",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_opponents_ahead_pass_reception",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_opponents_bypassed",
+      "type": "BIGINT"
+    },
+    {
+      "name": "one_touch",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "quick_pass",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "carry",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "forward_momentum",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "is_header",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "hand_pass",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "initiate_give_and_go",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "n_passing_options",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_off_ball_runs",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_line_break",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_first_line_break",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_second_last_line_break",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_last_line_break",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_ahead",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_dangerous_difficult",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_dangerous_not_difficult",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_not_dangerous_not_difficult",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_not_dangerous_difficult",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_at_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_at_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_ahead_at_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_passing_options_ahead_at_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_simultaneous_runs",
+      "type": "BIGINT"
+    },
+    {
+      "name": "give_and_go",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "intended_run_behind",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "push_defensive_line",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "break_defensive_line",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "passing_option_at_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "n_opponents_ahead_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_opponents_ahead_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "n_opponents_overtaken",
+      "type": "BIGINT"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "affected_line_break_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "affected_line_break",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_attempted",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_xthreat",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_dangerous",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_run_subtype_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "affected_line_breaking_passing_option_run_subtype",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pressing_chain",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "pressing_chain_length",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pressing_chain_end_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "pressing_chain_end_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "pressing_chain_index",
+      "type": "BIGINT"
+    },
+    {
+      "name": "index_in_pressing_chain",
+      "type": "BIGINT"
+    },
+    {
+      "name": "simultaneous_defensive_engagement_same_target",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "simultaneous_defensive_engagement_same_target_rank",
+      "type": "BIGINT"
+    },
+    {
+      "name": "consecutive_on_ball_engagements",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "is_player_possession_start_matched",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "is_player_possession_end_matched",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "is_previous_pass_matched",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "is_pass_reception_matched",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "fully_extrapolated",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "possession_epv_for_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_for_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_against_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_against_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_reception_epv_for",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_reception_epv_against",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_total",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_epv_total",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_delta_for",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "possession_epv_delta_against",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_epv_delta_for",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "pass_epv_delta_against",
+      "type": "DOUBLE"
+    }
+  ],
+  "all_null_columns": [],
+  "frozen_from": [
+    "data/matches/1874553/1874553_dynamic_events.csv",
+    "data/matches/1886347/1886347_dynamic_events.csv",
+    "data/matches/1899585/1899585_dynamic_events.csv",
+    "data/matches/1925299/1925299_dynamic_events.csv",
+    "data/matches/1927964/1927964_dynamic_events.csv",
+    "data/matches/1953632/1953632_dynamic_events.csv",
+    "data/matches/1959846/1959846_dynamic_events.csv",
+    "data/matches/1986691/1986691_dynamic_events.csv",
+    "data/matches/1996435/1996435_dynamic_events.csv",
+    "data/matches/1996436/1996436_dynamic_events.csv",
+    "data/matches/2006229/2006229_dynamic_events.csv",
+    "data/matches/2006363/2006363_dynamic_events.csv",
+    "data/matches/2007448/2007448_dynamic_events.csv",
+    "data/matches/2007721/2007721_dynamic_events.csv",
+    "data/matches/2010085/2010085_dynamic_events.csv",
+    "data/matches/2011166/2011166_dynamic_events.csv",
+    "data/matches/2013725/2013725_dynamic_events.csv",
+    "data/matches/2015213/2015213_dynamic_events.csv",
+    "data/matches/2016236/2016236_dynamic_events.csv",
+    "data/matches/2017461/2017461_dynamic_events.csv"
+  ]
+}

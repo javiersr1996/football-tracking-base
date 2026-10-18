@@ -1,0 +1,3 @@
+surface_spec,length_m,width_m,source
+fiba_28x15,28.0,15.0,FIBA official court; what task 9 measured in the 10 ACB matches
+nba_94x50,28.6512,15.24,"NBA court; the alternative task 9 rejected, kept so the rejection stays visible"

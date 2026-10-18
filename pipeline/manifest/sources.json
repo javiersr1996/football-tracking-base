@@ -1,0 +1,1020 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "opendata-football",
+      "sport": "football",
+      "kind": "github",
+      "repo": "SkillCorner/opendata",
+      "ref": "master",
+      "commit": "4340d274572876239c154c90bc507a9b3250a656",
+      "license": "MIT",
+      "raw_url": "https://raw.githubusercontent.com/SkillCorner/opendata/{commit}/",
+      "lfs_url": "https://media.githubusercontent.com/media/SkillCorner/opendata/{commit}/",
+      "files": [
+        {
+          "path": "data/aggregates/aus1league_obraggregates_20242025.csv",
+          "bytes": 263921,
+          "sha256": "1b5aeddceb4c120085357ca03d7ccb67c8aaeb3a0e9cf9439c96da2aa8b29736",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/aggregates/aus1league_passingaggregates_20242025.csv",
+          "bytes": 124039,
+          "sha256": "f9513abc29704613331f7647d7ec2e33137eb7145bdaae10ba3798ddd3a29c90",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/aggregates/aus1league_physicalaggregates_20242025.csv",
+          "bytes": 167312,
+          "sha256": "50e7d2cb5d08b1c53a726153e45468b9c0d398c2bfca6734270f65e45deb1a48",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/bodypose/sample_1925299_phase406.jsonl.gz",
+          "bytes": 1926895,
+          "sha256": "eb10f537c5c3b3c80018d5670f16cb788b14a3529d0be0b36a077bd1b41aeb4a",
+          "lfs": false,
+          "role": "bodypose_sample",
+          "match_id": null
+        },
+        {
+          "path": "data/matches.json",
+          "bytes": 6648,
+          "sha256": "4dd7a62f966046a8fde2563e69fd044997d471b213118aed436cb23ab1fdfad0",
+          "lfs": false,
+          "role": "matches",
+          "match_id": null
+        },
+        {
+          "path": "data/matches/1874553/1874553_dynamic_events.csv",
+          "bytes": 4738858,
+          "sha256": "92507490abbbeec7697227581c864cfb0a96c29b214dd63dcaa48929bb6c6408",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1874553
+        },
+        {
+          "path": "data/matches/1874553/1874553_match.json",
+          "bytes": 33730,
+          "sha256": "e6974e402779d8be44e75bf88ef2a3acfd4d025b87b3fc57f518fa826a645ad8",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1874553
+        },
+        {
+          "path": "data/matches/1874553/1874553_phases_of_play.csv",
+          "bytes": 115978,
+          "sha256": "e70054b64202a3f318b7208edec9a329da1f4cfcafeeb72ae197176c4a043a8c",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1874553
+        },
+        {
+          "path": "data/matches/1874553/1874553_tracking_extrapolated.jsonl",
+          "bytes": 90729279,
+          "sha256": "ea97f58f8eaad925feaeacc6395ec24860dd80027af8a89450276adebd29d265",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1874553
+        },
+        {
+          "path": "data/matches/1886347/1886347_dynamic_events.csv",
+          "bytes": 4918599,
+          "sha256": "b21368b9b94eb8f83032fe14a2a8da88ab7eda048b4f8078c06d0e6955d12bfb",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1886347
+        },
+        {
+          "path": "data/matches/1886347/1886347_match.json",
+          "bytes": 27541,
+          "sha256": "30c608e78663e9f490b3545479a3ce67b171f418c5133d5609cb249a2466abb2",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1886347
+        },
+        {
+          "path": "data/matches/1886347/1886347_phases_of_play.csv",
+          "bytes": 121864,
+          "sha256": "d1c3066f7ed0598069d0d1b317bb30261eca3d7786fd9d540985f395e4c8aea9",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1886347
+        },
+        {
+          "path": "data/matches/1886347/1886347_tracking_extrapolated.jsonl",
+          "bytes": 89280839,
+          "sha256": "3577e2803da95390f8b2f85d47829eb55fbbfee6211c94adc65db0dc78e46b41",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1886347
+        },
+        {
+          "path": "data/matches/1899585/1899585_dynamic_events.csv",
+          "bytes": 4375032,
+          "sha256": "14c62ffc99aa5fd62998c238036873509a9d82ced44354697a1db4251424d557",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1899585
+        },
+        {
+          "path": "data/matches/1899585/1899585_match.json",
+          "bytes": 27810,
+          "sha256": "41de8cb74a0512fcf0cbaaa5c615ae3e7dcaaf6745b9c78a050b59b906b1cb06",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1899585
+        },
+        {
+          "path": "data/matches/1899585/1899585_phases_of_play.csv",
+          "bytes": 119735,
+          "sha256": "e40562010c1b7c4aa6e0dbc17425dd236a1d82ce538ec03e77367a74e3f96b7e",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1899585
+        },
+        {
+          "path": "data/matches/1899585/1899585_tracking_extrapolated.jsonl",
+          "bytes": 85550410,
+          "sha256": "90b6289ec2181192d1793ec6240fbbe8225ff0219c7956710c6278c31a661100",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1899585
+        },
+        {
+          "path": "data/matches/1925299/1925299_dynamic_events.csv",
+          "bytes": 5043601,
+          "sha256": "2557acbdcba6547d764b9f7c277c3d7e81a4d58692d6c20c2bfa28625ae0cce3",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1925299
+        },
+        {
+          "path": "data/matches/1925299/1925299_match.json",
+          "bytes": 28396,
+          "sha256": "f4345b32c0fdd7c9990df70050b3a74f57b1992cf762e20f2a4d309bd2fba7d2",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1925299
+        },
+        {
+          "path": "data/matches/1925299/1925299_phases_of_play.csv",
+          "bytes": 131104,
+          "sha256": "a1682a736a9cf1c311cb799f0a949f7e023dca4ebaa9dd294b138e8929271274",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1925299
+        },
+        {
+          "path": "data/matches/1925299/1925299_tracking_extrapolated.jsonl",
+          "bytes": 97091519,
+          "sha256": "48528be40ad82fa3e2b232e1af8d311705f7d6d119925ef199d2b59ea36fd3c9",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1925299
+        },
+        {
+          "path": "data/matches/1927964/1927964_dynamic_events.csv",
+          "bytes": 5509112,
+          "sha256": "638747f76b43690974f95958952dfe62c9e50d64648f9456f43f66d5d91201f3",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1927964
+        },
+        {
+          "path": "data/matches/1927964/1927964_match.json",
+          "bytes": 33400,
+          "sha256": "f967f911c20f5c5f8c89bbe2020a30c92731173616d5a1e4bafeb65435278b76",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1927964
+        },
+        {
+          "path": "data/matches/1927964/1927964_phases_of_play.csv",
+          "bytes": 117263,
+          "sha256": "9216447a63a912edcad1a4d36370372210dcc800a7f48fc10127fd7de9eae503",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1927964
+        },
+        {
+          "path": "data/matches/1927964/1927964_tracking_extrapolated.jsonl",
+          "bytes": 91049828,
+          "sha256": "858c7a756ca3d33017f864775af5999d2c0f364e58ab60ae040c8b9ebab17827",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1927964
+        },
+        {
+          "path": "data/matches/1953632/1953632_dynamic_events.csv",
+          "bytes": 4643533,
+          "sha256": "d1f676ebb182da585da128fc80d468e27fb676e254abc47531daf920d977e51f",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1953632
+        },
+        {
+          "path": "data/matches/1953632/1953632_match.json",
+          "bytes": 27767,
+          "sha256": "366c8dd6b504d4f4ace5685040648b0f30081043a44f01663b8b7e077e6bfde8",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1953632
+        },
+        {
+          "path": "data/matches/1953632/1953632_phases_of_play.csv",
+          "bytes": 114478,
+          "sha256": "9243e4be8efcc1922fe46f9cda56c781584329f1febe84a74ee808c8f4ff0b93",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1953632
+        },
+        {
+          "path": "data/matches/1953632/1953632_tracking_extrapolated.jsonl",
+          "bytes": 90027965,
+          "sha256": "1c2014f97c3eff1ce2475203512c9d126930d7599c036105c9ac442d1de1667e",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1953632
+        },
+        {
+          "path": "data/matches/1959846/1959846_dynamic_events.csv",
+          "bytes": 4499680,
+          "sha256": "aa3d08a927a84f2b42d976cc10401e9efc52468744e0a7a86cb0d3dc2e288058",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1959846
+        },
+        {
+          "path": "data/matches/1959846/1959846_match.json",
+          "bytes": 32946,
+          "sha256": "4bbe2058af53edd42d5e3acd7fb28ecb8c79e4afb16cb9b77a6fe9b58f6e516b",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1959846
+        },
+        {
+          "path": "data/matches/1959846/1959846_phases_of_play.csv",
+          "bytes": 128571,
+          "sha256": "63b33ce9c020cfd54be6e957cd01a42cebec2acacd1345c338196fff5ecd9a9f",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1959846
+        },
+        {
+          "path": "data/matches/1959846/1959846_tracking_extrapolated.jsonl",
+          "bytes": 87710167,
+          "sha256": "5ba2d87f6fd1ba3138301b369bd9266be69416a2d799a3fba5b5ec8a52e1284b",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1959846
+        },
+        {
+          "path": "data/matches/1986691/1986691_dynamic_events.csv",
+          "bytes": 4290910,
+          "sha256": "c2f7102092970368cc487353d6e93e06522f8d3f184326cced63fa167ca0d9f5",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1986691
+        },
+        {
+          "path": "data/matches/1986691/1986691_match.json",
+          "bytes": 33792,
+          "sha256": "754f6a6fd0d996236cf553ef5c3c24513274b0db024cb6833a7419b08d55dd68",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1986691
+        },
+        {
+          "path": "data/matches/1986691/1986691_phases_of_play.csv",
+          "bytes": 115267,
+          "sha256": "7589168484ae1305072afa397126a72f8925cf261b9eb121ecb0192083632cd3",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1986691
+        },
+        {
+          "path": "data/matches/1986691/1986691_tracking_extrapolated.jsonl",
+          "bytes": 88531597,
+          "sha256": "630e946950fe459f5e48872b01a36e6dfc319cf9027e7b98156150bb6e2c30f6",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1986691
+        },
+        {
+          "path": "data/matches/1996435/1996435_dynamic_events.csv",
+          "bytes": 4964532,
+          "sha256": "379e5bbd90df47d2358a2bfc5b741f7626b934db780ff33d3337a8b1d5efc87c",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1996435
+        },
+        {
+          "path": "data/matches/1996435/1996435_match.json",
+          "bytes": 27830,
+          "sha256": "f54179645d3c3f308a7094086283277f2a7c99da5f3919302e622cbd82f9d065",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1996435
+        },
+        {
+          "path": "data/matches/1996435/1996435_phases_of_play.csv",
+          "bytes": 120335,
+          "sha256": "ff7ed406c900ad98bd48b6b9913e088c40bf176a3915f061430c1af7405ccb09",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1996435
+        },
+        {
+          "path": "data/matches/1996435/1996435_tracking_extrapolated.jsonl",
+          "bytes": 88634016,
+          "sha256": "f42764d8bde290e8f738fa21141cadbed75408314b0b337bbf1d5a3444540a02",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1996435
+        },
+        {
+          "path": "data/matches/1996436/1996436_dynamic_events.csv",
+          "bytes": 3760511,
+          "sha256": "94e7d7cc23ace6fd3eda12fb869eb2a0fef49402d7d72b7fb8155b4b2588da2d",
+          "lfs": false,
+          "role": "events",
+          "match_id": 1996436
+        },
+        {
+          "path": "data/matches/1996436/1996436_match.json",
+          "bytes": 32859,
+          "sha256": "4e8999668a79fccd43f01e5538d7595b4614ec6061d648b831a96951e495c78a",
+          "lfs": false,
+          "role": "match",
+          "match_id": 1996436
+        },
+        {
+          "path": "data/matches/1996436/1996436_phases_of_play.csv",
+          "bytes": 104584,
+          "sha256": "e3729e8a66db43f4c7abed7ac096a0416d3ad0657dcad1604908aa4d617e81e5",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 1996436
+        },
+        {
+          "path": "data/matches/1996436/1996436_tracking_extrapolated.jsonl",
+          "bytes": 88945845,
+          "sha256": "fab9d331e06f3042c83ac17798901b49bb259c99a8f3b319cd0146263cde65e7",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 1996436
+        },
+        {
+          "path": "data/matches/2006229/2006229_dynamic_events.csv",
+          "bytes": 4778846,
+          "sha256": "6308c15890803ed5cd44e8bc2fbb1844cce20bd59d63b154aec82977af8c6588",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2006229
+        },
+        {
+          "path": "data/matches/2006229/2006229_match.json",
+          "bytes": 28213,
+          "sha256": "87386df74b45eb7ccac80742c603763146cb2b61f47561122355fe246d8795eb",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2006229
+        },
+        {
+          "path": "data/matches/2006229/2006229_phases_of_play.csv",
+          "bytes": 122340,
+          "sha256": "fa5e3927a24f5ee78df26b96f398b376146a9cdbad9da48721322341fc758c38",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2006229
+        },
+        {
+          "path": "data/matches/2006229/2006229_tracking_extrapolated.jsonl",
+          "bytes": 90078007,
+          "sha256": "3ee193ba01f1fe2cbce087eca8a881c21b8b0ea3485ae6c3d7e32e8b2f51e738",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2006229
+        },
+        {
+          "path": "data/matches/2006363/2006363_dynamic_events.csv",
+          "bytes": 4794999,
+          "sha256": "430d5f840723c4c667b907e161716265b5ae4b87b4466a4883d3b95b5b5e5a58",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2006363
+        },
+        {
+          "path": "data/matches/2006363/2006363_match.json",
+          "bytes": 33294,
+          "sha256": "26d4068baf7454d1e066b6e70715da6c7ac016b14963a3bfa3ed99ed7c3aba79",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2006363
+        },
+        {
+          "path": "data/matches/2006363/2006363_phases_of_play.csv",
+          "bytes": 119862,
+          "sha256": "651610758454913a5082b217dccd23ba0e002482dbe39b685528c542d3dcdab6",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2006363
+        },
+        {
+          "path": "data/matches/2006363/2006363_tracking_extrapolated.jsonl",
+          "bytes": 90591887,
+          "sha256": "61dfdbd83f8e654127b249b8503f062338c14ec0c9e65404bcf70fb7c1346bd4",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2006363
+        },
+        {
+          "path": "data/matches/2007448/2007448_dynamic_events.csv",
+          "bytes": 4146729,
+          "sha256": "076e7a85949a1aca485bf202823a2b04b6d5eb20212faac1e51d346c6f4ac2a7",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2007448
+        },
+        {
+          "path": "data/matches/2007448/2007448_match.json",
+          "bytes": 32670,
+          "sha256": "434b31c032656be4a89e7042eadd442d4dfb468e4bfa87ce188102f314262873",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2007448
+        },
+        {
+          "path": "data/matches/2007448/2007448_phases_of_play.csv",
+          "bytes": 113871,
+          "sha256": "4ec5ece7b261e8cbb87403cb8a54ac617f5a1b61412554afeaa967d46e841994",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2007448
+        },
+        {
+          "path": "data/matches/2007448/2007448_tracking_extrapolated.jsonl",
+          "bytes": 90025383,
+          "sha256": "12d00d6e4257218812df6e4c4263c49387ba0313a83ff8d826c4416828f9c798",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2007448
+        },
+        {
+          "path": "data/matches/2007721/2007721_dynamic_events.csv",
+          "bytes": 4653039,
+          "sha256": "c102f35837a9e50f642bd3378f9303ccd4d9a40d07717a12423966c3fb66fe36",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2007721
+        },
+        {
+          "path": "data/matches/2007721/2007721_match.json",
+          "bytes": 33745,
+          "sha256": "0ed112bc955eb341bc25005f9a7bb3fdf040223c8e1765646225c47e974b6139",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2007721
+        },
+        {
+          "path": "data/matches/2007721/2007721_phases_of_play.csv",
+          "bytes": 116997,
+          "sha256": "cfb08b62ec61b54ecabfa3f2bed01c6f3dc49a4dbae4382dfcb1006648ef95a3",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2007721
+        },
+        {
+          "path": "data/matches/2007721/2007721_tracking_extrapolated.jsonl",
+          "bytes": 92872706,
+          "sha256": "fea913b8d4cbde8d85c6bdf5f1a4b3fd203b78227e976a171c8ab0946705d378",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2007721
+        },
+        {
+          "path": "data/matches/2010085/2010085_dynamic_events.csv",
+          "bytes": 4484006,
+          "sha256": "792b2ac103e314835b4e7d5a213b67093497c4a8a3756dfae3ec66b059de6ee3",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2010085
+        },
+        {
+          "path": "data/matches/2010085/2010085_match.json",
+          "bytes": 33744,
+          "sha256": "3222413d358251e1ac1cdde1f5ee2fd126b0d9cc3470c2aa1bb07177a09ef24d",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2010085
+        },
+        {
+          "path": "data/matches/2010085/2010085_phases_of_play.csv",
+          "bytes": 115871,
+          "sha256": "c2c7ac0a4286b171681d11a1e65e1d82594bcc33ff9cc5faf34ae6a5d28fa9af",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2010085
+        },
+        {
+          "path": "data/matches/2010085/2010085_tracking_extrapolated.jsonl",
+          "bytes": 92516156,
+          "sha256": "04562d9754b2977c80430535e9b5733426bc4ce910db56fe7a3760876211ac5a",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2010085
+        },
+        {
+          "path": "data/matches/2011166/2011166_dynamic_events.csv",
+          "bytes": 3846412,
+          "sha256": "7c2827cea8135395b77f70592c59721189da3b6c9abc94688884c073c3233a18",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2011166
+        },
+        {
+          "path": "data/matches/2011166/2011166_match.json",
+          "bytes": 28420,
+          "sha256": "6b381b8bd338859c394c1992da137436e2e09cd609a81ac94d5f5f941d35d1bc",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2011166
+        },
+        {
+          "path": "data/matches/2011166/2011166_phases_of_play.csv",
+          "bytes": 121175,
+          "sha256": "b49e1482a2d6086f06805f138f40a00dd22b2d14767a4418fbda47114e263b4c",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2011166
+        },
+        {
+          "path": "data/matches/2011166/2011166_tracking_extrapolated.jsonl",
+          "bytes": 87441570,
+          "sha256": "8ec2937050930d87e4f52b2d65515f70ef8edd0ae2814bf40155c4448133390e",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2011166
+        },
+        {
+          "path": "data/matches/2013725/2013725_dynamic_events.csv",
+          "bytes": 4508257,
+          "sha256": "20bd127c17768d70dade9a76b43c1201c2c5e10f6c89d420847250136270ad83",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2013725
+        },
+        {
+          "path": "data/matches/2013725/2013725_match.json",
+          "bytes": 27899,
+          "sha256": "c8b9372fbd2e79ddcbb859b51b5086111ed7f3cd84ca0b457091c7d0e5209df3",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2013725
+        },
+        {
+          "path": "data/matches/2013725/2013725_phases_of_play.csv",
+          "bytes": 130821,
+          "sha256": "02a4320f237512d0b3158d799a845cc1dc8a9d87c542fd64d27515afefb8354f",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2013725
+        },
+        {
+          "path": "data/matches/2013725/2013725_tracking_extrapolated.jsonl",
+          "bytes": 96059074,
+          "sha256": "13eb83329814ed5f5d73da8f8ab5c5979d6c8a7858e89e28a7fa8072f91fb250",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2013725
+        },
+        {
+          "path": "data/matches/2015213/2015213_dynamic_events.csv",
+          "bytes": 4417152,
+          "sha256": "1452564da8278500f4672152a27e361d3f5f1b9d741493e598e5bf7729a88811",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2015213
+        },
+        {
+          "path": "data/matches/2015213/2015213_match.json",
+          "bytes": 27937,
+          "sha256": "300342194bf3dcd9fe356ed30df26fd0ee6e8caeb8ce5d8cfd27cf90cd995dff",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2015213
+        },
+        {
+          "path": "data/matches/2015213/2015213_phases_of_play.csv",
+          "bytes": 134493,
+          "sha256": "4ccaa43d8c390ba1b4011bcdb63ee8208686a5d11f275ead130048239e8a0ba8",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2015213
+        },
+        {
+          "path": "data/matches/2015213/2015213_tracking_extrapolated.jsonl",
+          "bytes": 102030769,
+          "sha256": "413990d0024d84856ce1f2a16866b8887472c0cea22c61caef0d1f46505a609e",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2015213
+        },
+        {
+          "path": "data/matches/2016236/2016236_dynamic_events.csv",
+          "bytes": 4542962,
+          "sha256": "425274b44a124ec5e81ff8f2819cebd22702065d0f4e4f8070306db9ae97590a",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2016236
+        },
+        {
+          "path": "data/matches/2016236/2016236_match.json",
+          "bytes": 33791,
+          "sha256": "93ccf67cead82def1acda87d3cf550fd42f96cb0e1adbff9eeb8824077980495",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2016236
+        },
+        {
+          "path": "data/matches/2016236/2016236_phases_of_play.csv",
+          "bytes": 133630,
+          "sha256": "cb162b42bd95306404da15071df07f70cb0458db9b532930dac2a1b0092242e9",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2016236
+        },
+        {
+          "path": "data/matches/2016236/2016236_tracking_extrapolated.jsonl",
+          "bytes": 94737872,
+          "sha256": "d78555f9dfd7d1ce9de38066d3c98e6d54417c6d45d73b1f1ce7e26f07263d8f",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2016236
+        },
+        {
+          "path": "data/matches/2017461/2017461_dynamic_events.csv",
+          "bytes": 3957366,
+          "sha256": "d4ce943cd9b912cfcf1f6d2744c9f4ecd6db4d5f7bcd6152b946e2f5ba308878",
+          "lfs": false,
+          "role": "events",
+          "match_id": 2017461
+        },
+        {
+          "path": "data/matches/2017461/2017461_match.json",
+          "bytes": 28545,
+          "sha256": "db27759bf734dc8e3d9e56f047965cc7c74833bc3d0345ee3821ab97681ce4b9",
+          "lfs": false,
+          "role": "match",
+          "match_id": 2017461
+        },
+        {
+          "path": "data/matches/2017461/2017461_phases_of_play.csv",
+          "bytes": 118313,
+          "sha256": "5331495ecea48056df56dc843864bf36f366f7bca3898d82273eba7a3a54eba5",
+          "lfs": false,
+          "role": "phases",
+          "match_id": 2017461
+        },
+        {
+          "path": "data/matches/2017461/2017461_tracking_extrapolated.jsonl",
+          "bytes": 89543442,
+          "sha256": "59cfa5588efee041da439f44df5b5b92f2b7305571dc831164e3d05f7415787a",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 2017461
+        }
+      ]
+    },
+    {
+      "source_id": "opendata-basketball",
+      "sport": "basketball",
+      "kind": "github",
+      "repo": "SkillCorner/opendata-basketball",
+      "ref": "main",
+      "commit": "4bbed2e35e8fdd2cf083e8c8b280b3e5381a2c66",
+      "license": "MIT",
+      "raw_url": "https://raw.githubusercontent.com/SkillCorner/opendata-basketball/{commit}/",
+      "lfs_url": "https://media.githubusercontent.com/media/SkillCorner/opendata-basketball/{commit}/",
+      "files": [
+        {
+          "path": "data/aggregates/acb_drivesaggregates_20252026.csv",
+          "bytes": 162072,
+          "sha256": "a8001c3905d7013f276bb653215e5a4a21ac15e3de477acd9eacf9f3ebbf75e0",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/aggregates/acb_picksaggregates_20252026.csv",
+          "bytes": 839870,
+          "sha256": "24f39b26bbdad7667f40ad73ddee1f576b173dd621ba5b21ce11ab0e12d21a5d",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/aggregates/acb_shotsaggregates_20252026.csv",
+          "bytes": 601318,
+          "sha256": "4de26752f1f0c49901b82581d6bc6a92acbf697f609da7c245cb63e215254e42",
+          "lfs": false,
+          "role": "aggregate",
+          "match_id": null
+        },
+        {
+          "path": "data/matches.json",
+          "bytes": 4324,
+          "sha256": "5a6f2ee5b55aff806e0f13c9c90b47f19bc1734a6ed7d26b7682dd4bcc7ca063",
+          "lfs": false,
+          "role": "matches",
+          "match_id": null
+        },
+        {
+          "path": "data/matches/114086/114086_dynamic_events.json",
+          "bytes": 3345025,
+          "sha256": "d2867d13bd877d315e2b98097328f8832e26272a4114e058280ae88c05175da4",
+          "lfs": false,
+          "role": "events",
+          "match_id": 114086
+        },
+        {
+          "path": "data/matches/114086/114086_game_data.json",
+          "bytes": 2168,
+          "sha256": "52c69256ba20100c6d21d26652c7a45b52dd81998e1bfbdcadcdc178950c0698",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 114086
+        },
+        {
+          "path": "data/matches/114086/114086_tracking_data.jsonl.gz",
+          "bytes": 39842015,
+          "sha256": "df4043c143a6f7e3996089d4e20f19b25608a90b40f9a449d927dce89b0da846",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 114086
+        },
+        {
+          "path": "data/matches/114099/114099_dynamic_events.json",
+          "bytes": 3392618,
+          "sha256": "6432dd25fae6f34a4f47d1e21fe605a8e05935f9e2cc9a11e70912a4b56d2f0d",
+          "lfs": false,
+          "role": "events",
+          "match_id": 114099
+        },
+        {
+          "path": "data/matches/114099/114099_game_data.json",
+          "bytes": 2225,
+          "sha256": "f822d6723bf5394679c739df86675f4abb22963e5b926bc218bcbc02b420f3a2",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 114099
+        },
+        {
+          "path": "data/matches/114099/114099_tracking_data.jsonl.gz",
+          "bytes": 33060109,
+          "sha256": "1e4af3c2ea8f56f80a2b4adb56ffcf5abc479145c7dec55ebd7ebda652a2cc38",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 114099
+        },
+        {
+          "path": "data/matches/114169/114169_dynamic_events.json",
+          "bytes": 3459130,
+          "sha256": "6378bf1c909fe6a0576400adf15e57c9fd52576972c1afe3f920d7f1241d78d6",
+          "lfs": false,
+          "role": "events",
+          "match_id": 114169
+        },
+        {
+          "path": "data/matches/114169/114169_game_data.json",
+          "bytes": 2098,
+          "sha256": "1e826595364023c1b78bc308f102138f97e837a495684ec7290d63e9181af226",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 114169
+        },
+        {
+          "path": "data/matches/114169/114169_tracking_data.jsonl.gz",
+          "bytes": 45580755,
+          "sha256": "0b9f028febc7f7d46e7bd3d2bffa10c50ad85abbf0dd2a7937d5f32895e685f0",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 114169
+        },
+        {
+          "path": "data/matches/114234/114234_dynamic_events.json",
+          "bytes": 3465154,
+          "sha256": "f65fc5567c3000ad4dc22433fa70065a699f081369d3eff476ed23738cb9f7ad",
+          "lfs": false,
+          "role": "events",
+          "match_id": 114234
+        },
+        {
+          "path": "data/matches/114234/114234_game_data.json",
+          "bytes": 2130,
+          "sha256": "822ba4e3d216f7098bcbb0845596d0dff9ad18f2dd971cbd748293bb4527eadd",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 114234
+        },
+        {
+          "path": "data/matches/114234/114234_tracking_data.jsonl.gz",
+          "bytes": 31697559,
+          "sha256": "988b8a2ca3a8cc9c1c2a2838ab9a2d8d1add64cafd1113f0c63d2439f5164690",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 114234
+        },
+        {
+          "path": "data/matches/114243/114243_dynamic_events.json",
+          "bytes": 3526294,
+          "sha256": "05189826c14f9d15b1a5ec5e21831ed1ad4c177785c108a4ea6fb3c2522ea60b",
+          "lfs": false,
+          "role": "events",
+          "match_id": 114243
+        },
+        {
+          "path": "data/matches/114243/114243_game_data.json",
+          "bytes": 2253,
+          "sha256": "48cf4455ce9b5a918209aa7f2e786a1f86a8ead10fa5261a6f3a69eb9a64e1b6",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 114243
+        },
+        {
+          "path": "data/matches/114243/114243_tracking_data.jsonl.gz",
+          "bytes": 33707974,
+          "sha256": "a150110f57c365940ae1da32243cf924628c443ea16a85336c8cc4a674e05c0e",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 114243
+        },
+        {
+          "path": "data/matches/178442/178442_dynamic_events.json",
+          "bytes": 3572420,
+          "sha256": "ee731a0a4ad69ab43394b4097aa155b00d1f916d79994469ead1e2c81b877682",
+          "lfs": false,
+          "role": "events",
+          "match_id": 178442
+        },
+        {
+          "path": "data/matches/178442/178442_game_data.json",
+          "bytes": 2271,
+          "sha256": "78a28d73599dbf31c1a3e46a56217fc207caf4e5d238d73675649bae8baeb5a6",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 178442
+        },
+        {
+          "path": "data/matches/178442/178442_tracking_data.jsonl.gz",
+          "bytes": 39067647,
+          "sha256": "03ed31f1f76eaaad39eefec90b7eb2ca6234fa3a20ee0bcf3279d12ab6f7cc09",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 178442
+        },
+        {
+          "path": "data/matches/179612/179612_dynamic_events.json",
+          "bytes": 3414961,
+          "sha256": "615c177ad7db45beb66690dbf4329c2e189d6c1f4178f4c77cac8231a69877ae",
+          "lfs": false,
+          "role": "events",
+          "match_id": 179612
+        },
+        {
+          "path": "data/matches/179612/179612_game_data.json",
+          "bytes": 2221,
+          "sha256": "0b73c609ab510a1c5a48801b445c568b099c45b9746e0b1d9386caaa94331e8b",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 179612
+        },
+        {
+          "path": "data/matches/179612/179612_tracking_data.jsonl.gz",
+          "bytes": 36191342,
+          "sha256": "9681027e1306a2e5d6a6b80459ea2fc0816f455e5b65508c8ba9f32cc85024b8",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 179612
+        },
+        {
+          "path": "data/matches/184439/184439_dynamic_events.json",
+          "bytes": 3341994,
+          "sha256": "6d262edaedcf5b00b0554c3cfcbf63dba97968f61aa5979c751491ec3bc293ef",
+          "lfs": false,
+          "role": "events",
+          "match_id": 184439
+        },
+        {
+          "path": "data/matches/184439/184439_game_data.json",
+          "bytes": 2260,
+          "sha256": "6f0f355f4274f298fe867c416681fac85b11f4965973042a022d2c9cd7324323",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 184439
+        },
+        {
+          "path": "data/matches/184439/184439_tracking_data.jsonl.gz",
+          "bytes": 33809782,
+          "sha256": "a602b5c53d05eaebdb9e358945b8a92c42fb9fdc3e090f687b79224fa4d49bc1",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 184439
+        },
+        {
+          "path": "data/matches/188630/188630_dynamic_events.json",
+          "bytes": 3183718,
+          "sha256": "93caf5a6a205e2ed9806f5569b415a62890ed4bb195c4a3a86d08d5776e39cac",
+          "lfs": false,
+          "role": "events",
+          "match_id": 188630
+        },
+        {
+          "path": "data/matches/188630/188630_game_data.json",
+          "bytes": 2260,
+          "sha256": "10f0c038af7cc96ce7b921b877ddad7408fbd1435a6a772a89ae00d06ace2f10",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 188630
+        },
+        {
+          "path": "data/matches/188630/188630_tracking_data.jsonl.gz",
+          "bytes": 31869680,
+          "sha256": "1a289ff627f8985f3f54021fc6e3ad5b97c11e7b5e85bbd1d1a0842b9d1a17c6",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 188630
+        },
+        {
+          "path": "data/matches/191313/191313_dynamic_events.json",
+          "bytes": 3282745,
+          "sha256": "77f05d28ddbd52f516df8d3c08afe7c3d8ec8d3b2f5a9e28993d4b3b2d049c2e",
+          "lfs": false,
+          "role": "events",
+          "match_id": 191313
+        },
+        {
+          "path": "data/matches/191313/191313_game_data.json",
+          "bytes": 2294,
+          "sha256": "b3ac6345eb8ae877d58626cce16ed05df08e21139156db1355a2bbbd94121c65",
+          "lfs": false,
+          "role": "game_data",
+          "match_id": 191313
+        },
+        {
+          "path": "data/matches/191313/191313_tracking_data.jsonl.gz",
+          "bytes": 35898393,
+          "sha256": "a1c7cc6b5070686a8c5254a4a89627d289680c9f103bbe469b850f24a0742883",
+          "lfs": true,
+          "role": "tracking",
+          "match_id": 191313
+        },
+        {
+          "path": "data/player_id_aliases.csv",
+          "bytes": 1062,
+          "sha256": "973626f7cfaedaee331d394dab7fe40ce31611b44fd38faec0939fd6f1eba9a4",
+          "lfs": false,
+          "role": "player_aliases",
+          "match_id": null
+        }
+      ]
+    },
+    {
+      "source_id": "opendata-bodypose",
+      "sport": "football",
+      "kind": "huggingface",
+      "repo": "SkillCorner/opendata-bodypose",
+      "ref": "main",
+      "commit": "a62e1ec1e3b82952042a7f7fa9dafd77c0e0822a",
+      "license": "MIT",
+      "raw_url": "https://huggingface.co/datasets/SkillCorner/opendata-bodypose/resolve/{commit}/",
+      "lfs_url": "https://huggingface.co/datasets/SkillCorner/opendata-bodypose/resolve/{commit}/",
+      "files": [
+        {
+          "path": "raw/1925299.jsonl.zip",
+          "bytes": 623408231,
+          "sha256": "0415665098d594fb5681815000f7a6312037788a3237910a9f41bb8de5c336a0",
+          "lfs": true,
+          "role": "bodypose_zip",
+          "match_id": 1925299
+        },
+        {
+          "path": "raw/1996435.jsonl.zip",
+          "bytes": 644327811,
+          "sha256": "64bcab2be9776172d062521d9a97e0e6f391fc9cacb331f9e42a6fe88cf8434b",
+          "lfs": true,
+          "role": "bodypose_zip",
+          "match_id": 1996435
+        }
+      ]
+    }
+  ]
+}

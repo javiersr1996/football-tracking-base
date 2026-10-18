@@ -1,0 +1,209 @@
+{
+  "table": "phases_of_play",
+  "sport": "football",
+  "source_id": "opendata-football",
+  "commit": "4340d274572876239c154c90bc507a9b3250a656",
+  "n_columns": 44,
+  "header_sha256": "1dca435ea3cac484f53916f23db1c99da23ae371dd1d637c1cb95b421a80cab3",
+  "columns": [
+    {
+      "name": "index",
+      "type": "BIGINT"
+    },
+    {
+      "name": "match_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "frame_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "frame_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "time_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "time_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "minute_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "second_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "duration",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "period",
+      "type": "BIGINT"
+    },
+    {
+      "name": "attacking_side_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_in_possession_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "attacking_side",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_in_possession_shortname",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "n_player_possessions_in_phase",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_possession_loss_in_phase",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "team_possession_lead_to_goal",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "team_possession_lead_to_shot",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "team_in_possession_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_in_possession_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "team_out_of_possession_phase_type",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "team_out_of_possession_phase_type_id",
+      "type": "BIGINT"
+    },
+    {
+      "name": "x_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "y_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "channel_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "channel_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "third_id_start",
+      "type": "BIGINT"
+    },
+    {
+      "name": "third_start",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "penalty_area_start",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "x_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "y_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "channel_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "channel_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "third_id_end",
+      "type": "BIGINT"
+    },
+    {
+      "name": "third_end",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "penalty_area_end",
+      "type": "BOOLEAN"
+    },
+    {
+      "name": "team_in_possession_width_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_in_possession_width_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_in_possession_length_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_in_possession_length_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_out_of_possession_width_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_out_of_possession_width_end",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_out_of_possession_length_start",
+      "type": "DOUBLE"
+    },
+    {
+      "name": "team_out_of_possession_length_end",
+      "type": "DOUBLE"
+    }
+  ],
+  "all_null_columns": [],
+  "frozen_from": [
+    "data/matches/1874553/1874553_phases_of_play.csv",
+    "data/matches/1886347/1886347_phases_of_play.csv",
+    "data/matches/1899585/1899585_phases_of_play.csv",
+    "data/matches/1925299/1925299_phases_of_play.csv",
+    "data/matches/1927964/1927964_phases_of_play.csv",
+    "data/matches/1953632/1953632_phases_of_play.csv",
+    "data/matches/1959846/1959846_phases_of_play.csv",
+    "data/matches/1986691/1986691_phases_of_play.csv",
+    "data/matches/1996435/1996435_phases_of_play.csv",
+    "data/matches/1996436/1996436_phases_of_play.csv",
+    "data/matches/2006229/2006229_phases_of_play.csv",
+    "data/matches/2006363/2006363_phases_of_play.csv",
+    "data/matches/2007448/2007448_phases_of_play.csv",
+    "data/matches/2007721/2007721_phases_of_play.csv",
+    "data/matches/2010085/2010085_phases_of_play.csv",
+    "data/matches/2011166/2011166_phases_of_play.csv",
+    "data/matches/2013725/2013725_phases_of_play.csv",
+    "data/matches/2015213/2015213_phases_of_play.csv",
+    "data/matches/2016236/2016236_phases_of_play.csv",
+    "data/matches/2017461/2017461_phases_of_play.csv"
+  ]
+}
