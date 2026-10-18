@@ -22,7 +22,9 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
 - `ftbase ingest`: download and verify the 85 source files against a sha256 manifest (`--match <id>`
   for one match and `matches.json`, about 91 MB; `--from-existing <dir>` to verify a local clone
   in place, read-only). Set `FTBASE_DATA_ROOT` or `--data-dir` to move `data/`.
-- `ftbase bronze`: write typed Parquet tables from the raw files.
+- `ftbase bronze`: write typed Parquet tables (tracking, events, match metadata) under
+  `<data root>/bronze/football/`, one file per match, from what `ingest` verified. The contract tests
+  that read the real bundle are deselected by default: `uv run pytest -m realdata` runs them.
 - `ftbase silver`: build frames and events oriented to the attacking direction, with DuckDB.
 
 ## Data and LFS
