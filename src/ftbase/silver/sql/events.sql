@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/events.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/events.sql
 -- Changes: football only (the 20 basketball families, their Jinja loop and the union
 -- dropped); no dbt config block: ftbase.silver.build runs this once per match with the
 -- bronze event views pointed at that match and writes one Parquet file per match; the

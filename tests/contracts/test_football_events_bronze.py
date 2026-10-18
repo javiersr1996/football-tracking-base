@@ -1,3 +1,7 @@
+# Rewritten from tracklab@686508a: pipeline/tests/contracts/test_football_events_bronze.py
+# Changes: imports, data root and the `realdata` marker as in the other contract tests;
+# a header-hash test added (`test_raw_headers_match_the_frozen_header_sha256`); comments
+# no longer cite internal task numbers.
 """Contract of the bronze football events (`dynamic_events`, `phases_of_play`)
 against the built Parquet and the raw CSVs.
 

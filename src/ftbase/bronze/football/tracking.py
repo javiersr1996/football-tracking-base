@@ -1,5 +1,6 @@
 # Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/tracking.py
-# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit.
+# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit; comments no
+# longer cite internal task numbers or docs/formats/football.md.
 """Bronze of the football tracking: ``tracking_frames`` and ``tracking_objects``.
 
 Reads ``<match_id>_tracking_extrapolated.jsonl`` line by line (never whole in memory,

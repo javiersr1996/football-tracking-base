@@ -1,6 +1,7 @@
 # Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/events.py
-# Changes: imports; Parquet metadata keys ftbase.*; docstring no longer cites tracklab
-# commands or basketball; error for a missing pinned commit.
+# Changes: imports; Parquet metadata keys ftbase.*; docstring no longer cites tracklab commands or
+# basketball; error for a missing pinned commit; comments no longer cite internal task numbers or
+# docs/formats/football.md.
 """Bronze of the football event CSVs: ``dynamic_events`` and ``phases_of_play``.
 
 Both are per-match CSVs whose 322 and 44 columns were frozen once, in tracklab

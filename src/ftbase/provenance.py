@@ -1,3 +1,4 @@
+# New in ftbase (no tracklab origin): `ftbase provenance`, the line counts of this table.
 """Provenance of the files ftbase took from tracklab, counted by script.
 
 Scope: every file under ``src/ftbase/`` and ``tests/`` (``__pycache__`` and ``*.pyc`` aside).

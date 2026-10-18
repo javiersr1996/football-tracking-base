@@ -1,3 +1,6 @@
+# Copied from tracklab@686508a: pipeline/tests/unit/test_bronze_football_meta.py
+# Changes: imports (ftbase; `save_manifest` from manifest_helper.py); the CLI has no sport
+# argument; the docstring names `ftbase bronze`.
 """bronze football meta (match, match_periods, match_players, matches) on a synthetic
 bundle. No real data, no network.
 

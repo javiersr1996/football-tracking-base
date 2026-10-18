@@ -1,3 +1,4 @@
+# New in ftbase (no tracklab origin): the public readers of silver.
 """Silver: conformed frames and events in metres and silver keys, built from bronze with DuckDB.
 
 ``ftbase silver`` builds it (:func:`ftbase.silver.build.build_silver`); the readers below

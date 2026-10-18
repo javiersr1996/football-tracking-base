@@ -1,3 +1,6 @@
+# Copied from tracklab@686508a: pipeline/tests/unit/test_bronze_football_tracking.py
+# Changes: imports (ftbase; `save_manifest` from manifest_helper.py); the CLI has no sport
+# argument; Parquet metadata keys `ftbase.*`; the missing-receipt message names `ftbase ingest`.
 """bronze football tracking on a synthetic two-match bundle. No real data, no network.
 
 The bundle is built to a known truth: an out-of-period frame (`period`/`timestamp`/

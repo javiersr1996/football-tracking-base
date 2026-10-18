@@ -1,5 +1,6 @@
 # Copied from tracklab@686508a: pipeline/src/tracklab/bronze/football/meta.py
-# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit.
+# Changes: imports; Parquet metadata keys ftbase.*; error for a missing pinned commit; comments no
+# longer cite internal task numbers or docs/formats/football.md.
 """Bronze of the football metadata: ``match``, ``match_periods``, ``match_players``,
 ``matches``.
 

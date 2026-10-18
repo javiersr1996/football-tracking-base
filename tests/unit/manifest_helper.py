@@ -1,3 +1,7 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/manifest.py (`save_manifest`,
+# lines 117-119, and the imports it needs)
+# Changes: the function lifted out of that module into a test helper, with a new docstring;
+# ftbase's own manifest module no longer saves.
 """Writes a synthetic manifest for the bronze tests (ftbase itself never writes one)."""
 
 from __future__ import annotations

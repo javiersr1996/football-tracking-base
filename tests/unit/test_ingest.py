@@ -1,4 +1,4 @@
-# Copied from tracklab@686508a: pipeline/tests/unit/test_ingest.py
+# Rewritten from tracklab@686508a: pipeline/tests/unit/test_ingest.py
 # Changes: football only (no basketball, HuggingFace or freeze tests); the manifest is built from
 # the fake bundle instead of frozen; added tests for --match and --from-existing.
 """ingest against a fake GitHub served by httpx.MockTransport. No network.

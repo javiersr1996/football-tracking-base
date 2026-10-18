@@ -1,3 +1,6 @@
+# Rewritten from tracklab@686508a: pipeline/tests/unit/test_frozen_schemas.py
+# Changes: football's two schemas instead of 28 (basketball dropped); a header-hash test
+# added; the docstring rewritten.
 """Every frozen schema on disk must translate to pyarrow, and its header must be the frozen one.
 
 `formats.csvschema.pa_schema` once mapped four DuckDB types until the football season

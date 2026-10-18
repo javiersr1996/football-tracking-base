@@ -1,3 +1,6 @@
+# Copied from tracklab@686508a: pipeline/tests/unit/test_bronze_football_events.py
+# Changes: imports (ftbase; `save_manifest` from manifest_helper.py); the CLI has no sport
+# argument, so `bronze events` in the output prefix; one docstring line.
 """bronze football events (`dynamic_events`, `phases_of_play`) on synthetic CSVs.
 
 No real data, no 322/44-column fixture: the frozen schemas come from

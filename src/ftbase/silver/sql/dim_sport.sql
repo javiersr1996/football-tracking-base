@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/dim_sport.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/dim_sport.sql
 -- Changes: football only (the basketball row and its comments dropped).
 --
 -- The row that makes `sport` a column and not a fork in the code. Everything

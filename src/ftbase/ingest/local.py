@@ -1,4 +1,4 @@
-# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/local.py
+# Rewritten from tracklab@686508a: pipeline/src/tracklab/ingest/local.py
 # Changes: removed freeze_local and the git plumbing it needed; added --match (select_match).
 """Local-clone side of ingest: verify a source in place inside a copy that is
 already on disk (``ftbase ingest --from-existing``), with no network.

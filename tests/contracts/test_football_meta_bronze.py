@@ -1,3 +1,6 @@
+# Copied from tracklab@686508a: pipeline/tests/contracts/test_football_meta_bronze.py
+# Changes: imports and data root (ftbase, `FTBASE_DATA_ROOT`); the `realdata` marker instead of a
+# skip when bronze is missing; the docstring no longer cite internal task numbers.
 """Contract of the bronze football meta against the built Parquet and the raw match.json.
 
 Marked `realdata` (deselected by default, never skipped): run them with

@@ -1,3 +1,4 @@
+# New in ftbase (no tracklab origin): the command-line entry point.
 import pytest
 
 from ftbase import __version__

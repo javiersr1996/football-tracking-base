@@ -1,4 +1,4 @@
-# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/fetch.py
+# Rewritten from tracklab@686508a: pipeline/src/tracklab/ingest/fetch.py
 # Changes: removed freeze, the GitHub tree API and everything HuggingFace; User-Agent renamed;
 # added --match (select_match) and the match_id/manifest_files fields of Receipt.
 """HTTP side of ingest: streaming downloads hashed on the fly and the driver

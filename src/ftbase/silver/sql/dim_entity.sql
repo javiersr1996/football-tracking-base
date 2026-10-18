@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/dim_entity.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/dim_entity.sql
 -- Changes: football only (the basketball players, their alias table and the union
 -- dropped); dbt source() and ref() replaced by table names.
 --

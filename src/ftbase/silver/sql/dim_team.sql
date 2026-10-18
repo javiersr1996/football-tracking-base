@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/dim_team.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/dim_team.sql
 -- Changes: football only (the basketball branch and the union dropped); dbt source() and
 -- ref() replaced by the table names ftbase.silver.build registers.
 --

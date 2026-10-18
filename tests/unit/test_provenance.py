@@ -1,6 +1,8 @@
+# New in ftbase (no tracklab origin): tests of `ftbase provenance`.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -27,6 +29,26 @@ def test_every_file_under_src_ftbase_has_a_row() -> None:
     in_table = {row.path for row in provenance.read_rows(doc)}
     missing = [p for p in provenance.scope_files(ROOT) if p not in in_table]
     assert missing == []
+
+
+HEADER_WORD = {"copiado": "Copied from", "reescrito": "Rewritten from", "nuevo": "New in ftbase"}
+
+
+def test_every_header_says_what_the_table_says() -> None:
+    doc = (ROOT / provenance.DOC).read_text(encoding="utf-8")
+    wrong = []
+    for row in provenance.read_rows(doc):
+        if not row.path.endswith((".py", ".sql")):
+            continue  # JSON, CSV and py.typed take no header: the table is their record
+        lines = (ROOT / row.path).read_text(encoding="utf-8").splitlines()[:5]
+        first = re.sub(r"^(#|--) ", "", lines[0])
+        block = " ".join(re.sub(r"^(#|--) ?", "", line) for line in lines)
+        ok = first.startswith(HEADER_WORD[row.state]) and lines[0].startswith(("# ", "-- "))
+        if row.state != "nuevo":
+            ok = ok and f"@{row.commit}" in first and all(o in block for o in row.origins)
+        if not ok:
+            wrong.append(f"{row.path} ({row.state}): {lines[0]!r}")
+    assert wrong == []
 
 
 def test_json_line_totals_are_wc_l_of_each_file() -> None:

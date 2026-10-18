@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/frames.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/frames.sql
 -- Changes: football only (the two basketball sources and the figures that mixed both
 -- sports dropped); no dbt config block: ftbase.silver.build runs this once per match
 -- with the bronze tracking views pointed at that match and writes one Parquet file per

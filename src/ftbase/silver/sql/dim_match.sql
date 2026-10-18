@@ -1,4 +1,4 @@
--- Copied from tracklab@686508a: pipeline/dbt/models/silver/dim_match.sql
+-- Rewritten from tracklab@686508a: pipeline/dbt/models/silver/dim_match.sql
 -- Changes: football only (the basketball branch, its court report and the surface_spec
 -- seed dropped); the pinned commit comes from `manifest_sources`, which
 -- ftbase.silver.build fills from the manifest, instead of a dbt source over the JSON;
