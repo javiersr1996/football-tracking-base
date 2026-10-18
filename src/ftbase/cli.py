@@ -1,5 +1,6 @@
 # Rewritten from tracklab@686508a: pipeline/src/tracklab/cli.py
-# Changes: football only, down to the ingest, bronze and silver subcommands; `fixtures` is new.
+# Changes: football only, down to the ingest, bronze and silver subcommands; `fixtures` and
+# `provenance` are new.
 """Command-line entry point."""
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from ftbase.ingest.fetch import ingest_source, make_client
 from ftbase.ingest.local import ingest_local
 from ftbase.ingest.manifest import Source, load_manifest
 from ftbase.paths import data_root
+from ftbase.provenance import ProvenanceError, check, render_summary, write
 from ftbase.silver.build import build_silver
 
 SOURCE_ID = "opendata-football"
@@ -93,6 +95,23 @@ def _cmd_fixtures(args: argparse.Namespace) -> int:
         f"next: ftbase ingest --manifest {match.manifest} --from-existing {match.root} "
         f"--data-dir <dir>, then bronze and silver with the same --manifest and --data-dir"
     )
+    return 0
+
+
+def _cmd_provenance(args: argparse.Namespace) -> int:
+    if args.check:
+        problems = check(args.root, args.tracklab)
+        for problem in problems:
+            print(f"FAIL {problem}")
+        if not problems:
+            print("provenance: the table, the JSON and the files agree")
+        return 1 if problems else 0
+    try:
+        report = write(args.root, args.tracklab)
+    except ProvenanceError as exc:
+        sys.exit(f"ftbase: {exc}")
+    print(render_summary(report))
+    print("wrote reports/provenance.json and the count columns of docs/provenance.md")
     return 0
 
 
@@ -189,6 +208,33 @@ def build_parser() -> argparse.ArgumentParser:
         "--seed", type=int, default=DEFAULT_SEED, help="Seed of the coordinates (default: fixed)."
     )
     fixtures.set_defaults(func=_cmd_fixtures)
+
+    provenance = subparsers.add_parser(
+        "provenance",
+        help="Count the lines copied from tracklab and write reports/provenance.json and the "
+        "table's count columns; with --check, verify them against the files (exit 1 on a "
+        "difference).",
+    )
+    provenance.add_argument(
+        "--check",
+        action="store_true",
+        help="Verify the table and the JSON against the files instead of writing them.",
+    )
+    provenance.add_argument(
+        "--tracklab",
+        type=Path,
+        default=None,
+        help="tracklab clone to read the originals from with git show (read only). Needed to "
+        "write when a row is copiado or reescrito; with --check it recounts instead of "
+        "trusting the JSON.",
+    )
+    provenance.add_argument(
+        "--root",
+        type=Path,
+        default=Path("."),
+        help="Repository root (default: the current folder).",
+    )
+    provenance.set_defaults(func=_cmd_provenance)
     return parser
 
 

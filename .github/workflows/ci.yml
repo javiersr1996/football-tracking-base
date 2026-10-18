@@ -35,3 +35,5 @@ jobs:
         run: |
           n=$(uv run pytest -m realdata --collect-only -q | grep -c '::')
           echo "$n realdata tests are deselected in this run (they need the real bundle)"
+      - name: Provenance table and JSON agree with the files (no tracklab here)
+        run: uv run ftbase provenance --check
