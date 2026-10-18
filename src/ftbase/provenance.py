@@ -13,9 +13,8 @@ the order the table lists them. Lines changed are the rest. A ``nuevo`` file has
 none of its lines is copied.
 
 Where the originals come from: ``--tracklab <clone>`` reads them from tracklab; without it, a
-``nuevo`` row needs none, a file whose sha256 is the one in ``reports/provenance.json`` keeps
-its stored count, and an edited ``copiado`` or ``reescrito`` file is recounted against the
-original as it sits in this repository's own import commit (see :func:`import_commit`).
+``nuevo`` row needs none and any other row is recounted against the original as it sits in
+this repository's own import commit (see :func:`import_commit`).
 The recount is always made when the import commit holds the origins; the stored count is only
 reused for a file whose origins it does not hold, and only if the file's sha256, origin paths,
 commit and state all equal the ones stored with it.

@@ -131,7 +131,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/ingest/verify.py` | `pipeline/src/tracklab/ingest/verify.py` | `686508a` | copiado | 35 | 2 |
 | `src/ftbase/paths.py` | `pipeline/src/tracklab/paths.py` | `686508a` | copiado | 12 | 8 |
 | `src/ftbase/py.typed` | - | - | nuevo | 0 | 0 |
-| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 379 |
+| `src/ftbase/provenance.py` | - | - | nuevo | 0 | 378 |
 | `tests/contracts/test_football_events_bronze.py` | `pipeline/tests/contracts/test_football_events_bronze.py` | `686508a` | reescrito | 165 | 42 |
 | `tests/contracts/test_football_meta_bronze.py` | `pipeline/tests/contracts/test_football_meta_bronze.py` | `686508a` | copiado | 215 | 19 |
 | `tests/contracts/test_football_tracking_bronze.py` | `pipeline/tests/contracts/test_football_tracking_bronze.py` | `686508a` | copiado | 165 | 17 |
