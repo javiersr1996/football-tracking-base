@@ -1,20 +1,19 @@
-"""Every frozen schema on disk must translate to pyarrow, whatever types it carries.
+"""Every frozen schema on disk must translate to pyarrow, and its header must be the frozen one.
 
-`formats.csvschema.pa_schema` mapped four DuckDB types until task 8 built football's
-season aggregates and hit `player_birthdate`, a DATE. The type had been frozen by task
-4 long before; nothing was wrong with it. The gap was that the only schemas that had
-ever gone through `pa_schema` were basketball's 3 aggregates, which are BOOLEAN,
-BIGINT, DOUBLE and VARCHAR only, so no test could have caught it.
+`formats.csvschema.pa_schema` once mapped four DuckDB types until the football season
+aggregates hit `player_birthdate`, a DATE; the type had been frozen long before and
+nothing was wrong with it. The gap was that no test iterated the schemas that exist.
 
-This module closes that by iterating the schema files that exist rather than a list
-written by hand: a type frozen tomorrow fails here, with the file that carries it,
-instead of half-way through a build.
+This module iterates the schema files on disk rather than a list written by hand, so a
+type frozen tomorrow fails here, with the file that carries it, instead of half-way
+through a build. It also pins each schema's `header_sha256`: the hash of the CSV header
+line the schema was frozen from, which must equal the hash of its own column names.
 """
 
 from __future__ import annotations
 
 import datetime
-import json
+import hashlib
 from pathlib import Path
 
 import duckdb
@@ -22,46 +21,53 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from tracklab.formats.basketball import load_family
-from tracklab.formats.basketball import pa_schema as family_pa_schema
-from tracklab.formats.csvschema import (
+from ftbase.formats.csvschema import (
     Column,
     FrozenSchema,
     freeze_csv_family,
     load_schema,
     read_typed,
 )
-from tracklab.formats.csvschema import pa_schema as csv_pa_schema
+from ftbase.formats.csvschema import pa_schema as csv_pa_schema
 
-SCHEMAS = Path(__file__).resolve().parents[1].parent / "src" / "tracklab" / "bronze" / "schemas"
+SCHEMAS = Path(__file__).resolve().parents[2] / "src" / "ftbase" / "bronze" / "schemas"
 FROZEN = sorted(SCHEMAS.glob("*/*.schema.json"))
+# The header hashes tracklab froze (dynamic_events 322 columns, phases_of_play 44).
+HEADER_SHA256 = {
+    "dynamic_events": "801a67ffefdb68b215b1205318267fae6c3bd14316e1d305ef7775f9b2a74f48",
+    "phases_of_play": "1dca435ea3cac484f53916f23db1c99da23ae371dd1d637c1cb95b421a80cab3",
+}
 
 
 def test_the_glob_finds_every_schema_the_repository_froze() -> None:
     """Guards the glob itself: without this, a parametrised run over an empty or
-    half-found list would pass while testing nothing. Basketball froze 20 event
-    families plus 3 season aggregates (task 6), football 2 per-match CSVs plus 3
-    season aggregates (task 4). A schema added or lost changes these numbers on
-    purpose, so the test is meant to be updated by the task that moves them."""
+    half-found list would pass while testing nothing. ftbase ships the 2 per-match
+    football CSV schemas (the 3 season aggregates stayed in tracklab). A schema added
+    or lost changes these numbers on purpose."""
     found = {d.name: len(list(d.glob("*.schema.json"))) for d in sorted(SCHEMAS.iterdir())}
     print(f"\n{len(FROZEN)} frozen schemas under {SCHEMAS}: {found}")
-    assert found == {"basketball": 23, "football": 5}
-    assert len(FROZEN) == 28
+    assert found == {"football": 2}
+    assert len(FROZEN) == 2
 
 
 @pytest.mark.parametrize("path", FROZEN, ids=lambda p: f"{p.parent.name}/{p.stem}")
 def test_every_frozen_schema_translates_to_pyarrow(path: Path) -> None:
-    """A JSON event family goes through `formats.basketball.pa_schema` (it knows
-    POINT2D and the lists), a CSV family through `formats.csvschema.pa_schema`. Both
-    mappings are exercised by whichever files are on disk."""
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    if "family" in raw:
-        schema = family_pa_schema(load_family(path))
-    else:
-        schema = csv_pa_schema(load_schema(path))
+    schema = csv_pa_schema(load_schema(path))
     types = sorted({str(f.type) for f in schema})
     print(f"{path.parent.name}/{path.stem}: {len(schema)} columns, types {types}")
     assert len(schema) > 0
+
+
+@pytest.mark.parametrize("path", FROZEN, ids=lambda p: p.stem)
+def test_header_sha256_is_the_hash_of_the_frozen_column_names(path: Path) -> None:
+    """The stored `header_sha256` equals the hash of the comma-joined column names, and
+    equals the value tracklab froze: renaming, adding or dropping a column in the JSON
+    (or editing the hash) fails here."""
+    frozen = load_schema(path)
+    recomputed = hashlib.sha256(",".join(frozen.names).encode("utf-8")).hexdigest()
+    print(f"{frozen.table}: {len(frozen.names)} columns, stored {frozen.header_sha256}")
+    assert recomputed == frozen.header_sha256
+    assert frozen.header_sha256 == HEADER_SHA256[frozen.table]
 
 
 def test_an_unknown_frozen_type_names_the_table_the_column_and_the_type() -> None:

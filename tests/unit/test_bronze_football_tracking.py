@@ -20,18 +20,19 @@ from typing import Any
 
 import pyarrow.parquet as pq
 import pytest
+from manifest_helper import save_manifest
 
-from tracklab.bronze.common import raw_root_for
-from tracklab.bronze.football.tracking import (
+from ftbase.bronze.common import raw_root_for
+from ftbase.bronze.football.tracking import (
     CORNER_ORDER,
     TRACKING_FRAMES,
     TRACKING_OBJECTS,
     build_tracking_match,
     frame_batches,
 )
-from tracklab.cli import main
-from tracklab.ingest.fetch import RECEIPT_NAME
-from tracklab.ingest.manifest import FileEntry, Manifest, Source, save_manifest
+from ftbase.cli import main
+from ftbase.ingest.fetch import RECEIPT_NAME
+from ftbase.ingest.manifest import FileEntry, Manifest, Source
 
 SOURCE_ID = "opendata-football"
 COMMIT = "4340d274572876239c154c90bc507a9b3250a656"
@@ -176,7 +177,6 @@ def run_tracking(manifest_path: Path, data_dir: Path) -> int:
     return main(
         [
             "bronze",
-            "football",
             "--tables",
             "tracking",
             "--manifest",
@@ -197,7 +197,7 @@ def test_cli_builds_both_tables_per_match(
     rc = run_tracking(manifest_path, data_dir)
     assert rc == 0
     out = capsys.readouterr().out.splitlines()
-    assert out[0].startswith("bronze football tracking: ")
+    assert out[0].startswith("bronze tracking: ")
     assert out[1].split() == ["match_id", "frames", "objects", "seconds", "MB"]
     assert out[2].split()[:3] == [str(MATCH_A), "5", "6"], "3 players in frame 1 and frame 600"
     assert out[3].split()[:3] == [str(MATCH_B), "2", "3"]
@@ -219,10 +219,10 @@ def test_schema_metadata_and_lineage(bundle: tuple[Path, Path]) -> None:
         assert written.equals(declared, check_metadata=False), f"{path.name}: {written}"
         meta = {k.decode(): v.decode() for k, v in written.metadata.items() if k != b"ARROW:schema"}
         assert meta == {
-            "tracklab.sport": "football",
-            "tracklab.source_file": tracking_path(MATCH_A),
-            "tracklab.source_sha256": hashlib.sha256(jsonl_bytes(FRAMES_A)).hexdigest(),
-            "tracklab.source_commit": COMMIT,
+            "ftbase.sport": "football",
+            "ftbase.source_file": tracking_path(MATCH_A),
+            "ftbase.source_sha256": hashlib.sha256(jsonl_bytes(FRAMES_A)).hexdigest(),
+            "ftbase.source_commit": COMMIT,
         }
 
     for row in rows(frames_path) + rows(objects_path):
@@ -338,7 +338,7 @@ def test_a_failed_match_leaves_no_parquet_behind(tmp_path: Path) -> None:
 
 def test_raw_root_from_receipt(tmp_path: Path) -> None:
     data_dir = tmp_path / "data"
-    with pytest.raises(FileNotFoundError, match="tracklab ingest opendata-football"):
+    with pytest.raises(FileNotFoundError, match="ftbase ingest"):
         raw_root_for(data_dir, SOURCE_ID)
     write_receipt(data_dir, tmp_path / "clone", failed=[])
     assert raw_root_for(data_dir, SOURCE_ID) == tmp_path / "clone"

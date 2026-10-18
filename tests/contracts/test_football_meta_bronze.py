@@ -1,12 +1,15 @@
 """Contract of the bronze football meta against the built Parquet and the raw match.json.
 
-Skipped when the bronze tables are not built. Two things this file is the only place
-that checks: ``match_periods`` really has 40 rows (20 matches x 2 periods, the scope
+Marked `realdata` (deselected by default, never skipped): run them with
+`FTBASE_DATA_ROOT=<dir> uv run pytest -m realdata` after `ftbase ingest` and `ftbase bronze`.
+
+Two things this file is the only place that checks: ``match_periods`` really has 40 rows
+(20 matches x 2 periods, the scope
 correction task 7 applies: the acceptance criterion was written for a 10-match bundle
 and reads "20 filas" -- see the task report), and the leaf checker decision 8 demands:
 every scalar value ``match.json`` delivers, in every one of the 20 matches, is
 represented in a column of ``match``, ``match_periods`` or ``match_players``. The
-checker walks the raw JSON directly (no tracklab import in the walker itself) and
+checker walks the raw JSON directly (no ftbase import in the walker itself) and
 compares against ``COVERED_LEAF_PATTERNS``, a hand-maintained mirror of the flattening
 ``bronze/football/meta.py`` performs; a path missing from that set means a value bronze
 silently drops, and the test prints it instead of passing.
@@ -15,32 +18,29 @@ silently drops, and the test prints it instead of passing.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 import duckdb
 import pyarrow.parquet as pq
 import pytest
 
-from tracklab.bronze.common import raw_root_for
-from tracklab.bronze.football.meta import TABLES
-from tracklab.ingest.manifest import load_manifest
+from ftbase.bronze.common import raw_root_for
+from ftbase.bronze.football.meta import TABLES
+from ftbase.cli import default_manifest
+from ftbase.ingest.manifest import load_manifest
+from ftbase.paths import data_root
 
-PIPELINE = Path(__file__).resolve().parents[2]
-DATA = PIPELINE / "data"
+DATA = data_root()
 BRONZE = DATA / "bronze" / "football"
 SOURCE_ID = "opendata-football"
 EXPECTED_MATCH_PERIODS_ROWS = 40  # 20 matches x 2 periods: the scope correction of task 7
 
-pytestmark = pytest.mark.skipif(
-    not (BRONZE / "match").is_dir(),
-    reason="run `tracklab bronze football --tables meta` first",
-)
+pytestmark = pytest.mark.realdata
 
 
 @pytest.fixture(scope="module")
 def match_ids() -> list[int]:
-    source = load_manifest(PIPELINE / "manifest" / "sources.json").source(SOURCE_ID)
+    source = load_manifest(default_manifest()).source(SOURCE_ID)
     ids = sorted(f.match_id for f in source.files if f.role == "match" and f.match_id)
     assert len(ids) == 20, f"expected 20 match.json files in the manifest, found {len(ids)}"
     return ids

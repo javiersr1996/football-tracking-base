@@ -1,6 +1,8 @@
 """Contract of the bronze football tracking against the built Parquet and the raw JSONL.
 
-Skipped when the bronze tables are not built (CI on fixtures). Everything here reads
+Marked `realdata` (deselected by default, never skipped): run them with
+`FTBASE_DATA_ROOT=<dir> uv run pytest -m realdata` after `ftbase ingest` and `ftbase bronze`
+on the real bundle. Everything here reads
 the artefact on disk with DuckDB or pyarrow, never what the builder computed, and
 prints its evidence per match, never an aggregate. The independent counter of the last
 test walks the JSONL with ``open`` and ``json.loads`` alone, no pyarrow and none of the
@@ -10,18 +12,18 @@ tracking builder's own parsing code, so it shares no line with the writer it che
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import duckdb
 import pyarrow.parquet as pq
 import pytest
 
-from tracklab.bronze.common import raw_root_for
-from tracklab.bronze.football.tracking import TABLES
-from tracklab.ingest.manifest import load_manifest
+from ftbase.bronze.common import raw_root_for
+from ftbase.bronze.football.tracking import TABLES
+from ftbase.cli import default_manifest
+from ftbase.ingest.manifest import load_manifest
+from ftbase.paths import data_root
 
-PIPELINE = Path(__file__).resolve().parents[2]
-DATA = PIPELINE / "data"
+DATA = data_root()
 BRONZE = DATA / "bronze" / "football"
 SOURCE_ID = "opendata-football"
 COUNTED_MATCH = 1925299
@@ -29,15 +31,12 @@ EXPECTED_FRAMES_TOTAL = 1_244_814
 EXPECTED_OBJECTS_TOTAL = 19_334_986
 EXPECTED_COUNTED_OBJECTS = 1_054_724
 
-pytestmark = pytest.mark.skipif(
-    not (BRONZE / "tracking_frames").is_dir(),
-    reason="run `tracklab bronze football --tables tracking` first",
-)
+pytestmark = pytest.mark.realdata
 
 
 @pytest.fixture(scope="module")
 def match_ids() -> list[int]:
-    source = load_manifest(PIPELINE / "manifest" / "sources.json").source(SOURCE_ID)
+    source = load_manifest(default_manifest()).source(SOURCE_ID)
     ids = sorted(f.match_id for f in source.files if f.role == "tracking" and f.match_id)
     assert len(ids) == 20, f"expected 20 tracking files in the manifest, found {len(ids)}"
     return ids

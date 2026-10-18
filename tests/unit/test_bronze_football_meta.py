@@ -7,7 +7,7 @@ Two matches exercise the two ``players[]`` regimes measured while writing
 key at all. Each match also has one player who never took the pitch
 (``start_time``/``end_time`` null, ``playing_time.total`` null, ``by_period`` empty),
 to check that bronze keeps ``playing_time_total_*`` all-NULL rather than inventing
-zeros. Run through the CLI exactly as a user would (``tracklab bronze football --tables
+zeros. Run through the CLI exactly as a user would (``ftbase bronze --tables
 meta``), then every table is read back from Parquet and checked against the planted
 values. The key-set violation tests call the flattening helpers directly, the same way
 the basketball tests reach ``frame_batches`` directly, since the whole point of this
@@ -23,18 +23,19 @@ from typing import Any
 
 import pyarrow.parquet as pq
 import pytest
+from manifest_helper import save_manifest
 
-from tracklab.bronze.common import bronze_path, bronze_season_path
-from tracklab.bronze.football.meta import (
+from ftbase.bronze.common import bronze_path, bronze_season_path
+from ftbase.bronze.football.meta import (
     _check_keys,
     _match_row,
     _period_columns,
     _player_columns,
     build_match_tables,
 )
-from tracklab.cli import main
-from tracklab.ingest.fetch import RECEIPT_NAME
-from tracklab.ingest.manifest import FileEntry, Manifest, Source, save_manifest
+from ftbase.cli import main
+from ftbase.ingest.fetch import RECEIPT_NAME
+from ftbase.ingest.manifest import FileEntry, Manifest, Source
 
 SOURCE_ID = "opendata-football"
 COMMIT = "4340d274572876239c154c90bc507a9b3250a656"
@@ -297,7 +298,6 @@ def run_meta(manifest_path: Path, data_dir: Path) -> int:
     return main(
         [
             "bronze",
-            "football",
             "--tables",
             "meta",
             "--manifest",

@@ -1,11 +1,13 @@
 """Contract of the bronze football events (`dynamic_events`, `phases_of_play`)
 against the built Parquet and the raw CSVs.
 
-Skipped when the bronze tables are not built (CI on fixtures). Everything here reads
+Marked `realdata` (deselected by default, never skipped): run them with
+`FTBASE_DATA_ROOT=<dir> uv run pytest -m realdata` after `ftbase ingest` and `ftbase bronze`
+on the real bundle. Everything here reads
 the artefact on disk with DuckDB or pyarrow, never what the builder computed in
 memory, and prints its evidence per match, never an aggregate. The row-count test
 walks each raw CSV with plain `open()` and counts lines, no `csv` module, no
-pyarrow, no DuckDB, no import of `tracklab.bronze.football.events`: it shares no
+pyarrow, no DuckDB, no import of `ftbase.bronze.football.events`: it shares no
 line with the writer it checks. `docs/formats/football.md` measured `dynamic_events`
 and `phases_of_play` rows as the file's line count minus 1 (the header) in all 20
 matches; this test proves it against the actual artefact instead of the doc.
@@ -13,18 +15,20 @@ matches; this test proves it against the actual artefact instead of the doc.
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 import duckdb
 import pyarrow.parquet as pq
 import pytest
 
-from tracklab.bronze.common import LINEAGE_FIELDS, raw_root_for
-from tracklab.bronze.football.events import load_frozen_tables, table_schema
-from tracklab.ingest.manifest import load_manifest
+from ftbase.bronze.common import LINEAGE_FIELDS, raw_root_for
+from ftbase.bronze.football.events import load_frozen_tables, table_schema
+from ftbase.cli import default_manifest
+from ftbase.ingest.manifest import load_manifest
+from ftbase.paths import data_root
 
-PIPELINE = Path(__file__).resolve().parents[2]
-DATA = PIPELINE / "data"
+DATA = data_root()
 BRONZE = DATA / "bronze" / "football"
 SOURCE_ID = "opendata-football"
 
@@ -55,15 +59,12 @@ EXPECTED_EVENT_TYPE_TOTALS = {
     "off_ball_run": 9_898,
 }
 
-pytestmark = pytest.mark.skipif(
-    not (BRONZE / "dynamic_events").is_dir(),
-    reason="run `tracklab bronze football --tables events` first",
-)
+pytestmark = pytest.mark.realdata
 
 
 @pytest.fixture(scope="module")
 def match_ids() -> list[int]:
-    source = load_manifest(PIPELINE / "manifest" / "sources.json").source(SOURCE_ID)
+    source = load_manifest(default_manifest()).source(SOURCE_ID)
     ids = sorted(f.match_id for f in source.files if f.role == "events" and f.match_id)
     assert len(ids) == 20, f"expected 20 dynamic_events files in the manifest, found {len(ids)}"
     return ids
@@ -184,3 +185,20 @@ def test_orphan_player_rows_are_present(match_ids: list[int]) -> None:
     ).fetchone()
     print(f"\n{ORPHAN_MATCH} player_id={ORPHAN_PLAYER_ID}: rows={n}")
     assert n == ORPHAN_ROWS
+
+
+def test_raw_headers_match_the_frozen_header_sha256(match_ids: list[int]) -> None:
+    """The first line of every raw CSV hashes to the `header_sha256` frozen in the schema
+    (plain `open()` and `hashlib`, none of csvschema's code), per match and table."""
+    frozen = load_frozen_tables()
+    print(f"\n{'match_id':>8} {'table':>15} {'header matches':>14}")
+    bad = []
+    for match_id in match_ids:
+        for table, schema in frozen.items():
+            with raw_csv(table, match_id).open(encoding="utf-8", newline="") as fh:
+                header = fh.readline().rstrip("\r\n")
+            ok = hashlib.sha256(header.encode("utf-8")).hexdigest() == schema.header_sha256
+            print(f"{match_id:>8} {table:>15} {ok!s:>14}")
+            if not ok:
+                bad.append((match_id, table))
+    assert bad == []

@@ -23,14 +23,15 @@ from typing import Any
 import duckdb
 import pyarrow.parquet as pq
 import pytest
+from manifest_helper import save_manifest
 
-import tracklab.bronze.football.events as events_module
-from tracklab.bronze.common import bronze_path
-from tracklab.bronze.football.events import build_table_match, table_schema
-from tracklab.cli import main
-from tracklab.formats.csvschema import freeze_csv_family
-from tracklab.ingest.fetch import RECEIPT_NAME
-from tracklab.ingest.manifest import FileEntry, Manifest, Source, save_manifest
+import ftbase.bronze.football.events as events_module
+from ftbase.bronze.common import bronze_path
+from ftbase.bronze.football.events import build_table_match, table_schema
+from ftbase.cli import main
+from ftbase.formats.csvschema import freeze_csv_family
+from ftbase.ingest.fetch import RECEIPT_NAME
+from ftbase.ingest.manifest import FileEntry, Manifest, Source
 
 SPORT = "football"
 SOURCE_ID = "opendata-football"
@@ -257,7 +258,6 @@ def run_events(manifest_path: Path, data_dir: Path) -> int:
     return main(
         [
             "bronze",
-            "football",
             "--tables",
             "events",
             "--manifest",
@@ -275,7 +275,7 @@ def test_cli_builds_both_tables_for_both_matches(
     rc = run_events(manifest_path, data_dir)
     assert rc == 0
     out = capsys.readouterr().out.splitlines()
-    assert out[0].startswith("bronze football events: ")
+    assert out[0].startswith("bronze events: ")
     assert out[1].split() == ["match_id", "table", "rows", "seconds", "MB"]
     body = [line.split()[:3] for line in out[2:-1]]
     assert body == [
