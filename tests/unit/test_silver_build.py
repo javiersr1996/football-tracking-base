@@ -1,9 +1,10 @@
 # New in ftbase (no tracklab origin): tracklab tested silver through dbt on its fixtures.
 """``ftbase silver`` end to end on a synthetic bronze in ``tmp_path``: no real data.
 
-One match, 900001, home 7 (players 71, and 72 who never plays) against away 8 (player
-81), written as bronze Parquet with only the columns silver reads. Every count below is
-known by hand:
+Two identical matches, 900001 and 900002, home 7 (players 71, and 72 who never plays)
+against away 8 (player 81), written as bronze Parquet with only the columns silver reads.
+Two, so that a reader asked for one match can be caught reading the other. Every count
+below is per match and known by hand:
 
 - periods: 1 is frames 10-14, 2 is frames 20-24; frames 8-9 and 15-19 carry a null
   period, and player 71 is planted at frame 9, so the boundary rule has a row to drop;
@@ -37,7 +38,7 @@ from ftbase.silver import read_dim, read_events, read_frames
 from ftbase.silver.checks import Check, all_checks, assertion_checks, run_check, run_checks
 from ftbase.silver.read import connect
 
-MATCH, HOME, AWAY = 900001, 7, 8
+MATCH, OTHER, HOME, AWAY = 900001, 900002, 7, 8
 COMMIT = "c" * 40
 PP, R2L, L2R = "player_possession", "right_to_left", "left_to_right"
 PERIOD_FRAMES = [*range(10, 15), *range(20, 25)]
@@ -45,11 +46,11 @@ PERIOD_FRAMES = [*range(10, 15), *range(20, 25)]
 Columns = dict[str, tuple[pa.DataType, list[Any]]]
 
 
-def _write(data_dir: Path, table: str, columns: Columns) -> None:
-    path = bronze_path(data_dir, "football", table, MATCH)
+def _write(data_dir: Path, table: str, columns: Columns, match: int) -> None:
+    path = bronze_path(data_dir, "football", table, match)
     path.parent.mkdir(parents=True, exist_ok=True)
     n = len(next(iter(columns.values()))[1])
-    columns = {"match_id": (pa.int64(), [MATCH] * n), **columns}
+    columns = {"match_id": (pa.int64(), [match] * n), **columns}
     pq.write_table(pa.table({k: pa.array(v, type=t) for k, (t, v) in columns.items()}), path)
 
 
@@ -58,14 +59,20 @@ def _period(frame: int) -> int | None:
 
 
 def write_bronze(
-    data_dir: Path, phase_sides: list[str] | None = None, dup_frame: bool = False
+    data_dir: Path,
+    phase_sides: list[str] | None = None,
+    dup_frame: bool = False,
+    match: int = MATCH,
 ) -> None:
     i64, f64, s, b = pa.int64(), pa.float64(), pa.string(), pa.bool_()
-    _write(
-        data_dir,
+
+    def put(table: str, columns: Columns) -> None:
+        _write(data_dir, table, columns, match)
+
+    put(
         "match",
         {
-            "id": (i64, [MATCH]),
+            "id": (i64, [match]),
             "home_team_id": (i64, [HOME]),
             "away_team_id": (i64, [AWAY]),
             "home_team_side": (pa.list_(s), [[R2L, L2R]]),
@@ -82,13 +89,11 @@ def write_bronze(
             "competition_edition_season_name": (s, ["2024/2025"]),
         },
     )
-    _write(
-        data_dir,
+    put(
         "match_periods",
         {"period": (i64, [1, 2]), "start_frame": (i64, [10, 20]), "end_frame": (i64, [14, 24])},
     )
-    _write(
-        data_dir,
+    put(
         "match_players",
         {
             "id": (i64, [71, 72, 81]),
@@ -99,8 +104,7 @@ def write_bronze(
         },
     )
     frames = [8, 9, *range(10, 25)]
-    _write(
-        data_dir,
+    put(
         "tracking_frames",
         {
             "frame": (i64, frames),
@@ -114,8 +118,7 @@ def write_bronze(
     objects = [(9, 71), *((f, p) for f in PERIOD_FRAMES for p in (71, 81))]
     if dup_frame:
         objects.append((10, 71))
-    _write(
-        data_dir,
+    put(
         "tracking_objects",
         {
             "frame": (i64, [f for f, _ in objects]),
@@ -125,8 +128,7 @@ def write_bronze(
             "is_detected": (b, [not (p == 71 and f in (11, 12)) for f, p in objects]),
         },
     )
-    _write(
-        data_dir,
+    put(
         "dynamic_events",
         {
             "event_id": (s, ["e1", "e2", "e3", "e4", "e5", "r1"]),
@@ -150,8 +152,7 @@ def write_bronze(
             ),
         },
     )
-    _write(
-        data_dir,
+    put(
         "phases_of_play",
         {
             "index": (i64, [0, 1, 2, 3]),
@@ -199,6 +200,7 @@ def run_silver(tmp_path: Path) -> int:
 def built(tmp_path_factory: pytest.TempPathFactory) -> Path:
     data_dir = tmp_path_factory.mktemp("silver")
     write_bronze(data_dir)
+    write_bronze(data_dir, match=OTHER)
     assert run_silver(data_dir) == 0
     return data_dir
 
@@ -210,16 +212,17 @@ def test_silver_writes_every_table_with_the_planted_counts(built: Path) -> None:
     silver = built / "silver"
     expected = {
         "dim_sport": 1,
-        "dim_period": 2,
+        "dim_period": 4,
         "dim_team": 2,
-        "dim_match": 1,
-        "dim_team_period": 4,
-        "dim_entity": 4,  # three players on the roster and the ball
+        "dim_match": 2,
+        "dim_team_period": 8,
+        "dim_entity": 8,  # per match, three players on the roster and the ball
     }
     for name, n in expected.items():
         assert pq.read_table(silver / name / "data.parquet").num_rows == n, name
-    assert pq.read_table(silver / "frames" / f"{MATCH}.parquet").num_rows == 29
-    assert pq.read_table(silver / "events" / f"{MATCH}.parquet").num_rows == 14
+    for match in (MATCH, OTHER):
+        assert pq.read_table(silver / "frames" / f"{match}.parquet").num_rows == 29
+        assert pq.read_table(silver / "events" / f"{match}.parquet").num_rows == 14
     assert not list(silver.rglob("*.tmp")), "temporary files are renamed, never left behind"
 
 
@@ -232,8 +235,9 @@ def test_every_check_passes_and_there_is_one_per_assertion_file(built: Path) -> 
 
 
 def test_dims_carry_keys_names_and_the_pinned_commit(built: Path) -> None:
-    match = read_dim("dim_match", data_dir=built).to_pylist()[0]
-    assert match["match_id"] == f"fb:{MATCH}"
+    matches = {r["match_id"]: r for r in read_dim("dim_match", data_dir=built).to_pylist()}
+    assert set(matches) == {f"fb:{MATCH}", f"fb:{OTHER}"}
+    match = matches[f"fb:{MATCH}"]
     assert (match["home_team_id"], match["away_team_id"]) == (f"fb:{HOME}", f"fb:{AWAY}")
     assert match["surface_spec"] == "provider_105x68"
     assert match["n_periods"] == 2
@@ -243,6 +247,7 @@ def test_dims_carry_keys_names_and_the_pinned_commit(built: Path) -> None:
     signs = {
         (r["period"], r["team_id"]): r["attack_sign"]
         for r in read_dim("dim_team_period", data_dir=built).to_pylist()
+        if r["match_id"] == f"fb:{MATCH}"
     }
     assert signs == {(1, "fb:7"): -1, (1, "fb:8"): 1, (2, "fb:7"): 1, (2, "fb:8"): -1}
 
@@ -318,11 +323,24 @@ def test_read_events_rotate_to_the_venue_frame_and_derive_possessions(built: Pat
     assert e1["possession_id"] == f"fb:possession:{MATCH}:1"
 
 
+def test_readers_open_only_the_matches_they_are_given(built: Path) -> None:
+    for match in (MATCH, OTHER):
+        frames = read_frames([match], columns=["native_match_id"], data_dir=built)
+        assert set(frames.column("native_match_id").to_pylist()) == {match}
+        assert frames.num_rows == 29
+        attacking = read_frames([match], attacking=True, data_dir=built)
+        assert set(attacking.column("native_match_id").to_pylist()) == {match}
+        events = read_events([match], columns=["match_id"], data_dir=built)
+        assert set(events.column("match_id").to_pylist()) == {f"fb:{match}"}
+    both = read_frames([OTHER, MATCH], columns=["native_match_id"], data_dir=built)
+    assert both.column("native_match_id").to_pylist() == [MATCH] * 29 + [OTHER] * 29
+
+
 def test_readers_refuse_what_they_cannot_read(built: Path) -> None:
     with pytest.raises(ValueError, match="at least one match"):
         read_frames([], data_dir=built)
     with pytest.raises(FileNotFoundError, match="silver files missing"):
-        read_frames([MATCH + 1], data_dir=built)
+        read_frames([900009], data_dir=built)
     with pytest.raises(ValueError, match=r"no column\(s\) \['nope'\]"):
         read_events([MATCH], columns=["nope"], data_dir=built)
 
