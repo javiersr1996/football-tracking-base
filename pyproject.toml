@@ -29,9 +29,6 @@ packages = ["src/ftbase"]
 [tool.ruff]
 line-length = 100
 src = ["src"]
-# Imported from tracklab, still under pipeline/ until tasks 3 to 5 move and adapt it.
-# Remove this exclusion when task 5 closes.
-extend-exclude = ["pipeline"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -5,8 +5,7 @@ phases of play). It was extracted in October 2026 from tracklab, the author's pr
 which is where the code was first written (MIT). The pipeline keeps the provider's `is_detected`
 flag, which separates what the cameras saw from what the provider extrapolated.
 
-**Status: skeleton.** The imported code still lives under `pipeline/` and is excluded from lint,
-types and tests. That exclusion is removed when the silver step lands (v0.1.0).
+**Status: pre-release.** `ingest`, `bronze` and `silver` are in place; v0.1.0 is not tagged yet.
 
 ## Install
 
@@ -17,7 +16,7 @@ uv run ftbase --version
 
 Python 3.13 is pinned in `.python-version`; uv installs it.
 
-## Commands (coming in v0.1.0)
+## Commands
 
 - `ftbase ingest`: download and verify the 85 source files against a sha256 manifest (`--match <id>`
   for one match and `matches.json`, about 91 MB; `--from-existing <dir>` to verify a local clone
@@ -25,7 +24,12 @@ Python 3.13 is pinned in `.python-version`; uv installs it.
 - `ftbase bronze`: write typed Parquet tables (tracking, events, match metadata) under
   `<data root>/bronze/football/`, one file per match, from what `ingest` verified. The contract tests
   that read the real bundle are deselected by default: `uv run pytest -m realdata` runs them.
-- `ftbase silver`: build frames and events oriented to the attacking direction, with DuckDB.
+- `ftbase silver`: build the silver tables with DuckDB (no dbt) under `<data root>/silver/`: the
+  dimensions, `frames` (one row per match, frame and entity, in metres, with `is_detected`) and
+  `events` (rotated to the tracking frame, with team possessions derived from the provider's own
+  flag), one Parquet file per match; the `frames_attacking` view turns the frames of each team
+  possession so the team with the ball attacks towards +x. The build runs its checks and exits 1 if any fails. From Python:
+  `ftbase.silver.read_frames([match_id])`, `read_events` and `read_dim` (columns in the docstrings).
 
 ## Data and LFS
 

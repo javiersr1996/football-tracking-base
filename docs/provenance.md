@@ -10,30 +10,48 @@ tracklab CLI rewritten down to the `ingest` and `bronze` subcommands. `test_foot
 gains a header-hash test and `test_frozen_schemas.py` loses basketball (both `reescrito`);
 `manifest_helper.py` replaces the `save_manifest` that tracklab's manifest module had.
 
+Silver (task 5) replaces dbt with DuckDB run from Python, football only. The model SQL keeps its
+logic; `reescrito` marks the files that lost their basketball branch or changed a source, `copiado`
+the ones where only dbt's `ref()`/`source()` became a table name. `checks.py` holds the integrity
+tests of `schema.yml` (key uniqueness, not-null keys, relationships) and replaces the
+`unique_combination` macro; `build.py` takes the place of the dbt sources, seeds and run order.
+`event_type_map.csv` keeps its 3 football rows (CSV takes no header, so this table is its record;
+one note now points at `events.sql` instead of a tracklab report). Not carried over: the
+`surface_spec.csv` seed (basketball courts only), `schema.yml`, `sources/{football,common}.yml` and
+the macro, whose content moved into the files above. `orientation.py` is the football part of
+tracklab's `silver/orientation.py` (the sign from `home_team_side` and its check against the phases),
+without its basketball, event-frame probe, reports or docs. `read.py` (the typed readers and the
+per-connection views) has no tracklab origin: tracklab read silver through the views dbt left in its
+DuckDB file. `pipeline/` no longer exists; its last file, `pipeline/src/tracklab/__init__.py`, was
+the origin of `src/ftbase/__init__.py` and is removed.
+
 | File in ftbase | Path in tracklab | tracklab commit | State | Lines copied | Lines changed |
 |---|---|---|---|---|---|
-| `pipeline/dbt/macros/test_unique_combination.sql` | `pipeline/dbt/macros/test_unique_combination.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_match.sql` | `pipeline/dbt/models/silver/dim_match.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_period.sql` | `pipeline/dbt/models/silver/dim_period.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_team.sql` | `pipeline/dbt/models/silver/dim_team.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/dim_team_period.sql` | `pipeline/dbt/models/silver/dim_team_period.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/events.sql` | `pipeline/dbt/models/silver/events.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/schema.yml` | `pipeline/dbt/models/silver/schema.yml` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/views/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/silver/views/frames_attacking.sql` | `pipeline/dbt/models/silver/views/frames_attacking.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/models/sources/common.yml` | `pipeline/dbt/models/sources/common.yml` | `686508a` | copiado | | |
-| `pipeline/dbt/models/sources/football.yml` | `pipeline/dbt/models/sources/football.yml` | `686508a` | copiado | | |
-| `pipeline/dbt/seeds/event_type_map.csv` | `pipeline/dbt/seeds/event_type_map.csv` | `686508a` | copiado | | |
-| `pipeline/dbt/seeds/surface_spec.csv` | `pipeline/dbt/seeds/surface_spec.csv` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_attack_signs_opposite.sql` | `pipeline/dbt/tests/assert_attack_signs_opposite.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql` | `pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_frames_entities_in_dim_entity.sql` | `pipeline/dbt/tests/assert_frames_entities_in_dim_entity.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_frames_t_ms_increases.sql` | `pipeline/dbt/tests/assert_frames_t_ms_increases.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_frames_z_only_on_the_ball.sql` | `pipeline/dbt/tests/assert_frames_z_only_on_the_ball.sql` | `686508a` | copiado | | |
-| `pipeline/dbt/tests/assert_one_ball_per_match.sql` | `pipeline/dbt/tests/assert_one_ball_per_match.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/sql/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/dim_match.sql` | `pipeline/dbt/models/silver/dim_match.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/dim_period.sql` | `pipeline/dbt/models/silver/dim_period.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/dim_team.sql` | `pipeline/dbt/models/silver/dim_team.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/dim_team_period.sql` | `pipeline/dbt/models/silver/dim_team_period.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/sql/events.sql` | `pipeline/dbt/models/silver/events.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/sql/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/sql/frames_attacking.sql` | `pipeline/dbt/models/silver/views/frames_attacking.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/seeds/event_type_map.csv` | `pipeline/dbt/seeds/event_type_map.csv` | `686508a` | reescrito | | |
+| `src/ftbase/silver/assertions/assert_attack_signs_opposite.sql` | `pipeline/dbt/tests/assert_attack_signs_opposite.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/assertions/assert_football_possessions_do_not_overlap.sql` | `pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/assertions/assert_frames_entities_in_dim_entity.sql` | `pipeline/dbt/tests/assert_frames_entities_in_dim_entity.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/assertions/assert_frames_t_ms_increases.sql` | `pipeline/dbt/tests/assert_frames_t_ms_increases.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/assertions/assert_frames_z_only_on_the_ball.sql` | `pipeline/dbt/tests/assert_frames_z_only_on_the_ball.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/assertions/assert_one_ball_per_match.sql` | `pipeline/dbt/tests/assert_one_ball_per_match.sql` | `686508a` | copiado | | |
+| `src/ftbase/silver/checks.py` | `pipeline/dbt/models/silver/schema.yml` and `pipeline/dbt/macros/test_unique_combination.sql` | `686508a` | reescrito | | |
+| `src/ftbase/silver/build.py` | `pipeline/dbt/models/sources/football.yml` and `pipeline/dbt/models/sources/common.yml` | `686508a` | reescrito | | |
+| `src/ftbase/silver/orientation.py` | `pipeline/src/tracklab/silver/orientation.py` | `686508a` | reescrito | | |
+| `src/ftbase/silver/read.py` | - | - | nuevo | | |
+| `src/ftbase/silver/__init__.py` | - | - | nuevo | | |
+| `tests/unit/test_silver_orientation.py` | `pipeline/tests/unit/test_silver_orientation.py` | `686508a` | reescrito | | |
+| `tests/unit/test_silver_build.py` | - | - | nuevo | | |
+| `tests/contracts/test_silver.py` | - | - | nuevo | | |
 | `src/ftbase/manifest/sources.json` | `pipeline/manifest/sources.json` | `686508a` | copiado | | |
 | `src/ftbase/__init__.py` | `pipeline/src/tracklab/__init__.py` | `686508a` | copiado | | |
 | `src/ftbase/bronze/__init__.py` | `pipeline/src/tracklab/bronze/__init__.py` | `686508a` | copiado | | |
