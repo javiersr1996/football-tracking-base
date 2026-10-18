@@ -1,5 +1,8 @@
-"""HTTP side of ingest: GitHub lookups, streaming downloads hashed on the fly,
-and the two drivers behind ``tracklab freeze`` and ``tracklab ingest``.
+# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/fetch.py
+# Changes: removed freeze, the GitHub tree API and everything HuggingFace; User-Agent renamed;
+# added --match (select_match) and the match_id/manifest_files fields of Receipt.
+"""HTTP side of ingest: streaming downloads hashed on the fly and the driver
+behind ``ftbase ingest``.
 
 No ``git``, no ``git-lfs``, no clone. Small files come from the raw host, LFS
 files from the media host; both are plain GET requests.
@@ -11,19 +14,16 @@ import hashlib
 import json
 import os
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
-from tracklab.ingest.lfs import MAX_POINTER_BYTES, parse_pointer
-from tracklab.ingest.manifest import FileEntry, Source, match_id_for, role_for
-from tracklab.ingest.verify import CHUNK_BYTES, sha256_file
+from ftbase.ingest.manifest import FileEntry, Source
+from ftbase.ingest.select import select_match
+from ftbase.ingest.verify import CHUNK_BYTES, sha256_file
 
-API_URL = "https://api.github.com"
-API_HEADERS = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
-HF_API_URL = "https://huggingface.co/api/datasets"
 RECEIPT_NAME = "_receipt.json"
 ATTEMPTS = 3  # per file, on transport errors only
 
@@ -35,7 +35,7 @@ class IntegrityError(Exception):
 
 
 def _keep_token_on_github(request: httpx.Request) -> None:
-    """GITHUB_TOKEN goes to GitHub hosts only; HuggingFace is public and gets no credential."""
+    """GITHUB_TOKEN goes to GitHub hosts only, never to a host a redirect sends us to."""
     if not request.url.host.endswith("github.com") and not request.url.host.endswith(
         "githubusercontent.com"
     ):
@@ -43,7 +43,7 @@ def _keep_token_on_github(request: httpx.Request) -> None:
 
 
 def make_client(transport: httpx.BaseTransport | None = None) -> httpx.Client:
-    headers = {"User-Agent": "tracklab-ingest"}
+    headers = {"User-Agent": "ftbase-ingest"}
     token = os.environ.get("GITHUB_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -54,87 +54,6 @@ def make_client(transport: httpx.BaseTransport | None = None) -> httpx.Client:
         timeout=httpx.Timeout(60.0),
         event_hooks={"request": [_keep_token_on_github]},
     )
-
-
-# --- GitHub API -----------------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class TreeEntry:
-    path: str
-    size: int
-
-
-def resolve_commit(client: httpx.Client, repo: str, ref: str) -> str:
-    response = client.get(f"{API_URL}/repos/{repo}/commits/{ref}", headers=API_HEADERS)
-    response.raise_for_status()
-    return str(response.json()["sha"])
-
-
-def list_tree(client: httpx.Client, repo: str, commit: str) -> list[TreeEntry]:
-    response = client.get(
-        f"{API_URL}/repos/{repo}/git/trees/{commit}",
-        params={"recursive": "1"},
-        headers=API_HEADERS,
-    )
-    response.raise_for_status()
-    body = response.json()
-    if body.get("truncated"):
-        raise RuntimeError(f"GitHub truncated the tree of {repo}@{commit}; refusing to freeze it")
-    return [TreeEntry(e["path"], int(e["size"])) for e in body["tree"] if e["type"] == "blob"]
-
-
-@dataclass(frozen=True)
-class HfEntry:
-    path: str
-    size: int
-    sha256: str | None  # the LFS oid; None for a file stored in git proper
-
-
-def resolve_hf_revision(client: httpx.Client, repo: str, ref: str) -> str:
-    response = client.get(f"{HF_API_URL}/{repo}/revision/{ref}")
-    response.raise_for_status()
-    return str(response.json()["sha"])
-
-
-def list_hf_tree(client: httpx.Client, repo: str, revision: str) -> list[HfEntry]:
-    """Every file of the revision with its size and LFS oid (= sha256), without fetching a byte."""
-    entries: list[HfEntry] = []
-    url: str | None = f"{HF_API_URL}/{repo}/tree/{revision}?recursive=1"
-    while url is not None:
-        response = client.get(url)
-        response.raise_for_status()
-        for e in response.json():
-            if e["type"] == "file":
-                lfs = e.get("lfs")
-                entries.append(HfEntry(e["path"], int(e["size"]), lfs["oid"] if lfs else None))
-        url = response.links.get("next", {}).get("url")
-    return entries
-
-
-# --- Streaming downloads ------------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class StreamDigest:
-    sha256: str
-    size: int
-    head: bytes  # first bytes, enough to recognise an LFS pointer
-
-
-def stream_sha256(client: httpx.Client, url: str) -> StreamDigest:
-    """GET ``url`` and hash the body as it streams. Only the head is kept."""
-    digest = hashlib.sha256()
-    size = 0
-    head = b""
-    with client.stream("GET", url) as response:
-        response.raise_for_status()
-        for chunk in response.iter_bytes(CHUNK_BYTES):
-            if len(head) < MAX_POINTER_BYTES:
-                head += chunk[: MAX_POINTER_BYTES - len(head)]
-            digest.update(chunk)
-            size += len(chunk)
-    return StreamDigest(digest.hexdigest(), size, head)
 
 
 def download_verified(client: httpx.Client, url: str, dest: Path, entry: FileEntry) -> None:
@@ -173,59 +92,6 @@ def _download_with_retry(
             log(f"retry {attempt}/{ATTEMPTS - 1}: {entry.path}: {exc}")
 
 
-# --- freeze ------------------------------------------------------------------------
-
-
-def freeze_source(client: httpx.Client, source: Source, log: Log = print) -> Source:
-    """Pin ``source.ref`` to a commit and record bytes and sha256 of every bundle file.
-
-    LFS files are recognised by their pointer and cost one tiny request; the rest
-    are streamed once to compute their sha256. Nothing is written to ``data/``.
-    """
-    if source.kind == "huggingface":
-        return freeze_hf(client, source, log)
-    commit = resolve_commit(client, source.repo, source.ref)
-    frozen = replace(source, commit=commit, files=[])
-    files: list[FileEntry] = []
-    for entry in list_tree(client, source.repo, commit):
-        if not entry.path.startswith("data/"):
-            continue
-        role = role_for(entry.path)
-        if role is None:
-            log(f"skipped: {entry.path} (no role in the bundle)")
-            continue
-        digest = stream_sha256(client, frozen.raw_url_for(entry.path))
-        pointer = parse_pointer(digest.head) if digest.size <= MAX_POINTER_BYTES else None
-        match_id = match_id_for(entry.path)
-        if pointer is not None:
-            files.append(FileEntry(entry.path, pointer.size, pointer.oid, True, role, match_id))
-        else:
-            files.append(FileEntry(entry.path, digest.size, digest.sha256, False, role, match_id))
-    frozen.files = sorted(files, key=lambda f: f.path)
-    return frozen
-
-
-def freeze_hf(client: httpx.Client, source: Source, log: Log = print) -> Source:
-    """Pin a HuggingFace dataset to its revision. Sizes and sha256 come from the tree
-    API (the LFS oid is the sha256); a file with a role but no LFS oid is streamed once."""
-    commit = resolve_hf_revision(client, source.repo, source.ref)
-    frozen = replace(source, commit=commit, files=[])
-    files: list[FileEntry] = []
-    for entry in list_hf_tree(client, source.repo, commit):
-        role = role_for(entry.path)
-        if role is None:
-            log(f"skipped: {entry.path} (no role in the bundle)")
-            continue
-        match_id = match_id_for(entry.path)
-        if entry.sha256 is not None:
-            files.append(FileEntry(entry.path, entry.size, entry.sha256, True, role, match_id))
-        else:
-            digest = stream_sha256(client, frozen.raw_url_for(entry.path))
-            files.append(FileEntry(entry.path, digest.size, digest.sha256, False, role, match_id))
-    frozen.files = sorted(files, key=lambda f: f.path)
-    return frozen
-
-
 # --- ingest ------------------------------------------------------------------------
 
 
@@ -238,25 +104,37 @@ class Receipt:
     failed: list[str]
     finished_at: str
     source_path: str | None = None  # set by ingest_local: where --from-existing verified in place
+    match_id: int | None = None  # set by --match: only that match (plus matches.json) was ingested
+    manifest_files: int = 0  # files in the full manifest, so a partial run says what it left out
 
     @property
     def summary(self) -> str:
-        return f"downloaded={self.downloaded} verified={self.verified} failed={len(self.failed)}"
+        line = f"downloaded={self.downloaded} verified={self.verified} failed={len(self.failed)}"
+        if self.match_id is not None:
+            line += f" PARTIAL {self.verified}/{self.manifest_files}"
+        return line
 
 
 def ingest_source(
-    client: httpx.Client, source: Source, raw_root: Path, log: Log = print
+    client: httpx.Client,
+    source: Source,
+    raw_root: Path,
+    log: Log = print,
+    match_id: int | None = None,
 ) -> Receipt:
     """Make ``raw_root`` hold every manifest file with the right sha256.
 
     Per file: present and matching, skip; present and different, delete and
     download; absent, download. A failed file is recorded in the receipt and the
-    run carries on, so a re-run resumes where this one left off.
+    run carries on, so a re-run resumes where this one left off. With ``match_id``
+    only that match and ``matches.json`` are ingested and the receipt says so.
     """
     if source.commit is None or not source.files:
-        raise RuntimeError(
-            f"{source.source_id} is not frozen; run `tracklab freeze {source.source_id}` first"
-        )
+        raise RuntimeError(f"{source.source_id} has no pinned commit or no files")
+    commit = source.commit
+    manifest_files = len(source.files)
+    if match_id is not None:
+        source = select_match(source, match_id)
     verified = downloaded = 0
     failed: list[str] = []
     for entry in source.files:
@@ -279,11 +157,13 @@ def ingest_source(
         verified += 1
     receipt = Receipt(
         source_id=source.source_id,
-        commit=source.commit,
+        commit=commit,
         verified=verified,
         downloaded=downloaded,
         failed=failed,
         finished_at=datetime.now(UTC).isoformat(timespec="seconds"),
+        match_id=match_id,
+        manifest_files=manifest_files,
     )
     raw_root.mkdir(parents=True, exist_ok=True)
     (raw_root / RECEIPT_NAME).write_text(

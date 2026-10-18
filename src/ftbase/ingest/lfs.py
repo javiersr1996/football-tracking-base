@@ -1,3 +1,5 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/lfs.py
+# Changes: header only (no code changes).
 """Git LFS pointer files: detection and parsing.
 
 A pointer is the ~130-byte text Git stores in place of a large file. It is what

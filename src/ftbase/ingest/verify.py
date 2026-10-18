@@ -1,3 +1,5 @@
+# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/verify.py
+# Changes: header only (no code changes).
 """Streaming sha256 of files on disk.
 
 Files are hashed in fixed-size chunks so a 100 MB tracking file never sits in

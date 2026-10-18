@@ -1,65 +1,32 @@
-"""Local-clone side of ingest: freeze and verify a source straight out of a
-git working copy already on disk, with no network and no ``git-lfs``.
+# Copied from tracklab@686508a: pipeline/src/tracklab/ingest/local.py
+# Changes: removed freeze_local and the git plumbing it needed; added --match (select_match).
+"""Local-clone side of ingest: verify a source in place inside a copy that is
+already on disk (``ftbase ingest --from-existing``), with no network.
 
-Used for opendata-basketball, whose raw bytes already live in a git clone
-outside this repo. A git blob for an LFS-tracked path is always the pointer
-text (the smudge filter that expands it into real bytes only touches the
-worktree, never the object database), so ``git cat-file -p HEAD:<path>`` gives
-the same ``oid``/``size`` a raw LFS pointer download would, for the cost of a
-local process instead of a request. Everything else is hashed straight from
-the same command's output.
+Used when a clone of SkillCorner/opendata already exists, for instance if the
+provider's LFS quota is spent. The existing directory is only read; the receipt
+is written under the data root.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
-import subprocess
-from dataclasses import asdict, replace
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
-from tracklab.ingest.fetch import RECEIPT_NAME, Log, Receipt
-from tracklab.ingest.lfs import MAX_POINTER_BYTES, parse_pointer
-from tracklab.ingest.manifest import FileEntry, Source, match_id_for, role_for
-from tracklab.ingest.verify import only_line_endings_differ, verify_file
-
-
-def _git(repo_dir: Path, *args: str) -> bytes:
-    result = subprocess.run(["git", *args], cwd=repo_dir, capture_output=True, check=True)
-    return result.stdout
-
-
-def freeze_local(repo_dir: Path, source: Source, log: Log = print) -> Source:
-    """Freeze ``source`` by reading its files out of ``repo_dir`` at HEAD.
-
-    Mirrors ``fetch.freeze_source`` file for file, but the tree listing and
-    every file's bytes come from local git objects instead of the GitHub API
-    and raw host.
-    """
-    commit = _git(repo_dir, "rev-parse", "HEAD").decode("ascii").strip()
-    paths = _git(repo_dir, "ls-tree", "-r", "--name-only", "HEAD").decode("utf-8").splitlines()
-    files: list[FileEntry] = []
-    for path in paths:
-        if not path.startswith("data/"):
-            continue
-        role = role_for(path)
-        if role is None:
-            log(f"skipped: {path} (no role in the bundle)")
-            continue
-        content = _git(repo_dir, "cat-file", "-p", f"HEAD:{path}")
-        pointer = parse_pointer(content) if len(content) <= MAX_POINTER_BYTES else None
-        match_id = match_id_for(path)
-        if pointer is not None:
-            files.append(FileEntry(path, pointer.size, pointer.oid, True, role, match_id))
-        else:
-            digest = hashlib.sha256(content).hexdigest()
-            files.append(FileEntry(path, len(content), digest, False, role, match_id))
-    return replace(source, commit=commit, files=sorted(files, key=lambda f: f.path))
+from ftbase.ingest.fetch import RECEIPT_NAME, Log, Receipt
+from ftbase.ingest.manifest import Source
+from ftbase.ingest.select import select_match
+from ftbase.ingest.verify import only_line_endings_differ, verify_file
 
 
 def ingest_local(
-    source: Source, existing_root: Path, receipt_root: Path, log: Log = print
+    source: Source,
+    existing_root: Path,
+    receipt_root: Path,
+    log: Log = print,
+    match_id: int | None = None,
 ) -> Receipt:
     """Verify every manifest file inside ``existing_root`` in place.
 
@@ -67,12 +34,15 @@ def ingest_local(
     says or it is reported failed. The receipt still lands under
     ``receipt_root`` (the usual ``data/raw/<source_id>/`` bookkeeping spot),
     carrying ``existing_root`` as ``source_path`` since the bytes themselves
-    stay where they were found.
+    stay where they were found. With ``match_id`` only that match and
+    ``matches.json`` are checked and the receipt says so.
     """
     if source.commit is None or not source.files:
-        raise RuntimeError(
-            f"{source.source_id} is not frozen; run `tracklab freeze {source.source_id}` first"
-        )
+        raise RuntimeError(f"{source.source_id} has no pinned commit or no files")
+    commit = source.commit
+    manifest_files = len(source.files)
+    if match_id is not None:
+        source = select_match(source, match_id)
     verified = 0
     failed: list[str] = []
     for entry in source.files:
@@ -89,12 +59,14 @@ def ingest_local(
             failed.append(entry.path)
     receipt = Receipt(
         source_id=source.source_id,
-        commit=source.commit,
+        commit=commit,
         verified=verified,
         downloaded=0,
         failed=failed,
         finished_at=datetime.now(UTC).isoformat(timespec="seconds"),
         source_path=str(existing_root),
+        match_id=match_id,
+        manifest_files=manifest_files,
     )
     receipt_root.mkdir(parents=True, exist_ok=True)
     (receipt_root / RECEIPT_NAME).write_text(

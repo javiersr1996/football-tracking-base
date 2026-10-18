@@ -3,7 +3,9 @@ name = "ftbase"
 version = "0.1.0"
 description = "Open pipeline for SkillCorner open football data."
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+]
 
 [project.scripts]
 ftbase = "ftbase.cli:main"
