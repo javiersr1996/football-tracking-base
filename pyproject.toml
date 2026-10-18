@@ -1,0 +1,40 @@
+[project]
+name = "ftbase"
+version = "0.1.0"
+description = "Open pipeline for SkillCorner open football data."
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+ftbase = "ftbase.cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.3",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ftbase"]
+
+[tool.ruff]
+line-length = 100
+src = ["src"]
+# Imported from tracklab, still under pipeline/ until tasks 3 to 5 move and adapt it.
+# Remove this exclusion when task 5 closes.
+extend-exclude = ["pipeline"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
