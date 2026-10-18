@@ -4,11 +4,11 @@
 
 Reads ``<match_id>_tracking_extrapolated.jsonl`` line by line (never whole in memory,
 each file is 90-102 MB) in batches of 100k frames and writes one Parquet per match and
-table with the schemas declared below. Bronze does not correct, filter or interpolate:
+table with the schemas declared below. Bronze does not correct, filter or fill in anything:
 every line becomes a row of ``tracking_frames``, every ``player_data`` entry a row of
 ``tracking_objects``, and values are stored as delivered. Every correction belongs to
-silver. See ``docs/formats/football.md`` (task 4) for the measurements this module
-relies on instead of re-deriving.
+silver. The measurements this module relies on (key sets, contiguous ``frame``) were
+taken once over the 20 matches and are enforced on every run instead of re-derived.
 
 What is different from basketball's ``tracking.py`` (``bronze/basketball/tracking.py``),
 whose layout and key-imposition idiom this module copies:
@@ -28,10 +28,10 @@ whose layout and key-imposition idiom this module copies:
   ``ball_data`` all null) are a row of ``tracking_frames`` with ``n_players = 0`` and
   no row in ``tracking_objects``: the full timeline the provider delivered, pre-match
   and half-time footage included in the 5 matches that carry it, lives in bronze.
-  ``frame`` is contiguous from 0 in the 20 matches (measured by task 4); a frame the
+  ``frame`` is contiguous from 0 in the 20 matches (measured); a frame the
   file never delivered stays absent, never filled with ``range()``.
 - ``source_row`` is the JSONL line index and ``frame`` is the provider's own counter;
-  task 4 measured them equal in the matches checked so far, but bronze keeps both
+  they were measured equal in the matches checked so far, but bronze keeps both
   columns rather than assuming line N is frame N, the same discipline as basketball's
   ``frameIdx`` vs ``source_row``.
 """
@@ -54,8 +54,8 @@ SPORT = "football"
 BATCH_FRAMES = 100_000
 Log = Callable[[str], None]
 
-# Exactly the keys the provider delivers, frozen by task 4 over the 20 matches. One
-# more or one less fails the run: see ``docs/formats/football.md``, "frame_keys".
+# Exactly the keys the provider delivers, measured over the 20 matches. One
+# more or one less fails the run.
 FRAME_KEYS = frozenset(
     {
         "ball_data",
@@ -88,7 +88,7 @@ TRACKING_FRAMES = pa.schema(
     [
         *LINEAGE_FIELDS,
         pa.field("frame", pa.int64(), nullable=False),
-        pa.field("timestamp", pa.string()),  # null iff outside every period (task 4)
+        pa.field("timestamp", pa.string()),  # null iff outside every period
         pa.field("period", pa.int16()),
         pa.field("ball_x", pa.float64()),
         pa.field("ball_y", pa.float64()),
@@ -108,7 +108,7 @@ TRACKING_OBJECTS = pa.schema(
         pa.field("player_id", pa.int64(), nullable=False),
         pa.field("x", pa.float64(), nullable=False),
         pa.field("y", pa.float64(), nullable=False),
-        pa.field("is_detected", pa.bool_(), nullable=False),  # never null (task 4, 0/20 matches)
+        pa.field("is_detected", pa.bool_(), nullable=False),  # never null (0 of 20 matches)
     ]
 )
 

@@ -57,7 +57,7 @@ def test_every_file_has_the_declared_schema(match_ids: list[int]) -> None:
 
 
 def test_frame_rows_equal_frame_max_plus_1(match_ids: list[int]) -> None:
-    """``frame`` is contiguous from 0 (task 4): row count must equal ``max(frame) + 1``."""
+    """``frame`` is contiguous from 0: row count must equal ``max(frame) + 1``."""
     con = duckdb.connect()
     print(f"\n{'match_id':>8} {'frames':>8} {'frame_max+1':>12}")
     mismatches = []
@@ -91,7 +91,7 @@ def test_object_rows_total(match_ids: list[int]) -> None:
 
 
 def test_in_period_frames_are_full_or_empty(match_ids: list[int]) -> None:
-    """Inside a period: 22 players or 0, never 1-21 and never more than 22 (task 4)."""
+    """Inside a period: 22 players or 0, never 1-21 and never more than 22."""
     con = duckdb.connect()
     print(f"\n{'match_id':>8} {'in_period':>9} {'full22':>8} {'empty0':>8} {'partial':>8}")
     partials = []
@@ -126,7 +126,7 @@ def test_timestamp_null_iff_period_null(match_ids: list[int]) -> None:
 
 
 def test_ball_z_nonnull_iff_ball_present(match_ids: list[int]) -> None:
-    """``ball_data`` is present exactly when the 22 players are (task 4): ``ball_z`` non-null
+    """``ball_data`` is present exactly when the 22 players are: ``ball_z`` non-null
     iff ``n_players = 22``, checked inside every period."""
     con = duckdb.connect()
     print(f"\n{'match_id':>8} {'mismatches':>10}")

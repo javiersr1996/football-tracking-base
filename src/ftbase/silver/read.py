@@ -163,7 +163,7 @@ def read_frames(
     ``team_id``               string    ``fb:<team id>``; null for the ball
     ``x_m``, ``y_m``          double    metres, in the venue (tracking) frame as delivered
     ``z_m``                   double    the ball's height as delivered; null for players
-    ``is_detected``           bool      false: the provider extrapolated the position
+    ``is_detected``           bool      the provider's flag, as delivered
     ========================  ========  ==================================================
 
     With ``attacking=True`` the rows come from ``frames_attacking`` instead: only frames

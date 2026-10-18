@@ -4,9 +4,7 @@ Marked `realdata` (deselected by default, never skipped): run them with
 `FTBASE_DATA_ROOT=<dir> uv run pytest -m realdata` after `ftbase ingest` and `ftbase bronze`.
 
 Two things this file is the only place that checks: ``match_periods`` really has 40 rows
-(20 matches x 2 periods, the scope
-correction task 7 applies: the acceptance criterion was written for a 10-match bundle
-and reads "20 filas" -- see the task report), and the leaf checker decision 8 demands:
+(20 matches x 2 periods), and the leaf checker:
 every scalar value ``match.json`` delivers, in every one of the 20 matches, is
 represented in a column of ``match``, ``match_periods`` or ``match_players``. The
 checker walks the raw JSON directly (no ftbase import in the walker itself) and
@@ -33,7 +31,7 @@ from ftbase.paths import data_root
 DATA = data_root()
 BRONZE = DATA / "bronze" / "football"
 SOURCE_ID = "opendata-football"
-EXPECTED_MATCH_PERIODS_ROWS = 40  # 20 matches x 2 periods: the scope correction of task 7
+EXPECTED_MATCH_PERIODS_ROWS = 40  # 20 matches x 2 periods
 
 pytestmark = pytest.mark.realdata
 
@@ -78,7 +76,7 @@ def test_match_periods_has_40_rows_2_per_match(match_ids: list[int]) -> None:
     assert total == EXPECTED_MATCH_PERIODS_ROWS
 
 
-# --- decision 8's leaf checker: every scalar value of match.json lands in a column ----
+# --- the leaf checker: every scalar value of match.json lands in a column ----
 
 
 def scalar_leaf_paths(obj: Any, prefix: str = "$") -> set[str]:

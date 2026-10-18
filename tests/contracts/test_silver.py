@@ -6,7 +6,7 @@ Marked `realdata` (deselected by default, never skipped): run them with
 `FTBASE_DATA_ROOT=<dir> uv run pytest -m realdata` after `ftbase ingest`, `ftbase bronze`
 and `ftbase silver`.
 
-The pinned counts are the ones task 5 compared row by row against tracklab's silver
+The pinned counts are the ones compared row by row against tracklab's silver
 (tracklab@686508a, read-only): the same rows per match, the same ``is_detected`` split
 and ``EXCEPT ALL`` empty both ways in the 20 matches.
 """

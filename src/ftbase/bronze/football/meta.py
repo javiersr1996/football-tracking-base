@@ -14,13 +14,12 @@ own ``match_id`` (the native ``id``) in ``LINEAGE_FIELDS``.
 **Every nested dict and list of dicts read from ``match.json`` has its key set imposed
 against the set measured over the 20 matches, before any value is read from it**
 (``_check_keys``), the same discipline ``bronze/basketball/tracking.py`` applies to
-``FRAME_KEYS``/``PLAYER_KEYS`` and that task 6 paid for learning: a column built from
+``FRAME_KEYS``/``PLAYER_KEYS``: a column built from
 the schema instead of from the raw row lets a provider key silently disappear. A key
 missing or a key extra fails the run naming the file, the path inside the JSON, and the
 keys that differ.
 
-Two things measured while writing this module that ``docs/formats/football.md`` (task
-4) does not mention, because task 4 probed frames and CSVs, not ``match.json``:
+Two things measured over the 20 ``match.json`` files while writing this module:
 
 - **``players[]`` has two regimes, split by match, not by player.** 10 of the 20
   matches carry ``last_modified`` (a per-player processing timestamp) and

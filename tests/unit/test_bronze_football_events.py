@@ -10,7 +10,7 @@ time, so the patch reaches it), the same trick that test uses for `FAMILY_ORDER`
 Covers: the native `match_id` column folded into the lineage one (`table_schema`),
 that fold's row-by-row check failing loudly on a mismatch, a header that drifted
 from the frozen one failing through `read_typed`, and nulls carried through as-is
-(no orphan is ever dropped, matching docs/formats/football.md).
+(no orphan row is ever dropped).
 """
 
 from __future__ import annotations

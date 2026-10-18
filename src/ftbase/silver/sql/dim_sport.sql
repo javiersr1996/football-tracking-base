@@ -5,11 +5,9 @@
 -- here is a constant of the bundle, measured in tracklab and cited next to it; no
 -- model is allowed to hard-code any of these values again.
 --
--- native_event_frame is the one that changed with the evidence. The plan wrote
--- 'venue' for football as a hypothesis; tracklab's task 9 measured it and the
--- attack frame wins in 20 of 20 matches (94.66-100% within 1 m against
--- 40.04-56.41%), so football is 'attacking_pos_x': the attacker goes towards +x
--- and the rotation is chosen by `attacking_side`.
+-- native_event_frame: football is 'attacking_pos_x': the attacker goes towards +x
+-- and the rotation is chosen by `attacking_side`. Measured in tracklab: the attack
+-- frame wins in 20 of 20 matches (94.66-100% within 1 m against 40.04-56.41%).
 
 SELECT
     'football'::VARCHAR AS sport,

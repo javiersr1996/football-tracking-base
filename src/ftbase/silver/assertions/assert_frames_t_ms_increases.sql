@@ -1,11 +1,10 @@
 -- Copied from tracklab@686508a: pipeline/dbt/tests/assert_frames_t_ms_increases.sql
--- Changes: dbt ref() replaced by the table name; tracklab's task 20 player no longer
--- named; run by ftbase.silver.checks.
+-- Changes: dbt ref() replaced by the table name; a player id named in a comment dropped;
+-- run by ftbase.silver.checks.
 --
 -- t_ms is the clock that joins frames to events, so it has to move forward for a
 -- given entity inside a period. An equal or smaller t_ms than the previous row
--- would mean a duplicated frame or a frame counter that went backwards, and an
--- interpolation would silently divide by a non-positive interval.
+-- would mean a duplicated frame or a frame counter that went backwards.
 
 SELECT match_id, period, entity_id, t_ms, previous_t_ms
 FROM (

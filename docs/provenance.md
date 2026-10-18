@@ -41,7 +41,7 @@ tracklab CLI rewritten down to the `ingest` and `bronze` subcommands. `test_foot
 gains a header-hash test and `test_frozen_schemas.py` loses basketball (both `reescrito`);
 `manifest_helper.py` replaces the `save_manifest` that tracklab's manifest module had.
 
-Silver (task 5) replaces dbt with DuckDB run from Python, football only. The model SQL keeps its
+Silver replaces dbt with DuckDB run from Python, football only. The model SQL keeps its
 logic; `reescrito` marks the files that lost their basketball branch or changed a source, `copiado`
 the ones where only dbt's `ref()`/`source()` became a table name. `checks.py` holds the integrity
 tests of `schema.yml` (key uniqueness, not-null keys, relationships) and replaces the
@@ -56,28 +56,28 @@ per-connection views) has no tracklab origin: tracklab read silver through the v
 DuckDB file. `pipeline/` no longer exists; its last file, `pipeline/src/tracklab/__init__.py`, was
 the origin of `src/ftbase/__init__.py` and is removed.
 
-Task 6 adds `fixtures.py` (the synthetic match and `ftbase fixtures`, which also touches `cli.py`),
+The synthetic fixtures add `fixtures.py` (the synthetic match and `ftbase fixtures`, which also touches `cli.py`),
 its end-to-end test, and a `conftest.py` that makes a skipped test a failure (with its own test).
 `.github/workflows/ci.yml` is new and sits outside this table. `checks.py` gains two `not_null`
-checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` had and task 5 left out.
+checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` had and the first silver build left out.
 
 | File in ftbase | Path in tracklab | tracklab commit | State | Lines copied | Lines changed |
 |---|---|---|---|---|---|
 | `src/ftbase/silver/sql/dim_entity.sql` | `pipeline/dbt/models/silver/dim_entity.sql` | `686508a` | reescrito | 44 | 21 |
 | `src/ftbase/silver/sql/dim_match.sql` | `pipeline/dbt/models/silver/dim_match.sql` | `686508a` | reescrito | 51 | 24 |
 | `src/ftbase/silver/sql/dim_period.sql` | `pipeline/dbt/models/silver/dim_period.sql` | `686508a` | reescrito | 21 | 14 |
-| `src/ftbase/silver/sql/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | reescrito | 5 | 17 |
+| `src/ftbase/silver/sql/dim_sport.sql` | `pipeline/dbt/models/silver/dim_sport.sql` | `686508a` | reescrito | 4 | 16 |
 | `src/ftbase/silver/sql/dim_team.sql` | `pipeline/dbt/models/silver/dim_team.sql` | `686508a` | reescrito | 19 | 14 |
 | `src/ftbase/silver/sql/dim_team_period.sql` | `pipeline/dbt/models/silver/dim_team_period.sql` | `686508a` | copiado | 7 | 13 |
 | `src/ftbase/silver/sql/events.sql` | `pipeline/dbt/models/silver/events.sql` | `686508a` | reescrito | 146 | 49 |
-| `src/ftbase/silver/sql/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | reescrito | 63 | 49 |
-| `src/ftbase/silver/sql/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | 23 | 14 |
+| `src/ftbase/silver/sql/frames.sql` | `pipeline/dbt/models/silver/frames.sql` | `686508a` | reescrito | 63 | 47 |
+| `src/ftbase/silver/sql/frame_possession.sql` | `pipeline/dbt/models/silver/views/frame_possession.sql` | `686508a` | copiado | 23 | 13 |
 | `src/ftbase/silver/sql/frames_attacking.sql` | `pipeline/dbt/models/silver/views/frames_attacking.sql` | `686508a` | copiado | 16 | 10 |
 | `src/ftbase/silver/seeds/event_type_map.csv` | `pipeline/dbt/seeds/event_type_map.csv` | `686508a` | reescrito | 3 | 1 |
 | `src/ftbase/silver/assertions/assert_attack_signs_opposite.sql` | `pipeline/dbt/tests/assert_attack_signs_opposite.sql` | `686508a` | copiado | 8 | 9 |
 | `src/ftbase/silver/assertions/assert_football_possessions_do_not_overlap.sql` | `pipeline/dbt/tests/assert_football_possessions_do_not_overlap.sql` | `686508a` | copiado | 14 | 8 |
 | `src/ftbase/silver/assertions/assert_frames_entities_in_dim_entity.sql` | `pipeline/dbt/tests/assert_frames_entities_in_dim_entity.sql` | `686508a` | copiado | 5 | 8 |
-| `src/ftbase/silver/assertions/assert_frames_t_ms_increases.sql` | `pipeline/dbt/tests/assert_frames_t_ms_increases.sql` | `686508a` | copiado | 11 | 9 |
+| `src/ftbase/silver/assertions/assert_frames_t_ms_increases.sql` | `pipeline/dbt/tests/assert_frames_t_ms_increases.sql` | `686508a` | copiado | 11 | 8 |
 | `src/ftbase/silver/assertions/assert_frames_z_only_on_the_ball.sql` | `pipeline/dbt/tests/assert_frames_z_only_on_the_ball.sql` | `686508a` | copiado | 5 | 8 |
 | `src/ftbase/silver/assertions/assert_one_ball_per_match.sql` | `pipeline/dbt/tests/assert_one_ball_per_match.sql` | `686508a` | copiado | 10 | 5 |
 | `src/ftbase/silver/checks.py` | `pipeline/dbt/models/silver/schema.yml` and `pipeline/dbt/macros/test_unique_combination.sql` | `686508a` | reescrito | 14 | 132 |
@@ -99,9 +99,9 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/bronze/__init__.py` | `pipeline/src/tracklab/bronze/__init__.py` | `686508a` | copiado | 5 | 3 |
 | `src/ftbase/bronze/common.py` | `pipeline/src/tracklab/bronze/common.py` | `686508a` | copiado | 207 | 20 |
 | `src/ftbase/bronze/football/__init__.py` | `pipeline/src/tracklab/bronze/football/__init__.py` | `686508a` | copiado | 1 | 2 |
-| `src/ftbase/bronze/football/events.py` | `pipeline/src/tracklab/bronze/football/events.py` | `686508a` | copiado | 130 | 23 |
-| `src/ftbase/bronze/football/meta.py` | `pipeline/src/tracklab/bronze/football/meta.py` | `686508a` | copiado | 692 | 13 |
-| `src/ftbase/bronze/football/tracking.py` | `pipeline/src/tracklab/bronze/football/tracking.py` | `686508a` | copiado | 247 | 9 |
+| `src/ftbase/bronze/football/events.py` | `pipeline/src/tracklab/bronze/football/events.py` | `686508a` | copiado | 127 | 26 |
+| `src/ftbase/bronze/football/meta.py` | `pipeline/src/tracklab/bronze/football/meta.py` | `686508a` | copiado | 689 | 15 |
+| `src/ftbase/bronze/football/tracking.py` | `pipeline/src/tracklab/bronze/football/tracking.py` | `686508a` | copiado | 238 | 18 |
 | `src/ftbase/bronze/schemas/football/dynamic_events.schema.json` | `pipeline/src/tracklab/bronze/schemas/football/dynamic_events.schema.json` | `686508a` | copiado | 1321 | 0 |
 | `src/ftbase/bronze/schemas/football/phases_of_play.schema.json` | `pipeline/src/tracklab/bronze/schemas/football/phases_of_play.schema.json` | `686508a` | copiado | 209 | 0 |
 | `src/ftbase/formats/__init__.py` | `pipeline/src/tracklab/formats/__init__.py` | `686508a` | copiado | 2 | 6 |
@@ -115,10 +115,10 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/paths.py` | `pipeline/src/tracklab/paths.py` | `686508a` | copiado | 12 | 8 |
 | `src/ftbase/py.typed` | - | - | nuevo | 0 | 0 |
 | `src/ftbase/provenance.py` | - | - | nuevo | 0 | 340 |
-| `tests/contracts/test_football_events_bronze.py` | `pipeline/tests/contracts/test_football_events_bronze.py` | `686508a` | reescrito | 174 | 30 |
-| `tests/contracts/test_football_meta_bronze.py` | `pipeline/tests/contracts/test_football_meta_bronze.py` | `686508a` | copiado | 219 | 14 |
-| `tests/contracts/test_football_tracking_bronze.py` | `pipeline/tests/contracts/test_football_tracking_bronze.py` | `686508a` | copiado | 168 | 11 |
-| `tests/unit/test_bronze_football_events.py` | `pipeline/tests/unit/test_bronze_football_events.py` | `686508a` | copiado | 288 | 9 |
+| `tests/contracts/test_football_events_bronze.py` | `pipeline/tests/contracts/test_football_events_bronze.py` | `686508a` | reescrito | 165 | 38 |
+| `tests/contracts/test_football_meta_bronze.py` | `pipeline/tests/contracts/test_football_meta_bronze.py` | `686508a` | copiado | 215 | 16 |
+| `tests/contracts/test_football_tracking_bronze.py` | `pipeline/tests/contracts/test_football_tracking_bronze.py` | `686508a` | copiado | 165 | 14 |
+| `tests/unit/test_bronze_football_events.py` | `pipeline/tests/unit/test_bronze_football_events.py` | `686508a` | copiado | 287 | 10 |
 | `tests/unit/test_bronze_football_meta.py` | `pipeline/tests/unit/test_bronze_football_meta.py` | `686508a` | copiado | 446 | 7 |
 | `tests/unit/test_bronze_football_tracking.py` | `pipeline/tests/unit/test_bronze_football_tracking.py` | `686508a` | copiado | 332 | 12 |
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 35 |

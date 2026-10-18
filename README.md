@@ -1,9 +1,10 @@
 # ftbase
 
 Open pipeline for the SkillCorner open football data (A-League 2024/25: tracking, dynamic events,
-phases of play). It was extracted in October 2026 from tracklab, the author's private repository,
-which is where the code was first written (MIT). The pipeline keeps the provider's `is_detected`
-flag, which separates what the cameras saw from what the provider extrapolated.
+phases of play). It was extracted in October 2026 from tracklab, the author's private repository
+(MIT); [`docs/provenance.md`](docs/provenance.md) says which files were copied, rewritten or
+written new. It keeps the provider's `is_detected` flag for every tracked object (the provider's
+tracking files are named `*_tracking_extrapolated.jsonl`) and does no analysis of it.
 
 **Status: pre-release.** `ingest`, `bronze`, `silver` and the synthetic fixtures are in place; v0.1.0 is not tagged yet.
 

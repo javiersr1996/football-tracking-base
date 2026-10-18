@@ -25,9 +25,9 @@ other native column is kept verbatim, native name, native position. Net columns:
 ``phases_of_play`` 4 + 43 = 47.
 
 Nothing here drops a row. Match 1953632's `player_id` 973077 has 35
-``dynamic_events`` rows and is not a foreign key bronze enforces (see
-docs/formats/football.md, "Events player_id is not an enforceable foreign key");
-those rows are loaded like any other.
+``dynamic_events`` rows and is not a foreign key bronze enforces
+(the id is in no ``players[]`` of ``match.json`` and in no tracking frame); those rows are
+loaded like any other.
 """
 
 from __future__ import annotations

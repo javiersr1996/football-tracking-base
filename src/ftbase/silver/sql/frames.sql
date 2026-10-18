@@ -26,8 +26,8 @@
 -- the provider's value, uncorrected, with `dim_match.z_ball_status` saying what is
 -- known about it.
 --
--- is_detected is the column that makes the rest readable: false means the
--- provider extrapolated the position rather than seeing it.
+-- is_detected is the provider's own flag, kept as delivered for every player and
+-- for the ball. Nothing here reads it, filters on it or interprets it.
 --
 -- clock_s is the official clock in its own semantics: the seconds elapsed since
 -- the period's first frame, which is the period half of the match clock

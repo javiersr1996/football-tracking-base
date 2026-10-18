@@ -1,7 +1,6 @@
 -- Copied from tracklab@686508a: pipeline/dbt/models/silver/views/frame_possession.sql
 -- Changes: the basketball paragraphs of the comment dropped; dbt ref() replaced by table
--- names. Needed by frames_attacking, so it comes along although the plan names only that
--- view.
+-- names. Needed by frames_attacking, so it comes along with it.
 --
 -- Which team possession a frame belongs to, for the frames that belong to one.
 --

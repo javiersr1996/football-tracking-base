@@ -8,9 +8,9 @@ the artefact on disk with DuckDB or pyarrow, never what the builder computed in
 memory, and prints its evidence per match, never an aggregate. The row-count test
 walks each raw CSV with plain `open()` and counts lines, no `csv` module, no
 pyarrow, no DuckDB, no import of `ftbase.bronze.football.events`: it shares no
-line with the writer it checks. `docs/formats/football.md` measured `dynamic_events`
-and `phases_of_play` rows as the file's line count minus 1 (the header) in all 20
-matches; this test proves it against the actual artefact instead of the doc.
+line with the writer it checks. `dynamic_events` and `phases_of_play` rows equal the
+file's line count minus 1 (the header) in all 20 matches; this test proves it against the
+actual artefact.
 """
 
 from __future__ import annotations
@@ -32,12 +32,11 @@ DATA = data_root()
 BRONZE = DATA / "bronze" / "football"
 SOURCE_ID = "opendata-football"
 
-# Measured by the team lead directly on the 20 raw CSVs before this module existed
-# (see the task 8 brief); this test re-derives the per-match rows independently and
-# checks the totals against these frozen numbers.
+# Counted directly on the 20 raw CSVs before the bronze writer existed; this test
+# re-derives the per-match rows independently and checks the totals against these numbers.
 EXPECTED_TOTAL = {"dynamic_events": 94_361, "phases_of_play": 8_834}
 
-# docs/formats/football.md: 322 and 44 columns frozen by task 4. Both CSVs carry a
+# 322 and 44 columns, frozen once. Both CSVs carry a
 # native `match_id` column, the same name `bronze.common.LINEAGE_FIELDS` already
 # reserves for the match id every table starts with; a pyarrow schema cannot
 # usefully carry two fields of one name, so `events.py` folds the native one into
@@ -134,7 +133,7 @@ def test_row_counts_equal_csv_lines_minus_header(match_ids: list[int]) -> None:
 
 
 def test_source_row_is_0_based_and_contiguous(match_ids: list[int]) -> None:
-    """`source_row` is the CSV's 0-based data row, per the task 8 brief's lineage
+    """`source_row` is the CSV's 0-based data row, the lineage
     contract: `[0, n)` with no gap, checked per match and table."""
     con = duckdb.connect()
     bad = []
@@ -174,7 +173,7 @@ def test_event_type_counts(match_ids: list[int]) -> None:
 
 
 def test_orphan_player_rows_are_present(match_ids: list[int]) -> None:
-    """docs/formats/football.md: `events.player_id` is not an enforceable foreign
+    """`events.player_id` is not an enforceable foreign
     key. Match 1953632's `player_id` 973077 (35 rows, absent from `players[]` and
     the tracking) must be loaded, never dropped."""
     assert ORPHAN_MATCH in match_ids
