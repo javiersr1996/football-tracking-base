@@ -192,14 +192,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 27,
-      "lines_copied": 48,
+      "lines_changed": 28,
+      "lines_copied": 47,
       "lines_total": 75,
       "origins": [
         "pipeline/src/tracklab/ingest/local.py"
       ],
       "path": "src/ftbase/ingest/local.py",
-      "sha256": "c0e70e99a8cdf4b6463a1a2b5989a6594ef374aabfc45a36f67fb800e3571c25",
+      "sha256": "3770605f2fd49866cfca3595089c4e43c8843e693605649954c82df17f3809d9",
       "state": "reescrito"
     },
     {
@@ -688,14 +688,14 @@
     },
     {
       "commit": "686508a",
-      "lines_changed": 208,
+      "lines_changed": 222,
       "lines_copied": 209,
-      "lines_total": 417,
+      "lines_total": 431,
       "origins": [
         "pipeline/tests/unit/test_ingest.py"
       ],
       "path": "tests/unit/test_ingest.py",
-      "sha256": "991865e7d237a7240dc369bb79f5d32cc93c975ebab89668317436ab471a4416",
+      "sha256": "8a96b204da8866b39bc59108b83c7d8982e1f305d5d777e271af82b250d31fb2",
       "state": "reescrito"
     },
     {
@@ -746,9 +746,9 @@
     },
     "reescrito": {
       "files": 18,
-      "lines_changed": 1087,
-      "lines_copied": 1356,
-      "lines_total": 2443
+      "lines_changed": 1102,
+      "lines_copied": 1355,
+      "lines_total": 2457
     }
   }
 }

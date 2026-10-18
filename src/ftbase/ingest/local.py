@@ -64,7 +64,7 @@ def ingest_local(
         downloaded=0,
         failed=failed,
         finished_at=datetime.now(UTC).isoformat(timespec="seconds"),
-        source_path=str(existing_root),
+        source_path=existing_root.resolve().as_posix(),
         match_id=match_id,
         manifest_files=manifest_files,
     )

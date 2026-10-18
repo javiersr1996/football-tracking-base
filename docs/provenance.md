@@ -97,7 +97,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `src/ftbase/ingest/__init__.py` | `pipeline/src/tracklab/ingest/__init__.py` | `686508a` | copiado | 0 | 3 |
 | `src/ftbase/ingest/fetch.py` | `pipeline/src/tracklab/ingest/fetch.py` | `686508a` | reescrito | 140 | 32 |
 | `src/ftbase/ingest/lfs.py` | `pipeline/src/tracklab/ingest/lfs.py` | `686508a` | copiado | 36 | 2 |
-| `src/ftbase/ingest/local.py` | `pipeline/src/tracklab/ingest/local.py` | `686508a` | reescrito | 48 | 27 |
+| `src/ftbase/ingest/local.py` | `pipeline/src/tracklab/ingest/local.py` | `686508a` | reescrito | 47 | 28 |
 | `src/ftbase/ingest/manifest.py` | `pipeline/src/tracklab/ingest/manifest.py` | `686508a` | copiado | 84 | 6 |
 | `src/ftbase/ingest/verify.py` | `pipeline/src/tracklab/ingest/verify.py` | `686508a` | copiado | 35 | 2 |
 | `src/ftbase/paths.py` | `pipeline/src/tracklab/paths.py` | `686508a` | copiado | 12 | 8 |
@@ -110,7 +110,7 @@ checks (`frames.is_detected`, `frames_attacking.attack_sign`) that `schema.yml` 
 | `tests/unit/test_bronze_football_meta.py` | `pipeline/tests/unit/test_bronze_football_meta.py` | `686508a` | copiado | 446 | 7 |
 | `tests/unit/test_bronze_football_tracking.py` | `pipeline/tests/unit/test_bronze_football_tracking.py` | `686508a` | copiado | 332 | 12 |
 | `tests/unit/test_frozen_schemas.py` | `pipeline/tests/unit/test_frozen_schemas.py` | `686508a` | reescrito | 74 | 35 |
-| `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 208 |
+| `tests/unit/test_ingest.py` | `pipeline/tests/unit/test_ingest.py` | `686508a` | reescrito | 209 | 222 |
 | `src/ftbase/ingest/select.py` | - | - | nuevo | 0 | 24 |
 | `src/ftbase/cli.py` | `pipeline/src/tracklab/cli.py` | `686508a` | reescrito | 105 | 155 |
 | `tests/unit/manifest_helper.py` | - | - | nuevo | 0 | 14 |

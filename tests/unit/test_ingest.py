@@ -363,7 +363,21 @@ def test_from_existing_verifies_in_place_and_never_writes_there(
     assert capsys.readouterr().out.splitlines()[-1] == f"downloaded=0 verified={n} failed=0"
     assert tree_state(clone) == before, "the clone must be left exactly as it was found"
     receipt = json.loads((tmp_path / "data" / "raw" / SOURCE_ID / RECEIPT_NAME).read_text())
-    assert receipt["source_path"] == str(clone)
+    assert receipt["source_path"] == clone.resolve().as_posix()
+
+
+def test_the_receipt_keeps_an_absolute_posix_path_for_a_relative_clone(
+    manifest_path: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lay_out_clone(tmp_path / "clone")
+    monkeypatch.chdir(tmp_path)
+
+    assert run_cli(manifest_path, tmp_path, "--from-existing", "clone") == 0
+
+    receipt = json.loads((tmp_path / "data" / "raw" / SOURCE_ID / RECEIPT_NAME).read_text())
+    assert receipt["source_path"] == (tmp_path / "clone").resolve().as_posix()
+    assert "\\" not in receipt["source_path"]
+    assert Path(receipt["source_path"]).is_absolute()
 
 
 def test_from_existing_fails_on_a_changed_byte_and_on_a_missing_file(
