@@ -2,8 +2,8 @@
 """Subset of a source for ``ftbase ingest --match <id>``.
 
 One match is four files (match.json, tracking, dynamic events, phases of play) plus
-``matches.json``, the index every reader of a single match needs. That is about 91 MB
-instead of 1.9 GB, so a reviewer can reproduce one match before downloading all of them.
+``matches.json``, the index every reader of a single match needs. That is a small
+fraction of the source, so a reviewer can reproduce one match before downloading all of them.
 """
 
 from __future__ import annotations
